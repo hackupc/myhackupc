@@ -231,13 +231,12 @@ class ApplicationForm(OverwriteOnlyModelFormMixin, BetterModelForm):
             self._fieldsets.append(('Policies', {
                 'fields': ('terms_and_conditions', 'diet_notice', 'images_and_videos', 'cvs_edition'),
                 'description': 'We, Hackers at UPC, require all this information to organize an awesome hackathon.  '
-                               'It will also include images and videos of yourself during the event. '
-                               'Your data will be used for admissions mainly. '
-                               'We may also reach out to you about other events or services that we are organizing  '
-                               'and that we think that may be of interest to you. '
+                               'Part of this information may be images and videos with you during the event. '
+                               'Mainly, your data will be used for admissions. '
+                               'However, we may also reach out to you about other events or services that we are '
+                               'organizing and that we think that may be of your interest. '
                                'For more information on the processing of your personal '
-                               'data and on how to exercise your rights of access, rectification, suppression, '
-                               'limitation, portability and opposition please visit our Privacy and Cookies Policy.'
+                               'data and how to exercise your rights on it please visit our Privacy and Cookies Policy.'
             }))
         return super(ApplicationForm, self).fieldsets
 
