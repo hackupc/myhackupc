@@ -62,8 +62,7 @@ class ApplicationForm(OverwriteOnlyModelFormMixin, BetterModelForm):
 
     images_and_videos = forms.BooleanField(
         required=False,
-        label='I expressly authorize ASSOCIACIÓ HACKERS AT UPC to share the images '
-              'and videos of myself with the Sponsors of this specific event.'
+        label='I authorize "Hackers at UPC" to share any images or videos featuring myself with HackUPC 2018 Sponsors.'
               '<span style="color: red; font-weight: bold;"> *</span>'
     )
 
@@ -78,14 +77,14 @@ class ApplicationForm(OverwriteOnlyModelFormMixin, BetterModelForm):
 
     cvs_edition = forms.BooleanField(
         required=False,
-        label='I expressly authorize ASSOCIACIÓ HACKERS AT UPC to share my CV with the Sponsors of this specific event:'
-              ' HackUPC 2018.<span style="color: red; font-weight: bold;"> *</span>'
+        label='I authorize "Hackers at UPC" to share my CV with HackUPC 2018 Sponsors '
+              '.<span style="color: red; font-weight: bold;"> *</span>'
     )
 
     diet_notice = forms.BooleanField(
         required=False,
-        label='I expressly authorize ASSOCIACIÓ HACKERS AT UPC to use my personal data related to my food '
-              'allergies and intolerances only in order to manage the catering service.'
+        label='I authorize "Hackers at UPC" to use my food allergies and intolerances information to manage '
+              'the catering service only. <span style="color: red; font-weight: bold;"> *</span>'
     )
 
     def clean_resume(self):
@@ -229,17 +228,15 @@ class ApplicationForm(OverwriteOnlyModelFormMixin, BetterModelForm):
         # Fields that we only need the first time the hacker fills the application
         # https://stackoverflow.com/questions/9704067/test-if-django-modelform-has-instance
         if not self.instance.pk:
-            self._fieldsets.append(('HackUPC Policies', {
+            self._fieldsets.append(('Policies', {
                 'fields': ('terms_and_conditions', 'diet_notice', 'images_and_videos', 'cvs_edition'),
-                'description': '<p style="color: #202326cc;margin-top: 1em;display: block;'
-                               'margin-bottom: 1em;line-height: 1.25em;">ASSOCIACIÓ HACKERS AT UPC is the data '
-                               'controller of your data, including images and videos of yourself, in order to '
-                               'handle and process requests received from you and also to send commercial '
-                               'communications about activities, services or products offered by ASSOCIACIÓ '
-                               'HACKERS AT UPC that are of a similar nature to those previously requested by '
-                               'you, among other purposes. For more information on the processing of your personal '
-                               'data and on how to exercise your rights of access, rectification, suppression, '
-                               'limitation, portability and opposition please visit our Privacy and Cookies Policy.</p>'
+                'description': 'We, Hackers at UPC, require all this information to organize an awesome hackathon.  '
+                               'Part of this information may be images and videos with you during the event. '
+                               'Mainly, your data will be used for admissions. '
+                               'However, we may also reach out to you about other events or services that we are '
+                               'organizing and that we think that may be of your interest. '
+                               'For more information on the processing of your personal '
+                               'data and how to exercise your rights on it please visit our Privacy and Cookies Policy.'
             }))
         return super(ApplicationForm, self).fieldsets
 
@@ -258,7 +255,17 @@ class ApplicationForm(OverwriteOnlyModelFormMixin, BetterModelForm):
                         'but at least we\'ll try!',
             'projects': 'You can talk about about past hackathons, personal projects, awards etc. '
                         '(we love links) Show us your passion! :D',
-            'reimb_amount': 'We try our best to cover costs for all hackers, but our budget is limited.'
+            'reimb_amount': 'We try our best to cover costs for all hackers, but our budget is limited.',
+            'images_and_videos': 'We will have people taking pictures and recording the event. '
+                                 'We want you to have a way to remember HackUPC. '
+                                 'We may share those with sponsors as well.',
+            'terms_and_conditions': 'We want HackUPC to be as secure as possible, '
+                                    'this is why we have this terms and conditions, to ensure everyone\'s safety.',
+            'cvs_edition': 'We work with our partners to deliver the best HackUPC ever. '
+                           'This includes providing your CV to them, so they can taylor their experiences and '
+                           'maybe even send out job opportunities! However, if you decide not to upload your CV, '
+                           'we won\'t judge you negatively for this :D '
+
         }
 
         widgets = {
