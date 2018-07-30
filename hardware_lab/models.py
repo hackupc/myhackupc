@@ -1,4 +1,5 @@
 from django.db import models
+from user.models import User
 
 #A hacker can request this hardware
 HW_AVAILABLE = 'A'
@@ -16,10 +17,7 @@ STATUS = [
     (HW_UNAVAILABLE, 'Unavailable'),
 ]
 
-# Create your models here.
 class HardwareItem(models.Model):
-    #META
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     #Identifies a real world object
     label = models.CharField(max_length=20)
     #Human readable name
@@ -29,3 +27,15 @@ class HardwareItem(models.Model):
                               max_length=1)
     #Any other relevant information about this item
     comments = models.TextField(blank=True, null=True)
+
+class LogMessage(models.Model):
+    user = models.ForeignKey(User)
+    item = models.ForeignKey(HardwareItem)
+    #Status previous to this event
+    old_status = models.CharField(choices=STATUS, default=HW_AVAILABLE,
+                              max_length=1)
+    #New status
+    new_status = models.CharField(choices=STATUS, default=HW_AVAILABLE,
+                              max_length=1)
+
+    instant = models.DateField(auto_now_add=True)
