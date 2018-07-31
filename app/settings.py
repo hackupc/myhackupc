@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'teams',
     'stats',
     'storages',
+    'hardware_lab'
 ]
 
 if REIMBURSEMENT_ENABLED:
