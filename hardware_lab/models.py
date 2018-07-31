@@ -27,16 +27,16 @@ class HardwareType(models.Model):
     description = models.TextField()
 
     def get_available_count(self):
-        return HardwareItem.objects.filter(status=HW_AVAILABLE).count()
+        return HardwareItem.objects.filter(hardware_type=self, status=HW_AVAILABLE).count()
 
     def get_requested_count(self):
-        return HardwareItem.objects.filter(status=HW_REQUESTED).count()
+        return HardwareItem.objects.filter(hardware_type=self, status=HW_REQUESTED).count()
 
     def get_lent_count(self):
-        return HardwareItem.objects.filter(status=HW_LENT).count()
+        return HardwareItem.objects.filter(hardware_type=self, status=HW_LENT).count()
 
     def get_unavailable_count(self):
-        return HardwareItem.objects.filter(status=HW_UNAVAILABLE).count()
+        return HardwareItem.objects.filter(hardware_type=self, status=HW_UNAVAILABLE).count()
 
     def __str__(self):
         return self.name
