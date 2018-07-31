@@ -2,9 +2,9 @@ from django.contrib import admin
 from django.utils.html import format_html
 
 # Register your models here.
-from hardware_lab import models
+from hardware import models
 
-class HardwareTypeAdmin(admin.ModelAdmin):
+class TypeAdmin(admin.ModelAdmin):
 	def image_tag(self, obj):
 		return format_html('<img src="{}" />'.format(obj.image.url))
 
@@ -12,10 +12,10 @@ class HardwareTypeAdmin(admin.ModelAdmin):
 
 	list_display = ['name', 'image_tag']
 
-class HardwareItemAdmin(admin.ModelAdmin):
-	list_display = ['label', 'hardware_type', 'comments']
+class ItemAdmin(admin.ModelAdmin):
+	list_display = ['label', 'item_type', 'comments']
 
 
-admin.site.register(models.HardwareType, HardwareTypeAdmin)
-admin.site.register(models.HardwareItem, HardwareItemAdmin)
+admin.site.register(models.ItemType, TypeAdmin)
+admin.site.register(models.Item, ItemAdmin)
 admin.site.register(models.LogMessage)

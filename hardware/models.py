@@ -17,9 +17,9 @@ STATUS = [
     (HW_UNAVAILABLE, 'Unavailable'),
 ]
 
-class HardwareType(models.Model):
+class ItemType(models.Model):
     #Human readable name
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, unique=True)
     #Image of the hardware
     image = models.ImageField(upload_to='hw_images/')
     #Description of this hardware 
@@ -27,25 +27,25 @@ class HardwareType(models.Model):
     description = models.TextField()
 
     def get_available_count(self):
-        return HardwareItem.objects.filter(hardware_type=self, status=HW_AVAILABLE).count()
+        return Item.objects.filter(item_type=self, status=HW_AVAILABLE).count()
 
     def get_requested_count(self):
-        return HardwareItem.objects.filter(hardware_type=self, status=HW_REQUESTED).count()
+        return Item.objects.filter(item_type=self, status=HW_REQUESTED).count()
 
     def get_lent_count(self):
-        return HardwareItem.objects.filter(hardware_type=self, status=HW_LENT).count()
+        return Item.objects.filter(item_type=self, status=HW_LENT).count()
 
     def get_unavailable_count(self):
-        return HardwareItem.objects.filter(hardware_type=self, status=HW_UNAVAILABLE).count()
+        return Item.objects.filter(item_type=self, status=HW_UNAVAILABLE).count()
 
     def __str__(self):
         return self.name
 
-class HardwareItem(models.Model):
+class Item(models.Model):
     #Hardware model/type
-    hardware_type = models.ForeignKey(HardwareType)
+    item_type = models.ForeignKey(ItemType)
     #Identifies a real world object
-    label = models.CharField(max_length=20)
+    label = models.CharField(max_length=20, unique=True)
     #Status of this item
     status = models.CharField(choices=STATUS, default=HW_AVAILABLE,
                               max_length=1)
@@ -53,11 +53,11 @@ class HardwareItem(models.Model):
     comments = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return '{} ({})'.format(self.label, self.hardware_type.name)
+        return '{} ({})'.format(self.label, self.item_type.name)
 
 class LogMessage(models.Model):
     user = models.ForeignKey(User)
-    item = models.ForeignKey(HardwareItem)
+    item = models.ForeignKey(Item)
     #Status previous to this event
     old_status = models.CharField(choices=STATUS, default=HW_AVAILABLE,
                               max_length=1)

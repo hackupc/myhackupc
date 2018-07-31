@@ -23,7 +23,7 @@ urlpatterns = [
     url(r'privacy_and_cookies/$', views.privacy_and_cookies, name='privacy_and_cookies'),
     url(r'terms_and_conditions/$', views.terms_and_conditions, name='terms_and_conditions'),
     url(r'^files/(?P<file_>.*)$', views.protectedMedia, name="protect_media"),
-    url(r'^hardware/', include('hardware_lab.urls')),
+    url(r'^hardware/', include('hardware.urls')),
 ]
 
 if settings.REIMBURSEMENT_ENABLED:
