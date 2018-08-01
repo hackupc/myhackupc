@@ -1,0 +1,21 @@
+{% extends "base_tabs.html" %}
+{% load static %}
+{% block head_title %}Hardware Admin{% endblock %}
+{% block panel %}
+<h1>If the hacker has a request or he is returning an item:</h1>
+<div>
+	<form>
+		<label>Hacker:</label> <input type="text"/>
+	</form>
+</div>
+<h1>If the hacker doesn't have a request:</h1>
+<ul>
+	{% for item in hw_list %}
+		<li>
+			{% include 'include/item.html'%}
+		</li>
+	{% empty %}
+		<li>There's no hardware yet</li>
+	{% endfor %}
+</ul>
+{% endblock %}

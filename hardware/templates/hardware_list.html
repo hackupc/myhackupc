@@ -5,14 +5,8 @@
 <ul>
 	{% for item in hw_list %}
 		<li>
-			<h1>{{ item.name }}</h1>
-			<p>{{ item.description }}</p>
-			<div>
-				<div>{{ item.get_available_count }} Available</div>
-				<div>{{ item.get_requested_count }} Requested</div>
-				<div>{{ item.get_lent_count }} Lent</div>
-			</div>
-			<img src='{{ item.image.url }}' />
+			{% include 'include/item.html' with description=True%}
+			<button>Request</button>
 		</li>
 	{% empty %}
 		<li>There's no hardware yet</li>
