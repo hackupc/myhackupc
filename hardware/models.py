@@ -4,18 +4,6 @@ from hardware import settings
 from django.utils import timezone
 from datetime import timedelta
 
-#A hacker can request this hardware
-HW_AVAILABLE = 'A'
-#A hacker has this hardware
-HW_LENT = 'L'
-#This hardware is unavailable for any other reasons
-HW_UNAVAILABLE = 'U'
-
-STATUS = [
-    (HW_AVAILABLE, 'Available'),
-    (HW_LENT, 'Lent'),
-    (HW_UNAVAILABLE, 'Unavailable'),
-]
 
 class ItemType(models.Model):
     """Represents a kind of hardware"""
@@ -29,19 +17,19 @@ class ItemType(models.Model):
     description = models.TextField()
 
     def get_available_count(self):
-        available_count = Item.objects.filter(item_type=self, status=HW_AVAILABLE).count()
-        requested_count = self.get_requested_count()
-        return available_count - requested_count
+        ava_count =  Item.objects.filter(item_type=self, available=True).count()
+        req_count = self.get_requested_count()
+        lent_count = self.get_lent_count()
+        return ava_count - req_count - lent_count
 
     def get_requested_count(self):
-        time_threshold = timezone.now() - timedelta(minutes=settings.REQUEST_TIME)
-        return Request.objects.filter(item_type=self, timestamp__gte=time_threshold).count()
+        return len(Request.objects.get_active_by_item_type(self))
 
     def get_lent_count(self):
-        return Item.objects.filter(item_type=self, status=HW_LENT).count()
+        return Lending.objects.get_active_by_item_type(self).count()
 
     def get_unavailable_count(self):
-        return Item.objects.filter(item_type=self, status=HW_UNAVAILABLE).count()
+        return Item.objects.filter(item_type=self, available=False).count()
 
     def __str__(self):
         return self.name
@@ -53,46 +41,110 @@ class Item(models.Model):
     item_type = models.ForeignKey(ItemType)
     #Identifies a real world object
     label = models.CharField(max_length=20, unique=True)
-    #Status of this item
-    status = models.CharField(choices=STATUS, default=HW_AVAILABLE,
-                              max_length=1)
+    #Is the item available?
+    available = models.BooleanField(default=True)
     #Any other relevant information about this item
     comments = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return '{} ({})'.format(self.label, self.item_type.name)
 
+class LendingManager(models.Manager):
+    def get_active(self):
+        return self.get_queryset().filter(return_time__isnull=True)
+
+    def get_active_by_item_type(self, item_type):
+        return self.get_queryset().filter(return_time__isnull=True, item__item_type=item_type)
+
+    def get_active_by_user(self, user):
+        return self.get_queryset().filter(return_time__isnull=True, user=user)
+
+
+
+class Lending(models.Model):
+    """ 
+    The 'item' has been lent to the 'user' 
+    """
+    objects = LendingManager()
+
+    user = models.ForeignKey(User)
+    #An item can't be lent twice at the same time
+    item = models.ForeignKey(Item)
+    #Instant of creation
+    picked_up_time  = models.DateTimeField(auto_now_add=True)
+    #If null: item has not been returned yet
+    return_time  = models.DateTimeField(null=True, blank=True)
+
+    def get_picked_up_time_ago(self):
+        return str(timezone.now()-self.picked_up_time)
+    
+    def get_return_time_ago(self):
+        return str(timezone.now()-self.return_time)
+
+    def to_list_item(self):
+        """ Used to display lendings' list"""
+        return {
+            'item': str(self.item),
+            'user': str(self.user),
+            'user_name': str(self.user.name),
+            'picked_up_time': str(self.picked_up_time)
+        }
+
+    def __str__(self):
+        return '{} ({})'.format(self.item.item_type.name, self.user)
+
+
+class RequestManager(models.Manager):
+    def get_active(self):
+        return [x for x in self.get_queryset() if x.is_active()]
+
+    def get_active_by_user(self, user):
+        qs = self.get_queryset().filter(user=user)
+        return [x for x in qs if x.is_active()]
+
+    def get_active_by_item_type(self, item_type):
+        qs = self.get_queryset().filter(item_type=item_type)
+        return [x for x in qs if x.is_active()]
+
 class Request(models.Model):
-    """Represents a request (a reservation for a certain amount of time)"""
+    """
+    Represents reservation of an item 
+    of type 'item_type' done by 'user'
+    """
+
+    objects=RequestManager()
 
     #Requested item type
     item_type = models.ForeignKey(ItemType)
     #Hacker that made the request
     user = models.ForeignKey(User)
+    #Lending derived from this request
+    lending = models.ForeignKey(Lending, null=True, blank=True)
     #Instant of creation
-    timestamp = models.DateTimeField(auto_now_add=True)
+    request_time = models.DateTimeField(auto_now_add=True)
+
+    def is_active(self):
+        delta = timedelta(minutes=settings.REQUEST_TIME) 
+        remaining = delta - (timezone.now()-self.request_time)
+        return not self.lending and remaining.total_seconds()>0
 
     def get_remaining_time(self):
         delta = timedelta(minutes=settings.REQUEST_TIME) 
-        remaining = delta - (timezone.now()-self.timestamp)
-        if remaining.total_seconds() < 0:
+        remaining = delta - (timezone.now()-self.request_time)
+        if self.lending:
+            return "Lent"
+        elif remaining.total_seconds() < 0:
             return "Expired"
         else:
             return str(remaining)
 
+    def to_list_item(self):
+        return {
+            'item': str(self.item),
+            'user': str(self.user),
+            'user_name': str(self.user.name),
+            'request_time': str(self.request_time)
+        }
+
     def __str__(self):
         return '{} ({})'.format(self.item_type, self.user)
-
-class LogMessage(models.Model):
-    """Represents a change of status in time"""
-
-    user = models.ForeignKey(User)
-    item = models.ForeignKey(Item)
-    #Status previous to this event
-    old_status = models.CharField(choices=STATUS, default=HW_AVAILABLE,
-                              max_length=1)
-    #New status
-    new_status = models.CharField(choices=STATUS, default=HW_AVAILABLE,
-                              max_length=1)
-
-    instant = models.DateField(auto_now_add=True)
