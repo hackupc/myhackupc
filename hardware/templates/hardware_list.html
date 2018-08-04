@@ -1,12 +1,38 @@
 {% extends "base_tabs.html" %}
 {% load static %}
+{% block extra_head %}
+    <script > window.CSRF_TOKEN = "{{ csrf_token }}"</script>
+
+    <!--hardware/static/hw_list.js-->
+    <script>
+        document.addEventListener("DOMContentLoaded", ()=>{
+            $(".hw-req-btn").on("click", (ev)=>{
+                console.log("click request:"+ev.target.dataset.itemId)
+                $.ajax({
+                    method: 'POST',
+                    data: {
+                    	'req_item':true, 
+                        'item_id': ev.target.dataset.itemId,
+                        'csrfmiddlewaretoken': window.CSRF_TOKEN
+                    },
+                    dataType: 'json',
+                    success: function(data){
+                        console.log(data)
+
+                    }
+                    
+                })
+            })
+        })
+    </script>
+{% endblock %}
 {% block head_title %}Hardware List{% endblock %}
 {% block panel %}
 <ul>
 	{% for item in hw_list %}
 		<li>
 			{% include 'include/item.html' with description=True%}
-			<button>Request</button>
+			<button class='hw-req-btn' data-item-id='{{ item.id }}'>Request</button>
 		</li>
 	{% empty %}
 		<li>There's no hardware yet</li>

@@ -31,6 +31,10 @@ class ItemType(models.Model):
     def get_unavailable_count(self):
         return Item.objects.filter(item_type=self, available=False).count()
 
+    def make_request(self, user):
+        req = Request(item_type=self, user=user)
+        req.save()
+
     def __str__(self):
         return self.name
 
