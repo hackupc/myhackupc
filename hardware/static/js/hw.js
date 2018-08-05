@@ -4,7 +4,7 @@ let hw = (()=>{
     //The response must be an html string
     obj.ajax_req = (data, cb)=>{
         data['csrfmiddlewaretoken'] = window.CSRF_TOKEN
-        success: cb || function(){}
+        success= cb || function(){}
         $.ajax({
             method: 'POST',
             data: data,

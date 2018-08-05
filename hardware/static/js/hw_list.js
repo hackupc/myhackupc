@@ -11,10 +11,11 @@ let hw_list = ((hw)=>{
                     'item_id': ev.target.dataset.itemId,
             }, (data)=>{
                 if(data.msg) hw.toast(data.msg)
-                obj.inistListeners()
+                obj.initListeners()
             })
         })
     }
+    return obj
 })(hw)
 
 document.addEventListener("DOMContentLoaded", ()=>{

@@ -25,26 +25,26 @@ let hw_admin = ((hw)=>{
             hw.ajax_req({
                 'get_lists': true,
                 'email': $("#id_email").val()
-            }, hw.processResponse)
+            }, obj.processResponse)
         })
         $("#hw-requests-list li").on("click", (ev)=>{
             hw.ajax_req({
                 'select_request': true,
                 'request_id': ev.currentTarget.dataset.requestId
-            }, hw.processResponse)
+            }, obj.processResponse)
         })
         $("#hw-lendings-list li").on("click", (ev)=>{
             hw.ajax_req({
                 'return_item': true,
                 'lending_id': ev.currentTarget.dataset.lendingId
-            }, hw.processResponse)
+            }, obj.processResponse)
         })
         $("#hw-available-items-list li").on("click", (ev)=>{
             hw.ajax_req({
                 'make_lending': true,
                 'item_id': ev.currentTarget.dataset.itemId,
                 'request_id': ev.currentTarget.parentNode.dataset.requestId
-            }, hw.processResponse)
+            }, obj.processResponse)
         })
     }
    
