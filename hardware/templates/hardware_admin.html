@@ -10,32 +10,37 @@
                 ajax_req({
                     'get_lists': true,
                     'email': $("#id_email").val()
-                }, changeContent)
+                })
             })
             $("#hw-requests-list li").on("click", (ev)=>{
                 ajax_req({
                     'select_request': true,
                     'request_id': ev.currentTarget.dataset.requestId
-                }, changeContent)
+                })
+            })
+            $("#hw-lendings-list li").on("click", (ev)=>{
+                ajax_req({
+                    'return_item': true,
+                    'lending_id': ev.currentTarget.dataset.lendingId
+                })
             })
             $("#hw-available-items-list li").on("click", (ev)=>{
                 ajax_req({
                     'make_lending': true,
                     'item_id': ev.currentTarget.dataset.itemId,
                     'request_id': ev.currentTarget.parentNode.dataset.requestId
-                }, (data)=>{
-                    changeContent(data.content)
-                    $.snackbar({
-                        content: data.msg,
-                        timeout: 3000
-                    })
                 })
             })
         }
-        //Changes the content and reinitializes listeners
-        function changeContent(content){
+        function processResponse(data){
+            if(data.msg){
+                $.snackbar({
+                        content: data.msg,
+                        timeout: 3000
+                })
+            }
             $('#hw_container').hide(200, ()=>{
-                $('#hw_container').html(content)
+                $('#hw_container').html(data.content)
                 initListeners()
                 $('#hw_container').show(200)
             })
@@ -48,7 +53,7 @@
             $.ajax({
                 method: 'POST',
                 data: data,
-                success: success
+                success: processResponse
             })
         }
         document.addEventListener("DOMContentLoaded", ()=>{

@@ -4,6 +4,7 @@ from django.template.loader import render_to_string
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse, HttpResponse
+from django.utils import timezone
 from user.mixins import IsVolunteerMixin
 from app.mixins import TabsViewMixin
 from user.models import User
@@ -46,22 +47,64 @@ class HardwareAdminView(IsVolunteerMixin, TabsViewMixin, TemplateView):
         if request.is_ajax:
             if 'get_lists' in request.POST:
                 target_user = User.objects.get(email=request.POST['email'])
-                requests = Request.objects.get_active_by_user(target_user)
-                lendings = Lending.objects.get_active_by_user(target_user)
-                
-                return HttpResponse(render_to_string("include/hardware_admin_user.html",{
-                    'requests':requests,
-                    'lendings':lendings
-                }))
+                if target_user:
+                    requests = Request.objects.get_active_by_user(target_user)
+                    lendings = Lending.objects.get_active_by_user(target_user)
+                    html = render_to_string("include/hardware_admin_user.html",{
+                        'requests':requests,
+                        'lendings':lendings
+                    })
+                    return JsonResponse({
+                        'content':html
+                    })
+                else:
+                    html = render_to_string("include/hardware_admin_init.html", {
+                            'hw_list':ItemType.objects.all(),
+                    })
+                    return JsonResponse({
+                        'content':html,
+                        'msg': "The user doesn't exist"
+                    })
+
             if 'select_request' in request.POST:
                 request_obj = Request.objects.get(id=request.POST['request_id'])
                 if request_obj.is_active():
                     available_items = request_obj.item_type.get_lendable_items()
-                    return HttpResponse(render_to_string("include/hardware_admin_lending.html", {
+                    html = render_to_string("include/hardware_admin_lending.html", {
                             'items':available_items,
                             'request_id':request.POST['request_id']
-                        }))
-                return HttpResponse(render_to_string("<h1>Error: the request has expired</h1>"))
+                    })
+                    return JsonResponse({'content':html})
+                else:
+                    html = render_to_string("include/hardware_admin_init.html", {
+                            'hw_list':ItemType.objects.all(),
+                    })
+                    return JsonResponse({
+                        'content':html,
+                        'msg': "ERROR: The request has expired"
+                    })
+
+            if 'return_item' in request.POST:
+                lending = Lending.objects.get(id=request.POST['lending_id'])
+                if lending.is_active():
+                    lending.return_time = tiezone.now()
+                    lending.save()
+                    html = render_to_string("include/hardware_admin_init.html", {
+                            'hw_list':ItemType.objects.all(),
+                        })
+                    return JsonResponse({
+                        'content':html,
+                        'msg': "The item has been returned succesfully"
+                    })
+                else:
+                    html = render_to_string("include/hardware_admin_init.html", {
+                            'hw_list':ItemType.objects.all(),
+                        })
+                    return JsonResponse({
+                        'content':html,
+                        'msg': "ERROR: The item was not lent"
+                    })
+
 
             if 'make_lending' in request.POST:
                 item = Item.objects.get(id=request.POST['item_id'])
