@@ -44,7 +44,7 @@ class HardwareAdminView(IsVolunteerMixin, TabsViewMixin, TemplateView):
 
     def post(self, request):
         if request.is_ajax:
-            if 'getlist' in request.POST:
+            if 'get_lists' in request.POST:
                 target_user = User.objects.get(email=request.POST['email'])
                 requests = Request.objects.get_active_by_user(target_user)
                 lendings = Lending.objects.get_active_by_user(target_user)
@@ -53,6 +53,32 @@ class HardwareAdminView(IsVolunteerMixin, TabsViewMixin, TemplateView):
                     'requests':requests,
                     'lendings':lendings
                 }))
+            if 'select_request' in request.POST:
+                request_obj = Request.objects.get(id=request.POST['request_id'])
+                if request_obj.is_active():
+                    available_items = request_obj.item_type.get_lendable_items()
+                    return HttpResponse(render_to_string("include/hardware_admin_lending.html", {
+                            'items':available_items,
+                            'request_id':request.POST['request_id']
+                        }))
+                return HttpResponse(render_to_string("<h1>Error: the request has expired</h1>"))
+
+            if 'make_lending' in request.POST:
+                item = Item.objects.get(id=request.POST['item_id'])
+                request_obj = Request.objects.get(id=request.POST['request_id'])
+                lending = Lending(user=request_obj.user, item=item)
+                lending.save()
+                request_obj.lending = lending
+                request_obj.save()
+                html = render_to_string("include/hardware_admin_init.html", {
+                            'hw_list':ItemType.objects.all(),
+                        })
+                return JsonResponse({
+                    'content':html,
+                    'msg': "The item has been lent succesfully"
+                })
+
+
 
 
     def get_current_tabs(self):

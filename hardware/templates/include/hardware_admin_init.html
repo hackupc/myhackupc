@@ -1,0 +1,16 @@
+<h1>If the hacker has a request or he is returning an item:</h1>
+<div>
+    <label>Hacker email:</label>
+    <input id="id_email" name="email" type="email"/>
+    <button id="hw-user-send">Send</button>
+</div>
+<h1>If the hacker doesn't have a request:</h1>
+<ul>
+    {% for item in hw_list %}
+        <li>
+            {% include 'include/hardware_item.html'%}
+        </li>
+    {% empty %}
+        <li>There's no hardware yet</li>
+    {% endfor %}
+</ul>

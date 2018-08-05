@@ -16,6 +16,12 @@ class ItemType(models.Model):
     #what is it used for? which items are contained in the package?
     description = models.TextField()
 
+    def get_lendable_items(self):
+        """ Get items not lent already """
+        availables =  Item.objects.filter(item_type=self, available=True)
+        lendings = Lending.objects.filter(item__item_type=self, return_time__isnull=True)
+        return availables.exclude(id__in=[x.item.id for x in lendings])
+
     def get_available_count(self):
         ava_count =  Item.objects.filter(item_type=self, available=True).count()
         req_count = self.get_requested_count()

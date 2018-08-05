@@ -5,55 +5,60 @@
 
     <!--hardware/static/admin.js-->
     <script>
-        let steps = {}
-        function showStep(step){
-            $(".hw_steps").hide()
-            $(steps[step]).show()
-        }
-        document.addEventListener("DOMContentLoaded", ()=>{
-            $(".hw_steps").each((i, item)=>{
-                steps[item.dataset.hwStep] = item
+        function initListeners(){
+            $("#hw-user-send").on("click", ()=>{
+                ajax_req({
+                    'get_lists': true,
+                    'email': $("#id_email").val()
+                }, changeContent)
             })
-            $("#hw-send").on("click", ()=>{
-                $.ajax({
-                    method: 'POST',
-                    data: {
-                        'getlist': true,
-                        'email': $("#id_email").val(),
-                        'csrfmiddlewaretoken': window.CSRF_TOKEN
-                    },
-                    success: function(data){
-                        $(steps["2a"]).html(data)
-                        showStep("2a")
-                    }
-                    
+            $("#hw-requests-list li").on("click", (ev)=>{
+                ajax_req({
+                    'select_request': true,
+                    'request_id': ev.currentTarget.dataset.requestId
+                }, changeContent)
+            })
+            $("#hw-available-items-list li").on("click", (ev)=>{
+                ajax_req({
+                    'make_lending': true,
+                    'item_id': ev.currentTarget.dataset.itemId,
+                    'request_id': ev.currentTarget.parentNode.dataset.requestId
+                }, (data)=>{
+                    changeContent(data.content)
+                    $.snackbar({
+                        content: data.msg,
+                        timeout: 3000
+                    })
                 })
             })
-
+        }
+        //Changes the content and reinitializes listeners
+        function changeContent(content){
+            $('#hw_container').hide(200, ()=>{
+                $('#hw_container').html(content)
+                initListeners()
+                $('#hw_container').show(200)
+            })
+        }
+        //Sends an ajax request using POST
+        //The response must be an html string
+        function ajax_req(data, cb){
+            data['csrfmiddlewaretoken'] = window.CSRF_TOKEN
+            success = cb || function(){}
+            $.ajax({
+                method: 'POST',
+                data: data,
+                success: success
+            })
+        }
+        document.addEventListener("DOMContentLoaded", ()=>{
+            initListeners()
         })
     </script>
 {% endblock %}
 {% block head_title %}Hardware Admin{% endblock %}
 {% block panel %}
-<div class="hw_steps" data-hw-step='1'>
-    <h1>If the hacker has a request or he is returning an item:</h1>
-    <div>
-        <label>Hacker email:</label>
-        <input id="id_email" name="email" type="email"/>
-        <button id="hw-send">Send</button>
-    </div>
-    <h1>If the hacker doesn't have a request:</h1>
-    <ul>
-        {% for item in hw_list %}
-            <li>
-                {% include 'include/item.html'%}
-            </li>
-        {% empty %}
-            <li>There's no hardware yet</li>
-        {% endfor %}
-    </ul>
-</div>
-<div class="hw_steps" data-hw-step='2a'>
-    
+<div id="hw_container">
+    {% include 'include/hardware_admin_init.html' %}
 </div>
 {% endblock %}

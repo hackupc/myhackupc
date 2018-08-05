@@ -1,0 +1,11 @@
+<div>
+	<h1>Select the item to be lent:</h1>
+	<ul data-request-id="{{request_id}}" id="hw-available-items-list">
+		{% for item in items %}
+			<li data-item-id="{{item.id}}">
+				<h1>{{item}}</h1>
+				<p>{{item.comments}}</p>
+			</li>
+		{% endfor %}
+	</ul>
+</div>
