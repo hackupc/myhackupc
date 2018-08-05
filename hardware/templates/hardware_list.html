@@ -31,7 +31,7 @@
 <ul>
 	{% for item in hw_list %}
 		<li>
-			{% include 'include/item.html' with description=True%}
+			{% include 'include/hardware_item.html' with description=True%}
 			<button class='hw-req-btn' data-item-id='{{ item.id }}'>Request</button>
 		</li>
 	{% empty %}
