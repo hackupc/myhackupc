@@ -87,7 +87,7 @@ class HardwareAdminView(IsVolunteerMixin, TabsViewMixin, TemplateView):
             if 'return_item' in request.POST:
                 lending = Lending.objects.get(id=request.POST['lending_id'])
                 if lending.is_active():
-                    lending.return_time = tiezone.now()
+                    lending.return_time = timezone.now()
                     lending.save()
                     html = render_to_string("include/hardware_admin_init.html", {
                             'hw_list':ItemType.objects.all(),
