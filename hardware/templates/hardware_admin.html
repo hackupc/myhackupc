@@ -3,63 +3,8 @@
 {% block extra_head %}
     <script > window.CSRF_TOKEN = "{{ csrf_token }}"</script>
 
-    <!--hardware/static/admin.js-->
-    <script>
-        function initListeners(){
-            $("#hw-user-send").on("click", ()=>{
-                ajax_req({
-                    'get_lists': true,
-                    'email': $("#id_email").val()
-                })
-            })
-            $("#hw-requests-list li").on("click", (ev)=>{
-                ajax_req({
-                    'select_request': true,
-                    'request_id': ev.currentTarget.dataset.requestId
-                })
-            })
-            $("#hw-lendings-list li").on("click", (ev)=>{
-                ajax_req({
-                    'return_item': true,
-                    'lending_id': ev.currentTarget.dataset.lendingId
-                })
-            })
-            $("#hw-available-items-list li").on("click", (ev)=>{
-                ajax_req({
-                    'make_lending': true,
-                    'item_id': ev.currentTarget.dataset.itemId,
-                    'request_id': ev.currentTarget.parentNode.dataset.requestId
-                })
-            })
-        }
-        function processResponse(data){
-            if(data.msg){
-                $.snackbar({
-                        content: data.msg,
-                        timeout: 3000
-                })
-            }
-            $('#hw_container').hide(200, ()=>{
-                $('#hw_container').html(data.content)
-                initListeners()
-                $('#hw_container').show(200)
-            })
-        }
-        //Sends an ajax request using POST
-        //The response must be an html string
-        function ajax_req(data, cb){
-            data['csrfmiddlewaretoken'] = window.CSRF_TOKEN
-            success = cb || function(){}
-            $.ajax({
-                method: 'POST',
-                data: data,
-                success: processResponse
-            })
-        }
-        document.addEventListener("DOMContentLoaded", ()=>{
-            initListeners()
-        })
-    </script>
+    <script type="text/javascript" src="{% static 'js/hw.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/hw_admin.js' %}"></script>
 {% endblock %}
 {% block head_title %}Hardware Admin{% endblock %}
 {% block panel %}
