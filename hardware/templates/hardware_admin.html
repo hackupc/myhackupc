@@ -5,9 +5,16 @@
 
     <!--hardware/static/admin.js-->
     <script>
+        let steps = {}
+        function showStep(step){
+            $(".hw_steps").hide()
+            $(steps[step]).show()
+        }
         document.addEventListener("DOMContentLoaded", ()=>{
+            $(".hw_steps").each((i, item)=>{
+                steps[item.dataset.hwStep] = item
+            })
             $("#hw-send").on("click", ()=>{
-                console.log("click send")
                 $.ajax({
                     method: 'POST',
                     data: {
@@ -15,33 +22,38 @@
                         'email': $("#id_email").val(),
                         'csrfmiddlewaretoken': window.CSRF_TOKEN
                     },
-                    dataType: 'json',
                     success: function(data){
-                        console.log(data)
-
+                        $(steps["2a"]).html(data)
+                        showStep("2a")
                     }
                     
                 })
             })
+
         })
     </script>
 {% endblock %}
 {% block head_title %}Hardware Admin{% endblock %}
 {% block panel %}
-<h1>If the hacker has a request or he is returning an item:</h1>
-<div>
-    <label>Hacker email:</label>
-    <input id="id_email" name="email" type="email"/>
-    <button id="hw-send">Send</button>
+<div class="hw_steps" data-hw-step='1'>
+    <h1>If the hacker has a request or he is returning an item:</h1>
+    <div>
+        <label>Hacker email:</label>
+        <input id="id_email" name="email" type="email"/>
+        <button id="hw-send">Send</button>
+    </div>
+    <h1>If the hacker doesn't have a request:</h1>
+    <ul>
+        {% for item in hw_list %}
+            <li>
+                {% include 'include/item.html'%}
+            </li>
+        {% empty %}
+            <li>There's no hardware yet</li>
+        {% endfor %}
+    </ul>
 </div>
-<h1>If the hacker doesn't have a request:</h1>
-<ul>
-    {% for item in hw_list %}
-        <li>
-            {% include 'include/item.html'%}
-        </li>
-    {% empty %}
-        <li>There's no hardware yet</li>
-    {% endfor %}
-</ul>
+<div class="hw_steps" data-hw-step='2a'>
+    
+</div>
 {% endblock %}

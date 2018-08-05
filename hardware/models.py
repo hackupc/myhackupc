@@ -85,15 +85,6 @@ class Lending(models.Model):
     def get_return_time_ago(self):
         return str(timezone.now()-self.return_time)
 
-    def to_list_item(self):
-        """ Used to display lendings' list"""
-        return {
-            'item': str(self.item),
-            'user': str(self.user),
-            'user_name': str(self.user.name),
-            'picked_up_time': str(self.picked_up_time)
-        }
-
     def __str__(self):
         return '{} ({})'.format(self.item.item_type.name, self.user)
 
@@ -141,14 +132,6 @@ class Request(models.Model):
             return "Expired"
         else:
             return str(remaining)
-
-    def to_list_item(self):
-        return {
-            'item': str(self.item),
-            'user': str(self.user),
-            'user_name': str(self.user.name),
-            'request_time': str(self.request_time)
-        }
 
     def __str__(self):
         return '{} ({})'.format(self.item_type, self.user)

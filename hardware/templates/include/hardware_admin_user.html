@@ -1,0 +1,20 @@
+<div>
+	<h1>Requests</h1>
+	<ul>
+		{% for request in requests %}
+			<li>
+				<h1>{{request.item_type}}</h1>
+				<h2>Remaining time: {{request.get_remaining_time}}</h2>
+			</li>
+		{% endfor %}
+	</ul>
+	<h1>Lendings</h1>
+	<ul>
+		{% for lending in lendings %}
+			<li>
+				<h1>{{lending.item}}</h1>
+				<h2>Picked up: {{lending.get_picked_up_time_ago}} ago</h2>
+			</li>
+		{% endfor %}
+	</ul>
+</div>

@@ -1,12 +1,13 @@
 from django.urls import reverse
 from django.views.generic import TemplateView
+from django.template.loader import render_to_string
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from user.mixins import IsVolunteerMixin
 from app.mixins import TabsViewMixin
 from user.models import User
-from hardware.models import Item, ItemType, Lending
+from hardware.models import Item, ItemType, Lending, Request
 
 def hardware_tabs(user):
     first_tab = ('Hardware List', reverse('hw_list'), False)
@@ -46,14 +47,12 @@ class HardwareAdminView(IsVolunteerMixin, TabsViewMixin, TemplateView):
             if 'getlist' in request.POST:
                 target_user = User.objects.get(email=request.POST['email'])
                 requests = Request.objects.get_active_by_user(target_user)
-                request_dicts = [l.to_list_item() for l in requests]
                 lendings = Lending.objects.get_active_by_user(target_user)
-                lending_dicts = [l.to_list_item() for l in lendings]
-                data = {
-                    'requests': request_dicts,
-                    'lendings': lending_dicts
-                }
-                return JsonResponse(data)
+                
+                return HttpResponse(render_to_string("include/hardware_admin_user.html",{
+                    'requests':requests,
+                    'lendings':lendings
+                }))
 
 
     def get_current_tabs(self):
