@@ -91,6 +91,9 @@ class Lending(models.Model):
     def get_return_time_ago(self):
         return str(timezone.now()-self.return_time)
 
+    def is_active(self):
+        return self.return_time is None
+
     def __str__(self):
         return '{} ({})'.format(self.item.item_type.name, self.user)
 
