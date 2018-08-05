@@ -43,86 +43,91 @@ class HardwareListView(LoginRequiredMixin, TabsViewMixin, TemplateView):
 class HardwareAdminView(IsVolunteerMixin, TabsViewMixin, TemplateView):
     template_name = 'hardware_admin.html'
 
+    def get_lists(self, request):
+        target_user = User.objects.get(email=request.POST['email'])
+        if target_user:
+            requests = Request.objects.get_active_by_user(target_user)
+            lendings = Lending.objects.get_active_by_user(target_user)
+            html = render_to_string("include/hardware_admin_user.html",{
+                'requests':requests,
+                'lendings':lendings
+            })
+            return JsonResponse({
+                'content':html
+            })
+        else:
+            html = render_to_string("include/hardware_admin_init.html", {
+                    'hw_list':ItemType.objects.all(),
+            })
+            return JsonResponse({
+                'content':html,
+                'msg': "The user doesn't exist"
+            })
+        
+    def select_request(self, request):
+        request_obj = Request.objects.get(id=request.POST['request_id'])
+        if request_obj.is_active():
+            available_items = request_obj.item_type.get_lendable_items()
+            html = render_to_string("include/hardware_admin_lending.html", {
+                    'items':available_items,
+                    'request_id':request.POST['request_id']
+            })
+            return JsonResponse({'content':html})
+        else:
+            html = render_to_string("include/hardware_admin_init.html", {
+                    'hw_list':ItemType.objects.all(),
+            })
+            return JsonResponse({
+                'content':html,
+                'msg': "ERROR: The request has expired"
+            })
+        
+    def return_item(self, request):
+        lending = Lending.objects.get(id=request.POST['lending_id'])
+        if lending.is_active():
+            lending.return_time = timezone.now()
+            lending.save()
+            html = render_to_string("include/hardware_admin_init.html", {
+                    'hw_list':ItemType.objects.all(),
+                })
+            return JsonResponse({
+                'content':html,
+                'msg': "The item has been returned succesfully"
+            })
+        else:
+            html = render_to_string("include/hardware_admin_init.html", {
+                    'hw_list':ItemType.objects.all(),
+                })
+            return JsonResponse({
+                'content':html,
+                'msg': "ERROR: The item was not lent"
+            })
+
+    def make_lending(self, request):
+        item = Item.objects.get(id=request.POST['item_id'])
+        request_obj = Request.objects.get(id=request.POST['request_id'])
+        lending = Lending(user=request_obj.user, item=item)
+        lending.save()
+        request_obj.lending = lending
+        request_obj.save()
+        html = render_to_string("include/hardware_admin_init.html", {
+                    'hw_list':ItemType.objects.all(),
+                })
+        return JsonResponse({
+            'content':html,
+            'msg': "The item has been lent succesfully"
+        })
+
     def post(self, request):
         if request.is_ajax:
             if 'get_lists' in request.POST:
-                target_user = User.objects.get(email=request.POST['email'])
-                if target_user:
-                    requests = Request.objects.get_active_by_user(target_user)
-                    lendings = Lending.objects.get_active_by_user(target_user)
-                    html = render_to_string("include/hardware_admin_user.html",{
-                        'requests':requests,
-                        'lendings':lendings
-                    })
-                    return JsonResponse({
-                        'content':html
-                    })
-                else:
-                    html = render_to_string("include/hardware_admin_init.html", {
-                            'hw_list':ItemType.objects.all(),
-                    })
-                    return JsonResponse({
-                        'content':html,
-                        'msg': "The user doesn't exist"
-                    })
-
+                return self.get_lists(request)
             if 'select_request' in request.POST:
-                request_obj = Request.objects.get(id=request.POST['request_id'])
-                if request_obj.is_active():
-                    available_items = request_obj.item_type.get_lendable_items()
-                    html = render_to_string("include/hardware_admin_lending.html", {
-                            'items':available_items,
-                            'request_id':request.POST['request_id']
-                    })
-                    return JsonResponse({'content':html})
-                else:
-                    html = render_to_string("include/hardware_admin_init.html", {
-                            'hw_list':ItemType.objects.all(),
-                    })
-                    return JsonResponse({
-                        'content':html,
-                        'msg': "ERROR: The request has expired"
-                    })
-
+                return self.select_request(request)
             if 'return_item' in request.POST:
-                lending = Lending.objects.get(id=request.POST['lending_id'])
-                if lending.is_active():
-                    lending.return_time = timezone.now()
-                    lending.save()
-                    html = render_to_string("include/hardware_admin_init.html", {
-                            'hw_list':ItemType.objects.all(),
-                        })
-                    return JsonResponse({
-                        'content':html,
-                        'msg': "The item has been returned succesfully"
-                    })
-                else:
-                    html = render_to_string("include/hardware_admin_init.html", {
-                            'hw_list':ItemType.objects.all(),
-                        })
-                    return JsonResponse({
-                        'content':html,
-                        'msg': "ERROR: The item was not lent"
-                    })
-
-
+                return self.return_item(request)
             if 'make_lending' in request.POST:
-                item = Item.objects.get(id=request.POST['item_id'])
-                request_obj = Request.objects.get(id=request.POST['request_id'])
-                lending = Lending(user=request_obj.user, item=item)
-                lending.save()
-                request_obj.lending = lending
-                request_obj.save()
-                html = render_to_string("include/hardware_admin_init.html", {
-                            'hw_list':ItemType.objects.all(),
-                        })
-                return JsonResponse({
-                    'content':html,
-                    'msg': "The item has been lent succesfully"
-                })
-
-
-
+                return self.make_lending(request)
 
     def get_current_tabs(self):
         return hardware_tabs(self.request.user)

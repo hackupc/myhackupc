@@ -7,11 +7,10 @@ let hw_list = ((hw)=>{
     obj.initListeners = ()=>{
         $(".hw-req-btn").on("click", (ev)=>{
             hw.ajax_req({
-                	'req_item':true, 
-                    'item_id': ev.target.dataset.itemId,
+                'req_item':true, 
+                'item_id': ev.target.dataset.itemId,
             }, (data)=>{
                 if(data.msg) hw.toast(data.msg)
-                obj.initListeners()
             })
         })
     }
