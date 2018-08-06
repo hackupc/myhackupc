@@ -1,0 +1,9 @@
+<div>
+    <label>Hacker email:</label>
+    <input id="id_email" name="email" type="email"/>
+    {% if item_id %}
+    	<button id="hw-user-send-noreq" data-item-id="{{item_id}}">Send</button>
+    {% else %}
+    	<button id="hw-user-send">Send</button>
+    {% endif %}
+</div>

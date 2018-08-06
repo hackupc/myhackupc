@@ -1,10 +1,10 @@
-<h1>{{ item.name }}</h1>
+<h1>{{ item_type.name }}</h1>
 {% if description %}
-	<p>{{ item.description }}</p>
+	<p>{{ item_type.description }}</p>
 {% endif %}
 <div>
-	<div>{{ item.get_available_count }} Available</div>
-	<div>{{ item.get_requested_count }} Requested</div>
-	<div>{{ item.get_lent_count }} Lent</div>
+	<div>{{ item_type.get_available_count }} Available</div>
+	<div>{{ item_type.get_requested_count }} Requested</div>
+	<div>{{ item_type.get_lent_count }} Lent</div>
 </div>
-<img src='{{ item.image.url }}' />
+<img src='{{ item_type.image.url }}' />

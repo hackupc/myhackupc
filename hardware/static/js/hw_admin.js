@@ -27,6 +27,13 @@ let hw_admin = ((hw)=>{
                 'email': $("#id_email").val()
             }, obj.processResponse)
         })
+        $("#hw-user-send-noreq").on("click", (ev)=>{
+            hw.ajax_req({
+                'get_user_noreq': true,
+                'email': $("#id_email").val(),
+                'item_id': ev.currentTarget.dataset.itemId
+            }, obj.processResponse)
+        })
         $("#hw-requests-list li").on("click", (ev)=>{
             hw.ajax_req({
                 'select_request': true,
@@ -44,6 +51,18 @@ let hw_admin = ((hw)=>{
                 'make_lending': true,
                 'item_id': ev.currentTarget.dataset.itemId,
                 'request_id': ev.currentTarget.parentNode.dataset.requestId
+            }, obj.processResponse)
+        })
+        $("#hw-type-noreq li").on("click", (ev)=>{
+            hw.ajax_req({
+                'select_type_noreq': true,
+                'type_id': ev.currentTarget.dataset.typeId
+            }, obj.processResponse)
+        })
+        $("#hw-available-items-list-noreq li").on("click", (ev)=>{
+            hw.ajax_req({
+                'select_item_noreq': true,
+                'item_id': ev.currentTarget.dataset.itemId
             }, obj.processResponse)
         })
     }
