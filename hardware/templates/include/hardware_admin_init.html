@@ -1,0 +1,12 @@
+<h1>If the hacker has a request or he is returning an item:</h1>
+{% include 'include/hardware_user_email.html' %}
+<h1>If the hacker doesn't have a request:</h1>
+<ul id="hw-type-noreq">
+    {% for item_type in hw_list %}
+        <li class='hw_button' data-type-id="{{item_type.id}}">
+            {% include 'include/hardware_item.html'%}
+        </li>
+    {% empty %}
+        <li>There's no hardware yet</li>
+    {% endfor %}
+</ul>
