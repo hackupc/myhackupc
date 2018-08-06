@@ -40,7 +40,7 @@ class HardwareListView(LoginRequiredMixin, TabsViewMixin, TemplateView):
         if item.get_available_count() > 0:
             item.make_request(request.user)
             return JsonResponse({
-                'ok': True
+                'ok': True,
                 'minutes': hackathon_variables.REQUEST_TIME
             })
 
