@@ -56,6 +56,9 @@ class Item(models.Model):
     #Any other relevant information about this item
     comments = models.TextField(blank=True, null=True)
 
+    def can_be_lent(self):
+        return Lending.objects.filter(return_time__isnull=True, item=self).count() == 0
+
     def __str__(self):
         return '{} ({})'.format(self.label, self.item_type.name)
 
