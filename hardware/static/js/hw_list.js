@@ -37,7 +37,7 @@ let hw_list = ((hw)=>{
             }, (data)=>{
                 if(data.msg) hw.toast(data.msg)
                 if(data.ok){
-                    ev.currentTarget.dataset.targetTime = "00:15:00"
+                    ev.currentTarget.dataset.targetTime = "00:"+data.minutes+":00"
                     obj.setTimer(ev.currentTarget)
                 }
             })

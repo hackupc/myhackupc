@@ -1,6 +1,6 @@
 from django.db import models
 from user.models import User
-from hardware import settings
+from app import hackathon_variables
 from django.utils import timezone
 from datetime import timedelta
 
@@ -133,12 +133,12 @@ class Request(models.Model):
     request_time = models.DateTimeField(auto_now_add=True)
 
     def is_active(self):
-        delta = timedelta(minutes=settings.REQUEST_TIME)
+        delta = timedelta(minutes=hackathon_variables.REQUEST_TIME)
         remaining = delta - (timezone.now() - self.request_time)
         return not self.lending and remaining.total_seconds() > 0
 
     def get_remaining_time(self):
-        delta = timedelta(minutes=settings.REQUEST_TIME)
+        delta = timedelta(minutes=hackathon_variables.REQUEST_TIME)
         remaining = delta - (timezone.now() - self.request_time)
         if self.lending:
             return "Lent"

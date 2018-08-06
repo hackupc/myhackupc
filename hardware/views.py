@@ -5,6 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.utils import timezone
 from user.mixins import IsVolunteerMixin
+from app import hackathon_variables
 from app.mixins import TabsViewMixin
 from user.models import User
 from hardware.models import Item, ItemType, Lending, Request
@@ -38,7 +39,10 @@ class HardwareListView(LoginRequiredMixin, TabsViewMixin, TemplateView):
         item = ItemType.objects.get(id=request.POST['item_id'])
         if item.get_available_count() > 0:
             item.make_request(request.user)
-            return JsonResponse({'ok': True})
+            return JsonResponse({
+                'ok': True
+                'minutes': hackathon_variables.REQUEST_TIME
+            })
 
         return JsonResponse({'msg': "ERROR: There are no items available"})
 
