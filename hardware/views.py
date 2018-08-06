@@ -1,14 +1,14 @@
 from django.urls import reverse
 from django.views.generic import TemplateView
 from django.template.loader import render_to_string
-from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 from django.utils import timezone
 from user.mixins import IsVolunteerMixin
 from app.mixins import TabsViewMixin
 from user.models import User
 from hardware.models import Item, ItemType, Lending, Request
+
 
 def hardware_tabs(user):
     first_tab = ('Hardware List', reverse('hw_list'), False)
@@ -19,7 +19,9 @@ def hardware_tabs(user):
         ('Log', reverse('hw_log'), False)
     ]
 
+
 class HardwareListView(LoginRequiredMixin, TabsViewMixin, TemplateView):
+
     template_name = 'hardware_list.html'
 
     def get_current_tabs(self):
@@ -29,14 +31,14 @@ class HardwareListView(LoginRequiredMixin, TabsViewMixin, TemplateView):
         context = super(HardwareListView, self).get_context_data(**kwargs)
         context['hw_list'] = ItemType.objects.all()
         requests = Request.objects.get_active_by_user(self.request.user)
-        context['requests'] = {x.item_type.id:x.get_remaining_time() for x in requests}
+        context['requests'] = {x.item_type.id: x.get_remaining_time() for x in requests}
         return context
 
     def req_item(self, request):
         item = ItemType.objects.get(id=request.POST['item_id'])
         if item.get_available_count() > 0:
             item.make_request(request.user)
-            return JsonResponse({'ok':True})
+            return JsonResponse({'ok': True})
 
         return JsonResponse({'msg': "ERROR: There are no items available"})
 
@@ -44,6 +46,7 @@ class HardwareListView(LoginRequiredMixin, TabsViewMixin, TemplateView):
         if request.is_ajax:
             if 'req_item' in request.POST:
                 return self.req_item(request)
+
 
 class HardwareAdminView(IsVolunteerMixin, TabsViewMixin, TemplateView):
     template_name = 'hardware_admin.html'
@@ -54,10 +57,10 @@ class HardwareAdminView(IsVolunteerMixin, TabsViewMixin, TemplateView):
         showing a toast
         """
         html = render_to_string("include/hardware_admin_init.html", {
-                'hw_list':ItemType.objects.all(),
+            'hw_list': ItemType.objects.all(),
         })
         return JsonResponse({
-            'content':html,
+            'content': html,
             'msg': msg
         })
 
@@ -68,18 +71,18 @@ class HardwareAdminView(IsVolunteerMixin, TabsViewMixin, TemplateView):
         """
         target_user = User.objects.get(email=request.POST['email'])
         if not target_user:
-            return init_and_toast("The user doesn't exist")
+            return self.init_and_toast("The user doesn't exist")
 
         requests = Request.objects.get_active_by_user(target_user)
         lendings = Lending.objects.get_active_by_user(target_user)
-        html = render_to_string("include/hardware_admin_user.html",{
-            'requests':requests,
-            'lendings':lendings
+        html = render_to_string("include/hardware_admin_user.html", {
+            'requests': requests,
+            'lendings': lendings
         })
         return JsonResponse({
-            'content':html
+            'content': html
         })
-        
+
     def select_request(self, request):
         """
         We selected a request to process a lending. Then we show a list
@@ -91,11 +94,11 @@ class HardwareAdminView(IsVolunteerMixin, TabsViewMixin, TemplateView):
 
         available_items = request_obj.item_type.get_lendable_items()
         html = render_to_string("include/hardware_admin_lending.html", {
-                'items':available_items,
-                'request_id':request.POST['request_id']
+            'items': available_items,
+            'request_id': request.POST['request_id']
         })
-        return JsonResponse({'content':html})
-        
+        return JsonResponse({'content': html})
+
     def return_item(self, request):
         """
         We selected a lending to end it
@@ -116,6 +119,7 @@ class HardwareAdminView(IsVolunteerMixin, TabsViewMixin, TemplateView):
         item = Item.objects.get(id=request.POST['item_id'])
         if not item.can_be_lent():
             return self.init_and_toast("ERROR: The item is not available")
+
         request_obj = Request.objects.get(id=request.POST['request_id'])
         lending = Lending(user=request_obj.user, item=item)
         lending.save()
@@ -124,7 +128,7 @@ class HardwareAdminView(IsVolunteerMixin, TabsViewMixin, TemplateView):
         return self.init_and_toast("The item has been lent succesfully")
 
     def select_type_noreq(self, request):
-        """ 
+        """
         When a hacker doesn't have a request, we first select the hardware
         """
         item_type = ItemType.objects.get(id=request.POST['type_id'])
@@ -133,23 +137,23 @@ class HardwareAdminView(IsVolunteerMixin, TabsViewMixin, TemplateView):
 
         available_items = item_type.get_lendable_items()
         html = render_to_string("include/hardware_admin_lending.html", {
-                'items':available_items,
+            'items': available_items,
         })
-        return JsonResponse({'content':html})
+        return JsonResponse({'content': html})
 
     def select_item_noreq(self, request):
-        """ 
+        """
         We selected an item without request. We still need a user
         """
         item = Item.objects.get(id=request.POST['item_id'])
         if not item.can_be_lent():
             return self.init_and_toast("ERROR: The item is not available")
 
-        html = render_to_string("include/hardware_user_email.html",{
+        html = render_to_string("include/hardware_user_email.html", {
             'item_id': item.id
         })
         return JsonResponse({
-            'content':html
+            'content': html
         })
 
     def get_user_noreq(self, request):
@@ -160,6 +164,7 @@ class HardwareAdminView(IsVolunteerMixin, TabsViewMixin, TemplateView):
         target_user = User.objects.get(email=request.POST['email'])
         if not item.can_be_lent():
             return self.init_and_toast("ERROR: The item is not available")
+
         lending = Lending(user=target_user, item=item)
         lending.save()
         return self.init_and_toast("The item has been lent succesfully")
