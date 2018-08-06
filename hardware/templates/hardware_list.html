@@ -1,5 +1,6 @@
 {% extends "base_tabs.html" %}
 {% load static %}
+{% load hardware_extras %}
 {% block extra_head %}
     <script > window.CSRF_TOKEN = "{{ csrf_token }}"</script>
 
@@ -12,7 +13,11 @@
     {% for item in hw_list %}
         <li>
             {% include 'include/hardware_item.html' with description=True%}
-            <button class='hw-req-btn' data-item-id='{{ item.id }}'>Request</button>
+            {% if item.id in requests %}
+                <button class='hw-req-btn' data-item-id='{{ item.id }}' disabled data-target-time='{{requests|get_item:item.id}}'>Request</button>
+            {% else %}
+                <button class='hw-req-btn' data-item-id='{{ item.id }}'>Request</button>
+            {% endif %}
         </li>
     {% empty %}
         <li>There's no hardware yet</li>

@@ -28,17 +28,22 @@ class HardwareListView(LoginRequiredMixin, TabsViewMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super(HardwareListView, self).get_context_data(**kwargs)
         context['hw_list'] = ItemType.objects.all()
+        requests = Request.objects.get_active_by_user(self.request.user)
+        context['requests'] = {x.item_type.id:x.get_remaining_time() for x in requests}
         return context
+
+    def req_item(self, request):
+        item = ItemType.objects.get(id=request.POST['item_id'])
+        if item.get_available_count() > 0:
+            item.make_request(request.user)
+            return JsonResponse({'ok':True})
+
+        return JsonResponse({'msg': "ERROR: There are no items available"})
 
     def post(self, request):
         if request.is_ajax:
             if 'req_item' in request.POST:
-                item = ItemType.objects.get(id=request.POST['item_id'])
-                if item.get_available_count() > 0:
-                    item.make_request(request.user)
-                    return JsonResponse({'ok':True})
-
-                return JsonResponse({'error': 'Item unavailable'})
+                return self.req_item(request)
 
 class HardwareAdminView(IsVolunteerMixin, TabsViewMixin, TemplateView):
     template_name = 'hardware_admin.html'
