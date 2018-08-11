@@ -72,7 +72,7 @@ class RankingListTable(tables.Table):
         template = 'django_tables2/bootstrap-responsive.html'
         fields = ['counter', 'email', 'vote_count', 'skip_count', 'total_count']
         empty_text = 'No organizers voted yet... Why? :\'('
-        order_by = '-total_count'
+        ordering = ['-total_count', '-vote_count', '-skip_count']
 
 
 class AdminTeamListTable(tables.Table):
