@@ -28,6 +28,7 @@ SECRET_KEY = os.environ.get('SECRET', ')6+vf9(1tihg@u8!+(0abk+y*#$3r$(-d=g5qhm@1
 DEBUG = os.environ.get('PROD_MODE', "false").lower() == "false"
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
 
+
 # Application definition
 INSTALLED_APPS = [
     'jet',
@@ -49,6 +50,7 @@ INSTALLED_APPS = [
     'teams',
     'stats',
     'storages',
+    'hardware'
 ]
 
 if REIMBURSEMENT_ENABLED:

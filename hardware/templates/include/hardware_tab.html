@@ -1,0 +1,5 @@
+{% if request.user.is_volunteer %}
+	<li><a href="{% url 'hw_admin' %}">Hardware</a></li>
+{% else %}
+	<li><a href="{% url 'hw_list' %}">Hardware</a></li>
+{% endif %}

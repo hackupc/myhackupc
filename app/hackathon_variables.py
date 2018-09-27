@@ -76,3 +76,6 @@ SLACK = {
 # This allows to store an extra cookie in the browser to be shared with other application on the same domain
 # LOGGED_IN_COOKIE_DOMAIN = '.gerard.space'
 # LOGGED_IN_COOKIE_KEY = 'hackassistant_logged_in'
+
+# How many minutes a hardware request lasts
+REQUEST_TIME = 15

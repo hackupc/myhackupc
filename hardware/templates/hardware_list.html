@@ -1,0 +1,27 @@
+{% extends "base_tabs.html" %}
+{% load static %}
+{% load hardware_extras %}
+{% block extra_head %}
+    <script > window.CSRF_TOKEN = "{{ csrf_token }}"</script>
+
+    <script type="text/javascript" src="{% static 'js/hw.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/hw_list.js' %}"></script>
+{% endblock %}
+{% block head_title %}Hardware List{% endblock %}
+{% block panel %}
+<ul>
+    {% for item in hw_list %}
+        <li>
+            {% include 'include/hardware_item.html' with description=True%}
+            {% if item.id in requests %}
+                <button class='hw-req-btn' data-item-id='{{ item.id }}' disabled data-target-time='{{requests|get_item:item.id}}'>Request</button>
+            {% else %}
+                <button class='hw-req-btn' data-item-id='{{ item.id }}'>Request</button>
+            {% endif %}
+        </li>
+    {% empty %}
+        <li>There's no hardware yet</li>
+    {% endfor %}
+</ul>
+{% endblock %}
+

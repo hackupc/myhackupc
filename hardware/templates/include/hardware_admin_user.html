@@ -1,0 +1,20 @@
+<div>
+	<h1>Requests</h1>
+	<ul id="hw-requests-list">
+		{% for request in requests %}
+			<li class='hw_button' data-request-id="{{request.id}}">
+				<h1>{{request.item_type}}</h1>
+				<h2>Remaining time: {{request.get_remaining_time}}</h2>
+			</li>
+		{% endfor %}
+	</ul>
+	<h1>Lendings</h1>
+	<ul id="hw-lendings-list">
+		{% for lending in lendings %}
+			<li class='hw_button' data-lending-id='{{lending.id}}'>
+				<h1>{{lending.item}}</h1>
+				<h2>Picked up: {{lending.get_picked_up_time_ago}} ago</h2>
+			</li>
+		{% endfor %}
+	</ul>
+</div>
