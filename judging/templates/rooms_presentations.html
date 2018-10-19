@@ -37,8 +37,8 @@
 	{% for room in rooms %}
 		{% include 'include/room_presentations.html' %}
 	{% empty %}
-		<div class="empty">
-			<h1>The judging didn't start yet</h1>
+		<div class="empty text-center">
+			<h1>Judging hasn't started yet</h1>
 		</div>
 	{% endfor %}
 {% endblock %}
