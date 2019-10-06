@@ -19,11 +19,10 @@ from checkin.tables import ApplicationsCheckInTable, ApplicationCheckinFilter, R
 from user.mixins import IsVolunteerMixin, IsOrganizerMixin
 from user.models import User
 from app.slack import send_slack_message
+from multiprocessing import Pool
 
 
-def checking_in_hacker(request, web):
-    appid = request.POST.get('app_id')
-    qrcode = request.POST.get('qr_code')
+def checking_in_hacker(request, web, appid, qrcode):
     if qrcode is None or qrcode == '':
         return False
     app = models.Application.objects.filter(uuid=appid).first()
@@ -37,32 +36,31 @@ def checking_in_hacker(request, web):
     ci.application = app
     ci.qr_identifier = qrcode
     ci.save()
-    send_slack_message(app.user.email, 'Hello ' + app.user.name + ' :wave::skin-tone-3:'
-                                       'and welcome to *HackUPC 2018* :biene:!\nI\'m <@' +
-                                       settings.SLACK_BOT.get('id', None) + '> and I '
-                                       ':point_up::skin-tone-3: will be your guide '
-                                       ':female_mage::skin-tone-3: during the hackathon. '
-                                       'You can ask :question: me anything you need '
-                                       ':chocolate_bar:!\n    - Opening ceremony :fast_forward: '
-                                       'will be at 19h :clock6: on the Vertex building, more '
-                                       'information on how to get there :world_map: at maps.hackupc.com. '
-                                       'You can also watch it :tv: live at live.hackupc.com/#/streaming.\n'
-                                       '    - Hacking :female-technologist::skin-tone-3: starts at 21h, '
-                                       'but you can look :eyes: for your spot right now.\n'
-                                       '    - Live schedule :mantelpiece_clock: is available at '
-                                       'live.hackupc.com.\n    - If you need to leave your baggage '
-                                       ':handbag:, please go to the infodesk :information_source:.\n'
-                                       '    - Hardware :pager: will be provided, request it :memo: '
-                                       'before going to the infodesk :information_source: at '
-                                       'my.hackupc.com.\n    - If you need technical :three_button_mouse: '
-                                       'help, ask a mentor :female-teacher::skin-tone-3: at '
-                                       'mentors.hackupc.com.\nRemember that if I\'m unable to answer '
-                                       ':speak_no_evil:, you can try with the <#' +
-                                       settings.SLACK_BOT.get('channel', None) + '> channel '
-                                       ':speech_balloon: or to any organizer :tshirt: around.\n'
-                                       '*If there\'s any emergency :rotating_light: seek for any organizer, '
-                                       'you can also ping <@' + settings.SLACK_BOT.get('director1', None) +
-                                       '> or <@' + settings.SLACK_BOT.get('director2', None) + '>.*')
+    try:
+        pool = Pool(processes=1)
+        pool.apply_async(send_slack_message, [app.user.email, 'Hello ' + app.user.name + ' :wave::skin-tone-3:'
+                                           'and welcome to *HackUPC 2019* :bee:!\n    - Opening ceremony '
+                                           ':fast_forward: will be at 19h :clock6: on the Vèrtex building, more '
+                                           'information on how to get there :world_map: at maps.hackupc.com. '
+                                           'You can also watch it :tv: live at live.hackupc.com/#/streaming.\n'
+                                           '    - Hacking :female-technologist::skin-tone-3: starts at 21h, '
+                                           'but you can look :eyes: for your spot right now, *building A5 is '
+                                           'currently closed :door: and will be available after the opening '
+                                           'ceremony*.\n    - Live schedule :mantelpiece_clock: is available at '
+                                           'live.hackupc.com.\n    - If you need to leave your baggage '
+                                           ':handbag:, please go to the infodesk :information_source:.\n'
+                                           '    - Hardware :pager: will be provided, request it :memo: '
+                                           'before going to the infodesk :information_source: at '
+                                           'my.hackupc.com.\n    - If you need technical :three_button_mouse: '
+                                           'help, ask a mentor :female-teacher::skin-tone-3: at '
+                                           'mentors.hackupc.com.\nRemember that if you have a question, '
+                                           'try the <#' + settings.SLACK_BOT.get('channel', None) + '> channel '
+                                           ':speech_balloon: or just ask any organizer :tshirt: around.\n'
+                                           '*If there\'s an emergency :rotating_light: seek for an organizer, '
+                                           'you can also ping <@' + settings.SLACK_BOT.get('director1', None) +
+                                           '> or <@' + settings.SLACK_BOT.get('director2', None) + '>.*'])
+    except TypeError:
+        pass
     return True
 
 
@@ -107,7 +105,9 @@ class CheckInHackerView(IsVolunteerMixin, TabsView):
         return context
 
     def post(self, request, *args, **kwargs):
-        if checking_in_hacker(request, True):
+        appid = request.POST.get('app_id')
+        qrcode = request.POST.get('qr_code')
+        if checking_in_hacker(request, True, appid, qrcode):
             messages.success(self.request, 'Hacker checked-in! Good job! '
                                            'Nothing else to see here, '
                                            'you can move on :D')
@@ -141,9 +141,14 @@ class CheckInAPI(APIView):
         return HttpResponse(json.dumps({'code': 1, 'content': checkInDataList}), content_type='application/json')
 
     def post(self, request, format=None):
-        var_token = request.GET.get('token')
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
+        content = body['content']
+        var_token = content['token']
         if var_token != settings.MEALS_TOKEN:
             return HttpResponse(status=500)
-        if checking_in_hacker(request, False):
+        appid = content['app_id']
+        qrcode = content['qr_code']
+        if checking_in_hacker(request, False, appid, qrcode):
             return JsonResponse({'code': 1, 'message': 'Hacker Checked in'})
         return JsonResponse({'code': 0, 'message': 'Invalid QR'})
