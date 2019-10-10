@@ -13,8 +13,9 @@ class Offer(models.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        codes = {c for c in self.codes.read().decode("utf-8").replace("\"", "").replace(" ", "").split("\n") if c}
-        codes -= set(Code.objects.filter(offer_id=self.id).values_list("code", flat=True))
+        # codes = {c for c in self.codes.read().decode("utf-8").replace("\"", "").replace(" ", "").split("\n") if c}
+        # codes -= set(Code.objects.filter(offer_id=self.id).values_list("code", flat=True))
+        codes = [c for c in self.codes.read().decode("utf-8").replace("\"", "").replace(" ", "").split("\n") if c]
         Code.objects.bulk_create([Code(offer=self, code=c) for c in codes])
 
 
