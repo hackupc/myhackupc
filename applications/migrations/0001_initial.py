@@ -45,7 +45,7 @@ class Migration(migrations.Migration):
                 ('devpost', models.URLField(blank=True, null=True)),
                 ('linkedin', models.URLField(blank=True, null=True)),
                 ('site', models.URLField(blank=True, null=True)),
-                ('diet', models.CharField(choices=[('None', 'No requirements'), ('Vegeterian', 'Vegeterian'), ('Vegan', 'Vegan'), ('No pork', 'No pork'), ('Gluten-free', 'Gluten-free'), ('Others', 'Others')], default='None', max_length=300)),
+                ('diet', models.CharField(choices=[('None', 'No requirements'), ('Vegetarian', 'Vegetarian'), ('Vegan', 'Vegan'), ('Gluten-free', 'Gluten-free'), ('Others', 'Others')], default='None', max_length=300)),
                 ('other_diet', models.CharField(blank=True, max_length=600, null=True)),
                 ('tshirt_size', models.CharField(choices=[('XS', 'XS'), ('S', 'S'), ('M', 'M'), ('L', 'L'), ('XL', 'XL')], default='M', max_length=3)),
                 ('team', models.BooleanField()),

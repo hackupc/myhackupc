@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='user',
             name='diet',
-            field=models.CharField(blank=True, choices=[('None', 'No requirements'), ('Vegeterian', 'Vegeterian'), ('Vegan', 'Vegan'), ('No pork', 'No pork'), ('Gluten-free', 'Gluten-free'), ('Others', 'Others')], max_length=300, null=True),
+            field=models.CharField(blank=True, choices=[('None', 'No requirements'), ('Vegetarian', 'Vegetarian'), ('Vegan', 'Vegan'), ('Gluten-free', 'Gluten-free'), ('Others', 'Others')], max_length=300, null=True),
         ),
     ]

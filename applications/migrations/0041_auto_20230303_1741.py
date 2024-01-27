@@ -19,12 +19,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='hackerapplication',
             name='diet',
-            field=models.CharField(choices=[('None', 'No requirements'), ('Vegetarian', 'Vegeterian'), ('Vegan', 'Vegan'), ('No pork', 'No pork'), ('Gluten-free', 'Gluten-free'), ('Others', 'Others')], default='None', max_length=300),
+            field=models.CharField(choices=[('None', 'No requirements'), ('Vegetarian', 'Vegetarian'), ('Vegan', 'Vegan'), ('Gluten-free', 'Gluten-free'), ('Others', 'Others')], default='None', max_length=300),
         ),
         migrations.AlterField(
             model_name='mentorapplication',
             name='diet',
-            field=models.CharField(choices=[('None', 'No requirements'), ('Vegetarian', 'Vegeterian'), ('Vegan', 'Vegan'), ('No pork', 'No pork'), ('Gluten-free', 'Gluten-free'), ('Others', 'Others')], default='None', max_length=300),
+            field=models.CharField(choices=[('None', 'No requirements'), ('Vegetarian', 'Vegetarian'), ('Vegan', 'Vegan'), ('Gluten-free', 'Gluten-free'), ('Others', 'Others')], default='None', max_length=300),
         ),
         migrations.AlterField(
             model_name='mentorapplication',
@@ -34,12 +34,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='sponsorapplication',
             name='diet',
-            field=models.CharField(choices=[('None', 'No requirements'), ('Vegetarian', 'Vegeterian'), ('Vegan', 'Vegan'), ('No pork', 'No pork'), ('Gluten-free', 'Gluten-free'), ('Others', 'Others')], default='None', max_length=300),
+            field=models.CharField(choices=[('None', 'No requirements'), ('Vegetarian', 'Vegetarian'), ('Vegan', 'Vegan'), ('Gluten-free', 'Gluten-free'), ('Others', 'Others')], default='None', max_length=300),
         ),
         migrations.AlterField(
             model_name='volunteerapplication',
             name='diet',
-            field=models.CharField(choices=[('None', 'No requirements'), ('Vegetarian', 'Vegeterian'), ('Vegan', 'Vegan'), ('No pork', 'No pork'), ('Gluten-free', 'Gluten-free'), ('Others', 'Others')], default='None', max_length=300),
+            field=models.CharField(choices=[('None', 'No requirements'), ('Vegetarian', 'Vegetarian'), ('Vegan', 'Vegan'), ('Gluten-free', 'Gluten-free'), ('Others', 'Others')], default='None', max_length=300),
         ),
         migrations.AlterField(
             model_name='volunteerapplication',

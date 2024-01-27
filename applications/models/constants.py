@@ -46,7 +46,7 @@ GENDERS = [
 
 
 D_NONE = 'None'
-D_VEGETERIAN = 'Vegetarian'
+D_VEGETARIAN = 'Vegetarian'
 D_VEGAN = 'Vegan'
 D_NO_PORK = 'No pork'
 D_GLUTEN_FREE = 'Gluten-free'
@@ -54,7 +54,7 @@ D_OTHER = 'Others'
 
 DIETS = [
     (D_NONE, 'No requirements'),
-    (D_VEGETERIAN, 'Vegeterian'),
+    (D_VEGETARIAN, 'Vegetarian'),
     (D_VEGAN, 'Vegan'),
     (D_NO_PORK, 'No pork'),
     (D_GLUTEN_FREE, 'Gluten-free'),
