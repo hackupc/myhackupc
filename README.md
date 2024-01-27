@@ -48,7 +48,7 @@ If you are experiencing an error similar to this one:
 ERROR: Could not build wheels for backports.zoneinfo, which is required to install pyproject.toml-based projects
 ``
 
-Plase make sure to use *Python **3.8.10***
+Please make sure to use *Python **3.8.10***
 
 
 **The library Pillow fails to install**
