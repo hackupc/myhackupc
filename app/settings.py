@@ -332,5 +332,4 @@ SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
 CRONJOBS = [
     ('6 */2 * * *', 'django.core.management.call_command', ['expire_reimbursements']),
     ('6 */2 * * *', 'django.core.management.call_command', ['expire_applications']),
-    ('*/4 * * * *', 'django.core.management.call_command', ['expire_applications'])
 ]
