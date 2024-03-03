@@ -132,7 +132,7 @@ class Reimbursement(models.Model):
             self.status_update_date = timezone.now()
             self.reimbursed_by = user
             self.reimbursement_money = None
-            self.expiration_time = timezone.now() + timedelta(days=DEFAULT_EXPIRY_DAYS)
+            self.expiration_time = DEFAULT_EXPIRY_DAYS
             self.save()
 
     def no_reimb(self, user):
@@ -166,7 +166,7 @@ class Reimbursement(models.Model):
         return self.status == RE_PEND_TICKET and not self.expired and not self.hacker.application.is_rejected()
 
     def reject_receipt(self, user, request):
-        self.expiration_time = timezone.now() + timedelta(days=DEFAULT_EXPIRY_DAYS)
+        self.expiration_time = DEFAULT_EXPIRY_DAYS
         self.status = RE_PEND_TICKET
         self.reimbursed_by = user
         self.reimbursement_money = None
@@ -175,7 +175,7 @@ class Reimbursement(models.Model):
             for reimb in self.friend_submissions.all():
                 reimb.friend_submission = None
                 reimb.reimbursement_money = None
-                reimb.expiration_time = timezone.now() + timedelta(days=DEFAULT_EXPIRY_DAYS)
+                reimb.expiration_time = DEFAULT_EXPIRY_DAYS
                 reimb.public_comment = 'Your friend %s submission has not been accepted' % self.hacker.get_full_name()
                 reimb.status = RE_PEND_TICKET
                 reimb.save()
