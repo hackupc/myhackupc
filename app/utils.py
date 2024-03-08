@@ -5,7 +5,6 @@ from django.forms import forms
 from django.urls import reverse as django_reverse
 from django.utils import timezone
 from django.utils.functional import keep_lazy_text
-from datetime import datetime
 
 import os
 
@@ -297,6 +296,9 @@ def generateGTicketUrl(qrValue: str):
             "value": qrValue,
             "alternateText": qrValue,
         },
+        "locations": [
+            {"latitude": 41.389108923029085, "longitude": 2.1136612343959778}
+        ],
         "hexBackgroundColor": "#240059",
         "heroImage": {
             "sourceUri": {
