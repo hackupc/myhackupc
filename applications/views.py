@@ -206,9 +206,8 @@ class HackerDashboard(DashboardMixin, TabsView):
                 if application.status == models.APP_CONFIRMED and settings.GOOGLE_WALLET_ENABLED:
                     context.update({"gwalleturl": generateGTicketUrl(application.uuid_str)})
                     # generate a google pay ticket entrance with a QR code
-        except Exception:
-            # We ignore this as we are okay if the user has not created an application yet
-            pass
+        except Exception as e:
+            print("[GWALLET] An error ocurred:", e)
 
         return context
 

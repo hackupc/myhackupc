@@ -228,14 +228,35 @@ def generateGTicketUrl(qrValue: str):
     cardObject = {
         "id": f"{issuer_id}.{objSufix}",
         "classId": f"{issuer_id}.{class_suffix}",
-        "state": "ACTIVE",
-        "heroImage": {
-            "sourceUri": {"uri": "https://i.ibb.co/CwwGY33/Fondo-2.png"},
+        "issuerName": "Hackers@UPC",
+        "dateTime": {"start": "2024-03-05T18:00"},
+        "logo": {
+            "sourceUri": {
+                "uri": "https://my.hackupc.com/static/img/favicon/apple-touch-icon.0d0372730c66.png",
+            },
             "contentDescription": {
                 "defaultValue": {
                     "language": "en-US",
-                    "value": f"{settings.HACKATHON_NAME} {datetime.now().year} is here!",
-                }
+                    "value": "HackUPC logo",
+                },
+            },
+        },
+        "cardTitle": {
+            "defaultValue": {
+                "language": "en-US",
+                "value": "Hackers@UPC",
+            },
+        },
+        "subheader": {
+            "defaultValue": {
+                "language": "en-US",
+                "value": "You've been invited to:",
+            },
+        },
+        "header": {
+            "defaultValue": {
+                "language": "en-US",
+                "value": "HackUPC 2024",
             },
         },
         "textModulesData": [
@@ -273,19 +294,19 @@ def generateGTicketUrl(qrValue: str):
         ],
         "barcode": {
             "type": "QR_CODE",
-            "value": objSufix,
+            "value": qrValue,
+            "alternateText": qrValue,
         },
-        "cardTitle": {
-            "defaultValue": {"language": "en-US", "value": "An event of Hackers@UPC"}
-        },
-        "header": {"defaultValue": {"language": "en-US", "value": "HackUPC 2024"}},
-        "hexBackgroundColor": "#fff",
-        "logo": {
+        "hexBackgroundColor": "#240059",
+        "heroImage": {
             "sourceUri": {
-                "uri": "https://my.hackupc.com/static/img/favicon/apple-touch-icon.0d0372730c66.png"
+                "uri": "https://i.ibb.co/2ytdRvf/Gpay-2.png",
             },
             "contentDescription": {
-                "defaultValue": {"language": "en-US", "value": "HackUPC Logo"}
+                "defaultValue": {
+                    "language": "en-US",
+                    "value": "HackUPC 2024 with a rocket and a galactic space background",
+                },
             },
         },
     }
