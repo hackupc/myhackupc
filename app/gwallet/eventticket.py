@@ -37,7 +37,7 @@ class EventTicket:
     """
 
     def __init__(self):
-        self.key_file_path = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS',
+        self.key_file_path = os.environ.get('GOOGLE_WALLET_APPLICATION_CREDENTIALS',
                                             '/path/to/key.json')
         self.base_url = 'https://walletobjects.googleapis.com/walletobjects/v1'
         self.batch_url = 'https://walletobjects.googleapis.com/batch'
@@ -77,7 +77,7 @@ class EventTicket:
             url=f'{self.class_url}/{issuer_id}.{class_suffix}')
 
         if response.status_code == 200:
-            print(f'Class {issuer_id}.{class_suffix} already exists!')
+            print(f'[WALLET]Class {issuer_id}.{class_suffix} already exists!')
             return f'{issuer_id}.{class_suffix}'
         elif response.status_code != 404:
             # Something else went wrong...
@@ -90,9 +90,8 @@ class EventTicket:
 
         response = self.http_client.post(url=self.class_url, json=new_class)
 
-        print('Class insert response')
-        print(response.text)
-
+        print('[WALLET] Class created!')
+        
         return response.json().get('id')
 
     # [END createClass]
@@ -116,7 +115,7 @@ class EventTicket:
             url=f'{self.class_url}/{issuer_id}.{class_suffix}')
 
         if response.status_code == 404:
-            print(f'Class {issuer_id}.{class_suffix} not found!')
+            print(f'[WALLET]Class {issuer_id}.{class_suffix} not found!')
             return f'{issuer_id}.{class_suffix}'
         elif response.status_code != 200:
             # Something else went wrong...
@@ -165,7 +164,7 @@ class EventTicket:
             url=f'{self.class_url}/{issuer_id}.{class_suffix}')
 
         if response.status_code == 404:
-            print(f'Class {issuer_id}.{class_suffix} not found!')
+            print(f'[WALLET]Class {issuer_id}.{class_suffix} not found!')
             return f'{issuer_id}.{class_suffix}'
         elif response.status_code != 200:
             # Something else went wrong...
@@ -213,7 +212,7 @@ class EventTicket:
             url=f'{self.class_url}/{issuer_id}.{class_suffix}')
 
         if response.status_code == 404:
-            print(f'Class {issuer_id}.{class_suffix} not found!')
+            print(f'[WALLET]Class {issuer_id}.{class_suffix} not found!')
             return f'{issuer_id}.{class_suffix}'
         elif response.status_code != 200:
             # Something else went wrong...
@@ -253,7 +252,7 @@ class EventTicket:
             url=f'{self.object_url}/{issuer_id}.{object_suffix}')
 
         if response.status_code == 200:
-            print(f'Object {issuer_id}.{object_suffix} already exists!')
+            print(f'[WALLET] Object {issuer_id}.{object_suffix} already exists!')
             print(response.text)
             return f'{issuer_id}.{object_suffix}'
         elif response.status_code != 404:
@@ -267,8 +266,7 @@ class EventTicket:
         # Create the object
         response = self.http_client.post(url=self.object_url, json=object_pass)
 
-        print('Object insert response')
-        print(response.text)
+        print(f'[WALLET] Object created: {object_suffix}')
 
         return response.json().get('id')
 
@@ -293,7 +291,7 @@ class EventTicket:
             url=f'{self.object_url}/{issuer_id}.{object_suffix}')
 
         if response.status_code == 404:
-            print(f'Object {issuer_id}.{object_suffix} not found!')
+            print(f'[WALLET]Object {issuer_id}.{object_suffix} not found!')
             return f'{issuer_id}.{object_suffix}'
         elif response.status_code != 200:
             # Something else went wrong...
@@ -340,7 +338,7 @@ class EventTicket:
             url=f'{self.object_url}/{issuer_id}.{object_suffix}')
 
         if response.status_code == 404:
-            print(f'Object {issuer_id}.{object_suffix} not found!')
+            print(f'[WALLET]Object {issuer_id}.{object_suffix} not found!')
             return f'{issuer_id}.{object_suffix}'
         elif response.status_code != 200:
             # Something else went wrong...
@@ -394,7 +392,7 @@ class EventTicket:
             url=f'{self.object_url}/{issuer_id}.{object_suffix}')
 
         if response.status_code == 404:
-            print(f'Object {issuer_id}.{object_suffix} not found!')
+            print(f'[WALLET]Object {issuer_id}.{object_suffix} not found!')
             return f'{issuer_id}.{object_suffix}'
         elif response.status_code != 200:
             # Something else went wrong...
@@ -435,7 +433,7 @@ class EventTicket:
             url=f'{self.object_url}/{issuer_id}.{object_suffix}')
 
         if response.status_code == 404:
-            print(f'Object {issuer_id}.{object_suffix} not found!')
+            print(f'[WALLET]Object {issuer_id}.{object_suffix} not found!')
             return f'{issuer_id}.{object_suffix}'
         elif response.status_code != 200:
             # Something else went wrong...
@@ -479,14 +477,6 @@ class EventTicket:
         # https://developers.google.com/wallet/tickets/events/rest/v1/eventticketclass
         new_class = {
             'id': f'{issuer_id}.{class_suffix}',
-            'issuerName': 'Issuer name',
-            'reviewStatus': 'UNDER_REVIEW',
-            'eventName': {
-                'defaultValue': {
-                    'language': 'en-US',
-                    'value': 'Event name'
-                }
-            }
         }
 
         # See link below for more information on required properties
@@ -495,85 +485,6 @@ class EventTicket:
             'id': f'{issuer_id}.{object_suffix}',
             'classId': f'{issuer_id}.{class_suffix}',
             'state': 'ACTIVE',
-            'heroImage': {
-                'sourceUri': {
-                    'uri':
-                        'https://farm4.staticflickr.com/3723/11177041115_6e6a3b6f49_o.jpg'
-                },
-                'contentDescription': {
-                    'defaultValue': {
-                        'language': 'en-US',
-                        'value': 'Hero image description'
-                    }
-                }
-            },
-            'textModulesData': [{
-                'header': 'Text module header',
-                'body': 'Text module body',
-                'id': 'TEXT_MODULE_ID'
-            }],
-            'linksModuleData': {
-                'uris': [{
-                    'uri': 'http://maps.google.com/',
-                    'description': 'Link module URI description',
-                    'id': 'LINK_MODULE_URI_ID'
-                }, {
-                    'uri': 'tel:6505555555',
-                    'description': 'Link module tel description',
-                    'id': 'LINK_MODULE_TEL_ID'
-                }]
-            },
-            'imageModulesData': [{
-                'mainImage': {
-                    'sourceUri': {
-                        'uri':
-                            'http://farm4.staticflickr.com/3738/12440799783_3dc3c20606_b.jpg'
-                    },
-                    'contentDescription': {
-                        'defaultValue': {
-                            'language': 'en-US',
-                            'value': 'Image module description'
-                        }
-                    }
-                },
-                'id': 'IMAGE_MODULE_ID'
-            }],
-            'barcode': {
-                'type': 'QR_CODE',
-                'value': 'QR code'
-            },
-            'locations': [{
-                'latitude': 37.424015499999996,
-                'longitude': -122.09259560000001
-            }],
-            'seatInfo': {
-                'seat': {
-                    'defaultValue': {
-                        'language': 'en-US',
-                        'value': '42'
-                    }
-                },
-                'row': {
-                    'defaultValue': {
-                        'language': 'en-US',
-                        'value': 'G3'
-                    }
-                },
-                'section': {
-                    'defaultValue': {
-                        'language': 'en-US',
-                        'value': '5'
-                    }
-                },
-                'gate': {
-                    'defaultValue': {
-                        'language': 'en-US',
-                        'value': 'A'
-                    }
-                }
-            },
-            'ticketHolderName': 'Ticket holder name',
-            'ticketNumber': 'Ticket number'
         }
 
         # Create the JWT claims
@@ -594,7 +505,7 @@ class EventTicket:
         token = jwt.encode(signer, claims).decode('utf-8')
 
         print('Add to Google Wallet link')
-        print(f'https://pay.google.com/gp/v/save/{token}')
+        print(f'[WALLET]https://pay.google.com/gp/v/save/{token}')
 
         return f'https://pay.google.com/gp/v/save/{token}'
 
@@ -684,7 +595,7 @@ class EventTicket:
         token = jwt.encode(signer, claims).decode('utf-8')
 
         print('Add to Google Wallet link')
-        print(f'https://pay.google.com/gp/v/save/{token}')
+        print(f'[WALLET]https://pay.google.com/gp/v/save/{token}')
 
         return f'https://pay.google.com/gp/v/save/{token}'
 
