@@ -27,7 +27,7 @@ from google.auth import jwt, crypt
 # [END imports]
 
 
-class DemoEventTicket:
+class EventTicket:
     """Demo class for creating and managing Event tickets in Google Wallet.
 
     Attributes:
@@ -61,7 +61,7 @@ class DemoEventTicket:
     # [END auth]
 
     # [START createClass]
-    def create_class(self, issuer_id: str, class_suffix: str) -> str:
+    def create_class(self, issuer_id: str, class_suffix: str, class_data) -> str:
         """Create a class.
 
         Args:
@@ -86,18 +86,7 @@ class DemoEventTicket:
 
         # See link below for more information on required properties
         # https://developers.google.com/wallet/tickets/events/rest/v1/eventticketclass
-        new_class = {
-            'eventId': f'{issuer_id}.{class_suffix}',
-            'eventName': {
-                'defaultValue': {
-                    'language': 'en-US',
-                    'value': 'HackUPC'
-                }
-            },
-            'id': f'{issuer_id}.{class_suffix}',
-            'issuerName': 'Issuer name',
-            'reviewStatus': 'UNDER_REVIEW'
-        }
+        new_class = class_data
 
         response = self.http_client.post(url=self.class_url, json=new_class)
 
@@ -274,7 +263,6 @@ class DemoEventTicket:
 
         # See link below for more information on required properties
         # https://developers.google.com/wallet/tickets/events/rest/v1/eventticketobject
-        
 
         # Create the object
         response = self.http_client.post(url=self.object_url, json=object_pass)

@@ -59,7 +59,7 @@ INSTALLED_APPS = [
     'corsheaders',
 ]
 
-GOOGLE_WALLET_ENABLED = False  # Set to false to disable google wallet
+GOOGLE_WALLET_ENABLED = True  # Set to false to disable google wallet
 
 if BAGGAGE_ENABLED:
     INSTALLED_APPS.append('baggage')
