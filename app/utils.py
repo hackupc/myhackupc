@@ -240,7 +240,7 @@ def generateGTicketUrl(qrValue: str):
             "contentDescription": {
                 "defaultValue": {
                     "language": "en-US",
-                    "value": "LOGO_IMAGE_DESCRIPTION",
+                    "value": "HackUPC favicon",
                 },
             },
         },
