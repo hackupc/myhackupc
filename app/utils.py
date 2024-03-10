@@ -293,14 +293,12 @@ def generateGTicketUrl(qrValue: str):
             "address": {
                 "defaultValue": {
                     "language": "en-US",
-                    "value": "FIB Facultat d'Informàtica de Barcelona, Edifici A6 del Campus Nord, C/Jordi Girona, 1-3, 08034 Barcelona",
+                    "value": "FIB Facultat d'Informàtica de Barcelona, Edifici A6 del Campus Nord, C/Jordi Girona,\
+                          1-3, 08034 Barcelona",
                 },
             },
         },
-        "dateTime": {
-            "start": "2024-05-03T18:00",
-            "end": "2024-05-05T17:00"
-        },
+        "dateTime": {"start": "2024-05-03T18:00", "end": "2024-05-05T17:00"},
         "reviewStatus": "UNDER_REVIEW",
         "hexBackgroundColor": "#240059",
         "heroImage": {
