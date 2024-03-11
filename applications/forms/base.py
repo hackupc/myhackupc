@@ -160,7 +160,7 @@ class ConfirmationInvitationForm(BootstrapFormMixin, forms.ModelForm):
         initial=False,
         widget=forms.RadioSelect(),
         help_text='We only provide travel reimbursement if you attend from outside of Catalonia, '
-                  'you can find more info in our website\'s FAQ'
+                  'you can find more info in our website\'s <a target="_blank" href="https://hackupc.com/#faqs">FAQs</a>.'
     )
 
     mlh_required_terms = forms.BooleanField(
