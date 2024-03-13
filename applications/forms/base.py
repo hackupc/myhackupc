@@ -178,7 +178,7 @@ class ConfirmationInvitationForm(BootstrapFormMixin, forms.ModelForm):
     )
 
     diet_notice = forms.BooleanField(
-        required=True,
+        required=False,
         label='I authorize "Hackers at UPC" to use my food allergies and intolerances information to '
               'manage the catering service only.<span style="color: red; font-weight: bold;"> *</span>'
     )
