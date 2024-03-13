@@ -145,13 +145,16 @@ class ConfirmationInvitationForm(BootstrapFormMixin, forms.ModelForm):
             'fields': [{'name': 'tshirt_size', 'space': 4}, {'name': 'diet', 'space': 4},
                        {'name': 'other_diet', 'space': 4},
                        {'name': 'reimb', 'space': 12}, {'name': 'reimb_amount', 'space': 12},
-                       {'name': 'terms_and_conditions', 'space': 12}, {'name': 'mlh_required_terms', 'space': 12},
-                       {'name': 'mlh_required_privacy', 'space': 12}, {'name': 'mlh_subscribe', 'space': 12}
+                       {'name': 'terms_and_conditions', 'space': 12},
+                       {'name': 'mlh_required_terms', 'space': 12},
+                       {'name': 'mlh_required_privacy', 'space': 12}, {'name': 'mlh_subscribe', 'space': 12},
+                       {'name': 'diet_notice', 'space': 12}
                        ],
         },
     }
 
     diet = forms.ChoiceField(label='Dietary requirements', choices=models.DIETS, required=True)
+
     reimb = forms.TypedChoiceField(
         required=False,
         label='Do you need a travel reimbursement to attend?',
@@ -160,7 +163,7 @@ class ConfirmationInvitationForm(BootstrapFormMixin, forms.ModelForm):
         initial=False,
         widget=forms.RadioSelect(),
         help_text='We only provide travel reimbursement if you attend from outside of Catalonia, '
-                  'you can find more info in our website\'s FAQ'
+                  'you can find more info in our website\'s <a target="_blank" href="https://hackupc.com/#faqs">FAQs</a>.'
     )
 
     mlh_required_terms = forms.BooleanField(
@@ -172,6 +175,12 @@ class ConfirmationInvitationForm(BootstrapFormMixin, forms.ModelForm):
         required=False,
         label="I authorize MLH to send me an email where I can further opt into the MLH Hacker, Events, or "
               "Organizer Newsletters and other communications from MLH."
+    )
+
+    diet_notice = forms.BooleanField(
+        required=False,
+        label='I authorize "Hackers at UPC" to use my food allergies and intolerances information to '
+              'manage the catering service only.<span style="color: red; font-weight: bold;"> *</span>'
     )
 
     mlh_required_privacy = forms.BooleanField(
@@ -224,6 +233,19 @@ class ConfirmationInvitationForm(BootstrapFormMixin, forms.ModelForm):
             )
         return cc
 
+
+    def clean_diet_notice(self):
+        diet = self.cleaned_data.get('diet', 'None')
+        diet_notice = self.cleaned_data.get('diet_notice', False)
+        # Check that if it's the first submission hackers checks terms and conditions checkbox
+        # self.instance.pk is None if there's no Application existing before
+        # https://stackoverflow.com/questions/9704067/test-if-django-modelform-has-instance
+        if diet != 'None' and not diet_notice and not self.instance.pk:
+            raise forms.ValidationError(
+                "In order to apply and attend you have to accept us to use your personal data related to your food "
+                "allergies and intolerances only in order to manage the catering service."
+            )
+        return diet_notice
     def clean_other_diet(self):
         data = self.cleaned_data.get('other_diet', '')
         diet = self.cleaned_data.get('diet', 'None')

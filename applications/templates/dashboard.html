@@ -146,6 +146,7 @@
                             {% include 'include/deadline_countdown.html' with timeleft=invite_timeleft %}</b>
                     </p>
                     <p>Please confirm that this information regarding your application is correct. If you see that something's not right, now is the time to change it!</p>
+                    <p><b><span style="color:#E23532;">Disclaimer:</span></b> <span style="color:#FC5C5A;">We cannot guarantee that the meat provided at the event will be Halal. We strongly advise to consider opting for a vegetarian diet instead.</span></p>
                     {% include 'include/bootstrap_form.html' with form=confirm_form %}
                     <script src="{% static 'js/form_modifiers.js' %}"></script>
                     <script>
@@ -155,6 +156,26 @@
                             conditional_field(other_diet, diet, function () {
                                 return diet.val() === 'Others';
                             }, 1);
+
+                            diet_notice = $('#id_diet_notice');
+                            conditional_field(diet_notice, diet, function () {
+                                return diet.val() !== 'None';
+                            }, 1);
+                            
+                            function checkDietNotice(){
+                                if(diet.val() !== 'None'){
+                                    diet_notice.parent().parent().parent().addClass('required');
+                                    diet_notice.attr('required', 'true');
+                                }else{
+                                    diet_notice.removeAttr('required');
+                                    diet_notice.parent().parent().parent().removeClass('required');
+                                }
+                            }
+                            checkDietNotice();
+                            diet.on('change', function () {
+                                checkDietNotice();
+                            });
+                            
                             let needs_reimb = $('input[name="reimb"][value="True"]');
                             let no_reimb = $('input[name="reimb"][value="False"]');
                             let reimb_amout = $('#id_reimb_amount');
