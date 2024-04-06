@@ -515,8 +515,7 @@ class EventTicket:
         signer = crypt.RSASigner.from_service_account_file(self.key_file_path)
         token = jwt.encode(signer, claims).decode("utf-8")
 
-        print("Add to Google Wallet link")
-        print(f"[WALLET]https://pay.google.com/gp/v/save/{token}")
+        # print(f"[WALLET]https://pay.google.com/gp/v/save/{token}")
 
         return f"https://pay.google.com/gp/v/save/{token}"
 
@@ -613,8 +612,8 @@ class EventTicket:
         signer = crypt.RSASigner.from_service_account_file(self.key_file_path)
         token = jwt.encode(signer, claims).decode("utf-8")
 
-        print("Add to Google Wallet link")
-        print(f"[WALLET]https://pay.google.com/gp/v/save/{token}")
+        # print("Add to Google Wallet link")
+        # print(f"[WALLET]https://pay.google.com/gp/v/save/{token}")
 
         return f"https://pay.google.com/gp/v/save/{token}"
 
