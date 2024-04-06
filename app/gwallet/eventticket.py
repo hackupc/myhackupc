@@ -260,7 +260,7 @@ class EventTicket:
 
         if response.status_code == 200:
             print(f"[WALLET] Object {issuer_id}.{object_suffix} already exists!")
-            print(response.text)
+            # print(response.text)
             return f"{issuer_id}.{object_suffix}"
         elif response.status_code != 404:
             # Something else went wrong...
