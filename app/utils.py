@@ -235,7 +235,7 @@ def generateGTicketUrl(qrValue: str):
         },
         "logo": {
             "sourceUri": {
-                "uri": "https://my.hackupc.com/static/img/favicon/apple-touch-icon.0d0372730c66.png",
+                "uri": "https://i.ibb.co/tXt96Xn/Logo-1.png",
             },
             "contentDescription": {
                 "defaultValue": {
@@ -298,7 +298,7 @@ def generateGTicketUrl(qrValue: str):
                 },
             },
         },
-        "dateTime": {"start": "2024-05-03T18:00", "end": "2024-05-05T17:00"},
+        "dateTime": {"start": "2024-05-03T16:00", "end": "2024-05-05T17:00"},
         "reviewStatus": "UNDER_REVIEW",
         "hexBackgroundColor": "#240059",
         "heroImage": {
