@@ -17,7 +17,7 @@ export DOMAIN="my.hackupc.com"
 # Read the README to know how to get them
 export GOOGLE_WALLET_ISSUER_ID="XXXXXXXXXXXXXXXXXXX"
 export GOOGLE_WALLET_CLASS_SUFFIX="XXXXXXXXXXXXXXXXX"
-GOOGLE_WALLET_PASS_SUFFIX="" # use ="test" for testing
+export GOOGLE_WALLET_PASS_SUFFIX="" # use ="test" for testing
 export GOOGLE_WALLET_APPLICATION_CREDENTIALS="/path/to/credentials.json" # remember to allow read perms
 
 
