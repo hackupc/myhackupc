@@ -260,7 +260,6 @@ class EventTicket:
 
         if response.status_code == 200:
             print(f"[WALLET] Object {issuer_id}.{object_suffix} already exists!")
-            print(response.text)
             return f"{issuer_id}.{object_suffix}"
         elif response.status_code != 404:
             # Something else went wrong...
@@ -515,9 +514,6 @@ class EventTicket:
         signer = crypt.RSASigner.from_service_account_file(self.key_file_path)
         token = jwt.encode(signer, claims).decode("utf-8")
 
-        print("Add to Google Wallet link")
-        print(f"[WALLET]https://pay.google.com/gp/v/save/{token}")
-
         return f"https://pay.google.com/gp/v/save/{token}"
 
     # [END jwtNew]
@@ -612,9 +608,6 @@ class EventTicket:
         # The service account credentials are used to sign the JWT
         signer = crypt.RSASigner.from_service_account_file(self.key_file_path)
         token = jwt.encode(signer, claims).decode("utf-8")
-
-        print("Add to Google Wallet link")
-        print(f"[WALLET]https://pay.google.com/gp/v/save/{token}")
 
         return f"https://pay.google.com/gp/v/save/{token}"
 

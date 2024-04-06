@@ -221,7 +221,7 @@ def generateGTicketUrl(qrValue: str):
     """
     issuer_id = os.environ.get("GOOGLE_WALLET_ISSUER_ID", "")
     class_suffix = os.environ.get("GOOGLE_WALLET_CLASS_SUFFIX", "")
-    object_suffix = qrValue
+    object_suffix = os.environ.get("GOOGLE_WALLET_PASS_SUFFIX", "") + qrValue
     class_data = {
         "id": f"{issuer_id}.{class_suffix}",
         "eventId": f"{issuer_id}.{class_suffix}",
