@@ -9,9 +9,7 @@ from datetime import datetime
 
 import os
 
-from google.auth.transport.requests import AuthorizedSession
-from google.oauth2.service_account import Credentials
-from google.auth import jwt, crypt
+from app.gwallet.eventticket import EventTicket
 
 
 from offer.models import Code
@@ -221,44 +219,36 @@ def generateGTicketUrl(qrValue: str):
     :param qrValue: the value of the qr code
     :return: url
     """
-    generic = GenericPass()
-    objSufix = qrValue  # uuid.uuid4().hex
     issuer_id = os.environ.get("GOOGLE_WALLET_ISSUER_ID", "")
     class_suffix = os.environ.get("GOOGLE_WALLET_CLASS_SUFFIX", "")
-    cardObject = {
-        "id": f"{issuer_id}.{objSufix}",
-        "classId": f"{issuer_id}.{class_suffix}",
-        "state": "ACTIVE",
-        "heroImage": {
-            "sourceUri": {"uri": "https://i.ibb.co/CwwGY33/Fondo-2.png"},
+    object_suffix = os.environ.get("GOOGLE_WALLET_PASS_SUFFIX", "") + qrValue
+    class_data = {
+        "id": f"{issuer_id}.{class_suffix}",
+        "eventId": f"{issuer_id}.{class_suffix}",
+        "reviewStatus": "UNDER_REVIEW",
+        "issuerName": "Hackers@UPC",
+        "localizedIssuerName": {
+            "defaultValue": {
+                "language": "en-US",
+                "value": "Hackers@UPC",
+            },
+        },
+        "logo": {
+            "sourceUri": {
+                "uri": "https://i.ibb.co/tXt96Xn/Logo-1.png",
+            },
             "contentDescription": {
                 "defaultValue": {
                     "language": "en-US",
-                    "value": f"{settings.HACKATHON_NAME} {datetime.now().year} is here!",
-                }
+                    "value": "HackUPC favicon",
+                },
             },
         },
-        "textModulesData": [
-            {
-                "header": "Disclaimer",
-                "body": "This is a copy of the official ticket, do not treat this as the official ticket "
-                "since it is not updated in real time.",
-                "id": "TEXT_MODULE_ID",
-            }
-        ],
-        "linksModuleData": {
-            "uris": [
-                {
-                    "uri": "https://live.hackupc.com/",
-                    "description": "Live HackUPC",
-                    "id": "LINK_MODULE_URI_ID",
-                },
-                {
-                    "uri": "https://my.hackupc.com/",
-                    "description": "MyHackUPC",
-                    "id": "LINK_MODULE_URI_ID",
-                },
-            ]
+        "eventName": {
+            "defaultValue": {
+                "language": "en-US",
+                "value": f"{settings.HACKATHON_NAME} {datetime.now().year}",
+            },
         },
         "imageModulesData": [
             {
@@ -268,181 +258,85 @@ def generateGTicketUrl(qrValue: str):
                         "defaultValue": {"language": "en-US", "value": "Event picture"}
                     },
                 },
-                "id": "IMAGE_MODULE_ID",
+                "id": "main_banner",
             }
         ],
-        "barcode": {
-            "type": "QR_CODE",
-            "value": objSufix,
+        "textModulesData": [
+            {
+                "header": "Disclaimer",
+                "body": "This is a copy of the official ticket, do not treat this as the official ticket "
+                "since it is not updated in real time.",
+                "id": "TEXT_MODULE_ID",
+            },
+        ],
+        "linksModuleData": {
+            "uris": [
+                {
+                    "uri": "https://live.hackupc.com/",
+                    "description": "Live HackUPC",
+                    "id": "link_live_hackupc",
+                },
+                {
+                    "uri": "https://my.hackupc.com/",
+                    "description": "MyHackUPC",
+                    "id": "link_my_hackupc",
+                },
+            ]
         },
-        "cardTitle": {
-            "defaultValue": {"language": "en-US", "value": "An event of Hackers@UPC"}
+        "venue": {
+            "name": {
+                "defaultValue": {
+                    "language": "en-US",
+                    "value": "Campus Nord UPC",
+                },
+            },
+            "address": {
+                "defaultValue": {
+                    "language": "en-US",
+                    "value": "FIB Facultat d'Informàtica de Barcelona, Edifici A6 del Campus Nord, C/Jordi Girona,\
+                          1-3, 08034 Barcelona",
+                },
+            },
         },
-        "header": {"defaultValue": {"language": "en-US", "value": "HackUPC 2024"}},
-        "hexBackgroundColor": "#fff",
-        "logo": {
+        "dateTime": {"start": "2024-05-03T16:00", "end": "2024-05-05T17:00"},
+        "reviewStatus": "UNDER_REVIEW",
+        "hexBackgroundColor": "#240059",
+        "heroImage": {
             "sourceUri": {
-                "uri": "https://my.hackupc.com/static/img/favicon/apple-touch-icon.0d0372730c66.png"
+                "uri": "https://i.ibb.co/2ytdRvf/Gpay-2.png",
             },
             "contentDescription": {
-                "defaultValue": {"language": "en-US", "value": "HackUPC Logo"}
+                "defaultValue": {
+                    "language": "en-US",
+                    "value": "HackUPC galactic banner",
+                },
             },
         },
     }
-
-    generic.create_object(issuer_id, objSufix, cardObject)
-    return generic.create_jwt_new_objects(issuer_id, class_suffix, cardObject)
-
-
-#
-# Copyright 2022 Google Inc. All rights reserved.
-#
-#
-# Licensed under the Apache License, Version 2.0 (the "License"); you may not
-# use this file except in compliance with the License. You may obtain a copy of
-# the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-# License for the specific language governing permissions and limitations under
-# the License.
-#
-
-
-class GenericPass:
-    """Class for creating and managing Generic passes in Google Wallet.
-
-    Attributes:
-        key_file_path: Path to service account key file from Google Cloud
-            Console. Environment variable: GOOGLE_APPLICATION_CREDENTIALS.
-        base_url: Base URL for Google Wallet API requests.
-    """
-
-    def __init__(self):
-        self.key_file_path = os.environ.get(
-            "GOOGLE_WALLET_APPLICATION_CREDENTIALS", "/path/to/key.json"
-        )
-        self.base_url = "https://walletobjects.googleapis.com/walletobjects/v1"
-        self.batch_url = "https://walletobjects.googleapis.com/batch"
-        self.class_url = f"{self.base_url}/genericClass"
-        self.object_url = f"{self.base_url}/genericObject"
-
-        # Set up authenticated client
-        self.auth()
-
-    # [END setup]
-
-    # [START auth]
-    def auth(self):
-        """Create authenticated HTTP client using a service account file."""
-        self.credentials = Credentials.from_service_account_file(
-            self.key_file_path,
-            scopes=["https://www.googleapis.com/auth/wallet_object.issuer"],
-        )
-
-        self.http_client = AuthorizedSession(self.credentials)
-
-    # [END auth]
-
-    # [START createObject]
-    def create_object(
-        self, issuer_id: str, object_suffix: str, cardObject: dict
-    ) -> str:
-        """Create an object.
-
-        Args:
-            issuer_id (str): The issuer ID being used for this request.
-            class_suffix (str): Developer-defined unique ID for the pass class.
-            object_suffix (str): Developer-defined unique ID for the pass object.
-
-        Returns:
-            The pass object ID: f"{issuer_id}.{object_suffix}"
-        """
-
-        # Check if the object exists
-        response = self.http_client.get(
-            url=f"{self.object_url}/{issuer_id}.{object_suffix}"
-        )
-
-        if response.status_code == 200:
-            print(
-                f"[GOOGLE_WALLET]: Object {issuer_id}.{object_suffix} already exists!"
-            )
-            # print(response.text)
-            return f"{issuer_id}.{object_suffix}"
-        elif response.status_code == 404:
-            # Object does not exist, let's create it
-            # See link below for more information on required properties
-            # https://developers.google.com/wallet/generic/rest/v1/genericobject
-            new_object = cardObject
-
-            # Create the object
-            response = self.http_client.post(url=self.object_url, json=new_object)
-
-            print("Object created successfully!")
-
-            return response.json().get("id")
-        else:
-            # Something else went wrong...
-            print("[GOOGLE_WALLET]:", response.text)
-            return f"{issuer_id}.{object_suffix}"
-
-    # [END createObject]
-
-    # [START jwtNew]
-    def create_jwt_new_objects(
-        self,
-        issuer_id: str,
-        class_suffix: str,
-        cardObject: dict,
-    ) -> str:
-        """Generate a signed JWT that creates a new pass class and object.
-
-        When the user opens the "Add to Google Wallet" URL and saves the pass to
-        their wallet, the pass class and object defined in the JWT are
-        created. This allows you to create multiple pass classes and objects in
-        one API call when the user saves the pass to their wallet.
-
-        Args:
-            issuer_id (str): The issuer ID being used for this request.
-            class_suffix (str): Developer-defined unique ID for the pass class.
-            object_suffix (str): Developer-defined unique ID for the pass object.
-
-        Returns:
-            An "Add to Google Wallet" link.
-        """
-
-        # See link below for more information on required properties
-        # https://developers.google.com/wallet/generic/rest/v1/genericclass
-        new_class = {"id": f"{issuer_id}.{class_suffix}"}
-
-        # See link below for more information on required properties
-        # https://developers.google.com/wallet/generic/rest/v1/genericobject
-        new_object = cardObject
-
-        # Create the JWT claims
-        claims = {
-            "iss": self.credentials.service_account_email,
-            "aud": "google",
-            "origins": ["my.hackupc.com"],
-            "typ": "savetowallet",
-            "payload": {
-                # The listed classes and objects will be created
-                "genericClasses": [new_class],
-                "genericObjects": [new_object],
-            },
-        }
-
-        # The service account credentials are used to sign the JWT
-        signer = crypt.RSASigner.from_service_account_file(self.key_file_path)
-        token = jwt.encode(signer, claims).decode("utf-8")
-
-        return f"https://pay.google.com/gp/v/save/{token}"
-
-    # [END jwtNew]
+    pass_data = {
+        "id": f"{issuer_id}.{object_suffix}",
+        "classId": f"{issuer_id}.{class_suffix}",
+        "issuerName": "Hackers@UPC",
+        "state": "ACTIVE",
+        "barcode": {
+            "type": "QR_CODE",
+            "value": qrValue,
+            "alternateText": qrValue,
+        },
+    }
+    ticket = EventTicket()
+    ticket.create_class(
+        issuer_id=issuer_id, class_suffix=class_suffix, class_data=class_data
+    )
+    ticket.create_object(
+        issuer_id=issuer_id,
+        class_suffix=class_suffix,
+        object_suffix=object_suffix,
+        object_pass=pass_data,
+    )
+    return ticket.create_jwt_new_objects(
+        issuer_id=issuer_id, class_suffix=class_suffix, object_suffix=object_suffix
+    )
 
 
 def isset(variable):

@@ -6,7 +6,8 @@ services:
         ports:
             - "${MYHACKUPC_PORT}:8000"  # Map Gunicorn port
         volumes:
-            - ./files:/code/files
+            - ./files:/code/files # cv stuff
+            - ./.google-service.account.json:/code/.google-service.account.json # needed for google wallet application purpouses
         expose:
             - "${MYHACKUPC_PORT}"
         env_file:
