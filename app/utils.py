@@ -321,7 +321,6 @@ def generateGTicketUrl(qrValue: str):
         "barcode": {
             "type": "QR_CODE",
             "value": qrValue,
-            "alternateText": qrValue,
         },
     }
     ticket = EventTicket()
