@@ -80,10 +80,10 @@
             {% if not h_discord %}
               <div class="col-md-4">
                   <img class="img-responsive "
-                       src="http://chart.googleapis.com/chart?cht=qr&chs=350x350&chld=L|0&chl={{ application.uuid_str }}"/>
+                       src="https://quickchart.io/qr?size=350&text={{ application.uuid_str }}"/>
                     {% if gwallet_enabled %}
                        <a href="{{ gwalleturl }}">
-                           <img src='{% static '/img/button.svg' %}' class="img-responsive">
+                           <img src='{% static 'img/button.svg' %}' class="img-responsive">
                        </a>
                     {% endif %}
               </div>
