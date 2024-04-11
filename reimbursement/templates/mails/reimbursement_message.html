@@ -2,13 +2,36 @@
 {% block preheader %}Travel reimbursement award for {{ h_name }}{% endblock %}
 
 {% block content %}
-<p>    Congrats {{ app.user.get_full_name }}, you have been granted travel reimbursement for this edition of {{ h_name }}. We will
-    reimburse you <b>up to {{ h_currency }}{{ reimb.assigned_money }}</b> (depending on the ticket you send) as you are coming from {{ reimb.origin }}.
-    <b>You have {{ h_r_days }} days to submit a receipt of your tickets.</b>
+<p>
+  Congrats {{ app.user.get_full_name }}, you have been granted travel reimbursement for this edition of {{ h_name }}. We will
+  reimburse you <b>up to {{ h_currency }}{{ reimb.assigned_money }}</b> (depending on the ticket you send) as you are coming from {{ reimb.origin }}.
+  <b>You have until {{ h_r_days }} to submit a receipt of your tickets.</b>
 </p>
     {% include 'mails/include/email_button.html' with text='Submit receipt' url=form_url %}
     {% include 'mails/include/confirm_reimbursement.html' %}
-    <p>
+
+<p>
+  The tickets should be in the following format:
+</p>
+  <ul>
+    <li>Be in your name</li>
+    <li>Have the price of the ticket</li>
+    <li>Have the date of the purchase</li>
+    <li>Have the date of the trip</li>
+    <li>Have the origin and destination</li>
+    <li>Have the departure (after 26th April) and return (before 10th May)</li>
+  </ul>
+
+<p>
+  You can check all the details in our <a href="https://hackupc.com#faqs">FAQs</a> section on the website.
+</p>
+
+
+<p>
+  If you can not come to the event, we will be really sad, but we ask you to cancel your spot in myhackupc dashboard so we can give the spot to someone else.
+</p>
+
+  <p>
     If you need an invite letter for your visa, send us a email to reimbursements@hackupc.com with your full name, university name and passport number, as shown in your passport or if you have any questions, don't hesitate to contact us.
     </p>
     {% include 'mails/include/closing.html' with travel="false"%}
