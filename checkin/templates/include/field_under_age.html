@@ -1,0 +1,20 @@
+{% if value %}
+    <dt>{{ desc }} {% if showlength %} ({{ value | length}}) {% endif %}</dt>
+    <dd>
+        <span style="
+        padding: 2px; border-radius: 5px;
+        {% if value %}
+            color: red;
+            font-weight: bold;
+            background-color: red;
+            border: 1px solid #ff1100;
+            color: white;
+            text-transform: uppercase;
+        {% endif %}">{{ value }}</span></dd>
+        {% if value %}
+            <script type="text/javascript">
+                // ALERT THAT THERE'S AN UNDER AGE AND SPECIAL CHECKIN IS NEEDED
+                alert('⚠️ ATTENTION ⚠️ \n This hacker is under age. \n Please contact an organizer to handle this check-in.');
+            </script>
+        {% endif %}
+{% endif %}
