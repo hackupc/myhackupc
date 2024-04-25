@@ -58,18 +58,22 @@ let hw_admin = ((hw)=>{
 
 
     obj.initListeners = ()=>{
-        $(".hw-back").on("click", ()=>{
+        debugger;
+        $(".hw-back").on("click", (ev)=>{
+            ev.stopImmediatePropagation();
             hw.ajax_req({
                 'back': true
             }, obj.processResponse)
         })
-        $("#hw-user-send").on("click", ()=>{
+        $("#hw-user-send").on("click", (ev)=>{
+            ev.stopImmediatePropagation();
             hw.ajax_req({
                 'get_lists': true,
                 'email': $("#qr-result").val()
             }, obj.processResponse)
         })
         $("#hw-user-send-noreq").on("click", (ev)=>{
+            ev.stopImmediatePropagation();
             hw.ajax_req({
                 'get_user_noreq': true,
                 'email': $("#qr-result").val(),
@@ -77,18 +81,21 @@ let hw_admin = ((hw)=>{
             }, obj.processResponse)
         })
         $("#hw-requests-list li").on("click", (ev)=>{
+            ev.stopImmediatePropagation();
             hw.ajax_req({
                 'select_request': true,
                 'request_id': ev.currentTarget.dataset.requestId
             }, obj.processResponse)
         })
         $("#hw-borrowings-list li").on("click", (ev)=>{
+            ev.stopImmediatePropagation();
             hw.ajax_req({
                 'return_item': true,
                 'borrowing_id': ev.currentTarget.dataset.borrowingId
             }, obj.processResponse)
         })
         $("#hw-available-items-list li").on("click", (ev)=>{
+            ev.stopImmediatePropagation();
             hw.ajax_req({
                 'make_borrowing': true,
                 'item_id': ev.currentTarget.dataset.itemId,
@@ -97,12 +104,14 @@ let hw_admin = ((hw)=>{
         })
         /* Admin no request hardware type element */
         $("#hw-type-noreq li").on("click", (ev)=>{
+            ev.stopImmediatePropagation();
             hw.ajax_req({
                 'select_type_noreq': true,
                 'type_id': ev.currentTarget.dataset.typeId
             }, obj.processResponse)
         })
         $("#hw-available-items-list-noreq li").on("click", (ev)=>{
+            ev.stopImmediatePropagation();
             hw.ajax_req({
                 'select_item_noreq': true,
                 'item_id': ev.currentTarget.dataset.itemId
