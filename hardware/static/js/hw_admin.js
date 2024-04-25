@@ -58,7 +58,6 @@ let hw_admin = ((hw)=>{
 
 
     obj.initListeners = ()=>{
-        debugger;
         $(".hw-back").on("click", (ev)=>{
             ev.stopImmediatePropagation();
             hw.ajax_req({
