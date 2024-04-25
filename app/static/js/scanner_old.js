@@ -21,6 +21,7 @@ function Scanner(videoId, selectId=null, scanFunction=null, start=false, extraOp
     this.videoId = videoId
     let opts = {
         ...extraOpts,
+        mirror: false,
         video: document.getElementById(videoId)
     }
     this.scanner = new Instascan.Scanner(opts);
