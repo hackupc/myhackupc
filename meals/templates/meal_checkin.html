@@ -32,11 +32,15 @@
 
         <div id="success" class="alert alert-success" style="display:none;">
           <strong>Success!</strong> <span id="succ"></span>
-          <button class="btn btn-block btn-primary scan-again">Scan again</button>
+          <br>
+          <br>
+          <button class="btn btn-block btn-primary scan-again">Ok</button>
         </div>
         <div id="no" class="alert alert-danger" style="display:none;">
           <strong>ERROR!</strong> <span id="deny"></span>
-          <button class="btn btn-block btn-primary scan-again">Scan again</button>
+          <br>
+          <br>
+          <button class="btn btn-block btn-primary scan-again">Ok</button>
         </div>
 
         <video id="qr-video" style="width: 100%; height: 100%; "></video>
@@ -59,11 +63,11 @@
               popup: false,
             })
             scanner.show();
-            $('.scan-again').click(() => {
-              scanner.show()
-              document.getElementById('no').style.display = "none";
-              document.getElementById('success').style.display = "none";
-            })
+            // $('.scan-again').click(() => {
+              // scanner.show()
+              // document.getElementById('no').style.display = "none";
+              //document.getElementById('success').style.display = "none";
+            // })
           })
 
 
@@ -78,7 +82,6 @@
                 qr_id: content,
               },
               success: function (data, status, jqXHR) {
-                scanner.hide()
                 if (jqXHR.status != 200) {
                   $('#no').fadeOut("fast");
                   $('#no').fadeIn("fast");
