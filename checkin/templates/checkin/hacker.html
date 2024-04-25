@@ -13,8 +13,6 @@
 
 {% block panel %}
     <dl class="dl-horizontal">
-        {% include 'include/field.html' with desc='Lenny face' value=app.lennyface %}
-        {% include 'include/field.html' with desc='Online' value=app.online %}
         {% include 'include/field.html' with desc='Type' value=app.user.get_type_display %}
         {% if app.user.is_sponsor %}
             {% include 'include/field.html' with desc='Name' value=app.name %}
@@ -28,7 +26,9 @@
         {% include 'include/field_diet.html' with desc='Diet' value=app.diet color=app.get_diet_color %}
         {% include 'include/field.html' with desc='Other' value=app.other_diet %}
         {% include 'include/field.html' with desc='Status' value=app.get_status_display %}
-    </dl>
+        {% include 'include/field_under_age.html' with desc='Is under age?' value=app.under_age %}
+
+        </dl>
 {% endblock %}
 
 {% block cols-panel %}col-md-6 col-md-offset-3{% endblock %}
