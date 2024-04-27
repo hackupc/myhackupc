@@ -9,6 +9,7 @@ from django.db.models import Q
 class MealsListFilter(django_filters.FilterSet):
     search = django_filters.CharFilter(method='search_filter', label='Search')
     kind = django_filters.ChoiceFilter(label='Type', choices=MEAL_TYPE, empty_label='Any')
+
     def search_filter(self, queryset, name, value):
         return queryset.filter((Q(name__icontains=value) | Q(kind__icontains=value)))
 
