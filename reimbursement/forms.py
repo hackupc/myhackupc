@@ -13,8 +13,11 @@ class ReceiptSubmissionReceipt(BootstrapFormMixin, ModelForm):
             'fields': [{'name': 'receipt', 'space': 12}, {'name': 'multiple_hackers', 'space': 12},
                        {'name': 'friend_emails', 'space': 12}, ],
         },
-        'Where should we send you the monies?': {
+        'Where should we send you the money?': {
             'fields': [{'name': 'paypal_email', 'space': 12}, ],
+        },
+        'What project did you demoed?': {
+            'fields': [{'name': 'devpost_link', 'space': 12}, ],
         },
         'Where are you joining us from?': {
             'fields': [{'name': 'origin', 'space': 12}, ],
@@ -40,6 +43,11 @@ class ReceiptSubmissionReceipt(BootstrapFormMixin, ModelForm):
             raise forms.ValidationError("Please add PayPal so we can send you reimbursement")
         return paypal
 
+    def clean_devpost_link(self):
+        devpost = self.cleaned_data.get('devpost_link', '')
+        if not devpost:
+            raise forms.ValidationError("Please add a devpost link")
+        return devpost
     def clean_receipt(self):
         receipt = self.cleaned_data['receipt']
         size = getattr(receipt, '_size', 0)
@@ -58,7 +66,7 @@ class ReceiptSubmissionReceipt(BootstrapFormMixin, ModelForm):
     class Meta:
         model = Reimbursement
         fields = (
-            'paypal_email', 'receipt', 'multiple_hackers', 'friend_emails', 'origin',)
+            'paypal_email', 'devpost_link', 'receipt', 'multiple_hackers', 'friend_emails', 'origin',)
         widgets = {
             'origin': forms.TextInput(attrs={'autocomplete': 'off'}),
         }
@@ -66,7 +74,8 @@ class ReceiptSubmissionReceipt(BootstrapFormMixin, ModelForm):
         labels = {
             'multiple_hackers': 'This receipt covers multiple hackers',
             'friend_emails': 'Hackers emails',
-            'paypal_email': 'PayPal email'
+            'paypal_email': 'PayPal email',
+            'devpost_link': 'Devpost link',
         }
 
         help_texts = {
