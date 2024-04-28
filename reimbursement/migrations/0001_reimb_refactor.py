@@ -25,7 +25,6 @@ class Migration(migrations.Migration):
                 ('reimbursement_money', models.FloatField(blank=True, null=True)),
                 ('public_comment', models.CharField(blank=True, max_length=300, null=True)),
                 ('paypal_email', models.EmailField(blank=True, max_length=254, null=True)),
-                ('devpost_link', models.URLField(blank=True, null=True)),
                 ('receipt', models.FileField(blank=True, null=True, upload_to=b'')),
                 ('multiple_hackers', models.BooleanField(default=False)),
                 ('friend_emails', models.CharField(blank=True, max_length=400, null=True)),
