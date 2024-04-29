@@ -52,7 +52,19 @@
       <input type="text" id="id_bag_type" class="form-control" name="bag_type" autocomplete="off"/>
     </div>
     <div class="form-group">
-      <label class="control-label" for="bag_color">Color</label>
+    <label class="control-label" for="bag_color">Color</label>
+    
+    <br>
+    <div class="flex-container">
+      <!-- buttons as color presets -->
+      <button type="button" class="color-btn" style="background-color: black;" onclick="document.getElementById('id_bag_color').value = 'Black';"></button>
+      <button type="button" class="color-btn" style="background-color: blue;" onclick="document.getElementById('id_bag_color').value = 'Blue';"></button>
+      <button type="button" class="color-btn" style="background-color: grey;" onclick="document.getElementById('id_bag_color').value = 'Grey';"></button>
+      <button type="button" class="color-btn" style="background-color: green;" onclick="document.getElementById('id_bag_color').value = 'Green';"></button>
+      <button type="button" class="color-btn" style="background-color: white;" onclick="document.getElementById('id_bag_color').value = 'White';"></button>
+      <button type="button" class="color-btn" style="background-color: red;" onclick="document.getElementById('id_bag_color').value = 'Red';"></button>
+    </div>
+    <br>
       <input type="text" id="id_bag_color" class="form-control" name="bag_color" autocomplete="off"/>
     </div>
     {% if h_b_picture %}
@@ -67,7 +79,7 @@
     {% endif %}
     <div class="form-group">
       <label class="control-label" for="bag_description">Description</label>
-      <textarea rows="4" cols="50" class="form-control" name="bag_description"></textarea>
+      <textarea rows="1" cols="50" class="form-control" name="bag_description"></textarea>
     </div>
     <div class="form-group" id="baggage-sel-special" style="margin-bottom: 5px;">
       <input type="checkbox" name="bag_special" id="pos_special" value="special"> Special
