@@ -49,12 +49,35 @@
     </div>
     <div class="form-group">
       <label class="control-label" for="bag_type">Type</label>
+      <br>
+      <div class="flex-container">
+        <!-- buttons as color presets -->
+        <button type="button" class="color-btn" onclick="document.getElementById('id_bag_type').value = 'Backpack';">
+          <!--Backpack icons created by deemakdaksina - Flaticon-->
+          <img src="{% static 'img/backpack.png' %}" class="icon-type" alt="Backpack">
+        </button>
+        <button type="button" class="color-btn" onclick="document.getElementById('id_bag_type').value = 'Bag';">
+          <!--School bag icons created by andinur - Flaticon-->
+          <img src="{% static 'img/bag.png' %}" class="icon-type" alt="Bag">
+        </button>
+        <button type="button" class="color-btn" onclick="document.getElementById('id_bag_type').value = 'Suitcase';">
+          <!--Briefcase icons created by Those Icons - Flaticon-->
+          <img src="{% static 'img/suitcase.png' %}" class="icon-type" alt="Suitcase">
+        </button>
+        <button type="button" class="color-btn" onclick="document.getElementById('id_bag_type').value = 'Sleeping Bag';">
+          <!--Sleeping bag icons created by Victoruler - Flaticon-->
+          <img src="{% static 'img/sleeping-bag.png' %}" class="icon-type" alt="Sleeping bag" style="width: 50px;">
+        </button>
+        
+        
+      </div>
+      <br>
       <input type="text" id="id_bag_type" class="form-control" name="bag_type" autocomplete="off"/>
     </div>
     <div class="form-group">
-    <label class="control-label" for="bag_color">Color</label>
-    
-    <br>
+      <label class="control-label" for="bag_color">Color</label>
+      
+      <br>
     <div class="flex-container">
       <!-- buttons as color presets -->
       <button type="button" class="color-btn" style="background-color: black;" onclick="document.getElementById('id_bag_color').value = 'Black';"></button>
@@ -65,12 +88,11 @@
       <button type="button" class="color-btn" style="background-color: red;" onclick="document.getElementById('id_bag_color').value = 'Red';"></button>
     </div>
     <br>
-      <input type="text" id="id_bag_color" class="form-control" name="bag_color" autocomplete="off"/>
+    <input type="text" id="id_bag_color" class="form-control" name="bag_color" autocomplete="off"/>
     </div>
     {% if h_b_picture %}
       <div class="form-group">
         <label class="control-label" for="baggage-scan-image">Image</label>
-        <p class="image-info"><i class="fa fa-info-circle"></i> Picture will be taken automatically on check-in.</p>
         <video id="qr-video" style="width: 100%; height: 100%;"></video>
         <button id="snap" class="btn btn-info btn-block" type="button">Snap</button>
         <button style="display: none" id="reload" class="btn btn-info btn-block" type="button">Reload</button>
@@ -120,7 +142,7 @@
     <input type="hidden" name="user_id" value="{{ user.id }}"/>
     <button class="btn btn-success" name="checkin" id="trigger">Bag check-in</button>
   </form>
-
+  
   <script>
     {#        document.addEventListener("DOMContentLoaded", ()=>{#}
     {#           let scanner = new Scanner('preview', 'camera-select', null, true)#}

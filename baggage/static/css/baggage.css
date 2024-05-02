@@ -165,6 +165,11 @@
     border: 1px solid #c4c4c4;
 }
 
+.icon-type{
+    padding:0px;
+    width: 40px; 
+}
+
 .flex-container{
     display: flex;
     justify-content: space-between;
