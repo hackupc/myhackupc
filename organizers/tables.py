@@ -186,7 +186,7 @@ class VolunteerListTable(tables.Table):
         model = VolunteerApplication
         attrs = {'class': 'table table-hover'}
         template = 'django_tables2/bootstrap-responsive.html'
-        fields = ['user.name', 'user.email', 'status']
+        fields = ['user.name', 'user.email', 'status', 'disregarded']
         empty_text = 'No Volunteer Application available'
         order_by = '-submission_date'
 

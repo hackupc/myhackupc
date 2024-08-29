@@ -58,7 +58,6 @@ def add_comment(application, user, text):
     comment.save()
     return comment
 
-
 def hacker_tabs(user):
     new_app = models.HackerApplication.objects.exclude(vote__user_id=user.id)\
         .filter(status=APP_PENDING, submission_date__lte=timezone.now() - timedelta(hours=2))
@@ -296,6 +295,8 @@ class ApplicationDetailView(TabsViewMixin, IsOrganizerMixin, TemplateView):
                 m.send()
         except ValidationError as e:
             messages.error(self.request, e.message)
+
+
 
 
 class ReviewApplicationView(ApplicationDetailView):
@@ -562,6 +563,12 @@ class ReviewVolunteerApplicationView(TabsViewMixin, HaveVolunteerPermissionMixin
         elif request.POST.get('add_comment'):
             add_comment(application, request.user, comment_text)
             messages.success(request, 'Comment added')
+        elif request.POST.get('change_disregard') and request.user.is_organizer:
+            application.disregarded = not application.disregarded
+            application.save()
+            messages.success(request, 'Volunteer disregarded status changed')
+
+        #TODO: Add the possibility to change the disregard a volunteer application
 
         return HttpResponseRedirect(reverse('volunteer_detail', kwargs={'id': application.uuid_str}))
 

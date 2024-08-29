@@ -35,7 +35,26 @@
                     {% include 'include/field.html' with desc='Gender' value=app.get_gender_display %}
                     {% include 'include/field.html' with desc='Other gender' value=app.other_gender %}
                     {% include 'include/field.html' with desc='In BCN Apr-May' value=app.lennyface|yesno %}
-                    <hr>
+                  <hr>
+                    <dt>
+                    <h3>Disregarded</h3>
+                    </dt>
+                    <dd></dd>
+                    {% include 'include/fieldAccent.html' with desc="Disregarded?" value=app.disregarded|yesno %}
+                    <br>
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="app_id" value="{{ app.pk }}"/>
+                        <button name="change_disregard" class="btn btn-default btn-block" value="disregard">
+                            {% if app.disregarded %}
+                                Take back into consideration
+                            {% else %}
+                                Disregard
+                            {% endif %}
+                        </button>
+                    </form>
+                    <br>
+                  <hr>
                     <dt>
                     <h3>Volunteering</h3>
                     </dt>
