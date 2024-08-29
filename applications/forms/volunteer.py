@@ -75,6 +75,12 @@ class VolunteerApplicationForm(_BaseApplicationForm):
         label='Autorizo a "HackersAtUpc" a utilizar mi información sobre alergias e intolerancias alimentarias únicamente para gestionar el servicio de catering.<span style="color: red; font-weight: bold;"> *</span>'
     )
 
+    disregarded = forms.IntegerField(
+        required=False,
+        widget=forms.HiddenInput(),
+        initial=0,
+    )
+
     bootstrap_field_info = {
         "Información Personal": {
             "fields": [

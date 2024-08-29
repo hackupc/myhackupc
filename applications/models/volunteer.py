@@ -64,6 +64,11 @@ NIGHT_SHIFT_ES = [
     ('Maybe', 'Puede ser')
 ]
 
+DISREGARDED = [
+    (0, 'No'),
+    (1, 'Sí')
+]
+
 class VolunteerApplication(BaseApplication):
 
     # gender
@@ -103,6 +108,7 @@ class VolunteerApplication(BaseApplication):
     night_shifts = MultiSelectField(choices=NIGHT_SHIFT_ES, default='No')
     hobbies = models.CharField(max_length=150, null=False)
     volunteer_motivation = models.CharField(max_length=500)
+    disregarded = models.IntegerField(choices=DISREGARDED, default=0)
 
     def can_be_edit(self, app_type="V"):
         return self.status in [APP_PENDING, APP_DUBIOUS] and not utils.is_app_closed(
