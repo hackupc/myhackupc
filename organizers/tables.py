@@ -174,13 +174,15 @@ class AdminTeamListTable(tables.Table):
 class VolunteerFilter(ApplicationFilter):
     class Meta:
         model = VolunteerApplication
-        fields = ['search', 'status']
+        fields = ['search', 'status', 'disregarded']
 
 
 class VolunteerListTable(tables.Table):
     detail = tables.TemplateColumn(
         "<a href='{% url 'volunteer_detail' record.uuid %}'>Detail</a> ",
         verbose_name='Actions', orderable=False)
+
+    disregarded = tables.BooleanColumn(accessor='disregarded', verbose_name='Disregarded')
 
     class Meta:
         model = VolunteerApplication

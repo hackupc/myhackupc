@@ -296,9 +296,6 @@ class ApplicationDetailView(TabsViewMixin, IsOrganizerMixin, TemplateView):
         except ValidationError as e:
             messages.error(self.request, e.message)
 
-
-
-
 class ReviewApplicationView(ApplicationDetailView):
     def get_current_tabs(self):
         return hacker_tabs(self.request.user)
@@ -567,8 +564,6 @@ class ReviewVolunteerApplicationView(TabsViewMixin, HaveVolunteerPermissionMixin
             application.disregarded = not application.disregarded
             application.save()
             messages.success(request, 'Volunteer disregarded status changed')
-
-        #TODO: Add the possibility to change the disregard a volunteer application
 
         return HttpResponseRedirect(reverse('volunteer_detail', kwargs={'id': application.uuid_str}))
 
