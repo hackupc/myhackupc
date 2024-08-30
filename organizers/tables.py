@@ -196,7 +196,7 @@ class VolunteerListTable(tables.Table):
 class MentorFilter(ApplicationFilter):
     class Meta:
         model = MentorApplication
-        fields = ['search', 'status']
+        fields = ['search', 'status', 'valid']
 
 
 class MentorListTable(tables.Table):
@@ -204,11 +204,13 @@ class MentorListTable(tables.Table):
         "<a href='{% url 'mentor_detail' record.uuid %}'>Detail</a> ",
         verbose_name='Actions', orderable=False)
 
+    valid = tables.BooleanColumn(accessor='valid', verbose_name='Valid')
+
     class Meta:
         model = MentorApplication
         attrs = {'class': 'table table-hover'}
         template = 'django_tables2/bootstrap-responsive.html'
-        fields = ['user.name', 'user.email', 'status']
+        fields = ['user.name', 'user.email', 'status', 'valid']
         empty_text = 'No Mentor Application available'
         order_by = '-submission_date'
 
