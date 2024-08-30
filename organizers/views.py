@@ -560,10 +560,10 @@ class ReviewVolunteerApplicationView(TabsViewMixin, HaveVolunteerPermissionMixin
         elif request.POST.get('add_comment'):
             add_comment(application, request.user, comment_text)
             messages.success(request, 'Comment added')
-        elif request.POST.get('change_disregard') and request.user.is_organizer:
-            application.disregarded = not application.disregarded
+        elif request.POST.get('change_valid') and request.user.is_organizer:
+            application.valid = not application.valid
             application.save()
-            messages.success(request, 'Volunteer disregarded status changed')
+            messages.success(request, 'Volunteer valid status changed')
 
         return HttpResponseRedirect(reverse('volunteer_detail', kwargs={'id': application.uuid_str}))
 

@@ -37,19 +37,19 @@
                     {% include 'include/field.html' with desc='In BCN Apr-May' value=app.lennyface|yesno %}
                   <hr>
                     <dt>
-                    <h3>Disregarded</h3>
+                    <h3>Validation</h3>
                     </dt>
                     <dd></dd>
-                    {% include 'include/fieldAccent.html' with desc="Disregarded?" value=app.disregarded|yesno %}
+                    {% include 'include/fieldAccent.html' with desc="Valid?" value=app.valid|yesno %}
                     <br>
                     <form action="" method="post">
                         {% csrf_token %}
                         <input type="hidden" name="app_id" value="{{ app.pk }}"/>
-                        <button name="change_disregard" class="btn btn-default btn-block" value="disregard">
-                            {% if app.disregarded %}
-                                Take back into consideration
+                        <button name="change_valid" class="btn btn-default btn-block" value="valid">
+                            {% if app.valid %}
+                                Invalidate
                             {% else %}
-                                Disregard
+                                Validate
                             {% endif %}
                         </button>
                     </form>
