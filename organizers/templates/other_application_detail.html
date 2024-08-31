@@ -102,6 +102,24 @@
                 {% if app.user.is_mentor %}
                     <hr>
                     <dt>
+                      <h3>Validation</h3>
+                      </dt>
+                      <dd></dd>
+                      {% include 'include/fieldAccent.html' with desc="Valid?" value=app.valid|yesno %}
+                      <br>
+                      <form action="" method="post">
+                          {% csrf_token %}
+                          <input type="hidden" name="app_id" value="{{ app.pk }}"/>
+                          <button name="change_valid" class="btn btn-default btn-block" value="valid">
+                              {% if app.valid %}
+                                  Invalidate
+                              {% else %}
+                                  Validate
+                              {% endif %}
+                          </button>
+                      </form>
+                      <br>
+                    <dt>
                     <h3>Mentor</h3>
                     </dt>
                     <dd></dd>
