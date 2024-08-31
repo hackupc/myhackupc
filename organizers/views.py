@@ -58,6 +58,7 @@ def add_comment(application, user, text):
     comment.save()
     return comment
 
+
 def hacker_tabs(user):
     new_app = models.HackerApplication.objects.exclude(vote__user_id=user.id)\
         .filter(status=APP_PENDING, submission_date__lte=timezone.now() - timedelta(hours=2))
@@ -295,6 +296,7 @@ class ApplicationDetailView(TabsViewMixin, IsOrganizerMixin, TemplateView):
                 m.send()
         except ValidationError as e:
             messages.error(self.request, e.message)
+
 
 class ReviewApplicationView(ApplicationDetailView):
     def get_current_tabs(self):
