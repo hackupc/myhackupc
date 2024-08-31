@@ -556,6 +556,9 @@ class ReviewVolunteerApplicationView(TabsViewMixin, HaveVolunteerPermissionMixin
             if m:
                 m.send()
                 messages.success(request, 'Volunteer invited!')
+        elif request.POST.get('reject') and request.user.is_organizer:
+            application.reject()
+            application.save()
         elif request.POST.get('cancel_invite') and request.user.is_organizer:
             application.move_to_pending()
             messages.success(request, 'Volunteer invite canceled')
