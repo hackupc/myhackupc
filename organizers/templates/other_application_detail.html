@@ -213,6 +213,12 @@
                     <button name="cancel_invite" class="btn btn-danger btn-block" value="cancel_invite">Move back to review</button>
                 {% endif %}
             </form>
+        <br>
+            <form action="" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="app_id" value="{{ app.pk }}"/>
+                <button name="reject" class="btn btn-danger btn-block" value="reject">Reject</button>
+            </form>
         </div>
 
     {% endif %}
