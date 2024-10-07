@@ -37,6 +37,28 @@
 
 <script>
 
+    function updateCounter(description, description_remaining, max_length) {
+
+        var current = description.val().length;
+        if(max_length >= current && current > 450){
+             description_remaining.style.color = "#f77f00";
+             description.parent().removeClass('has-error');
+        }
+        else{
+            description_remaining.style.color = "";
+                if(current > max_length){
+                
+                description.parent().removeClass('has-success');
+                description.parent().addClass('has-error');
+                
+            } else {
+            description.parent().removeClass('has-error');
+
+        }
+    } 
+        description_remaining.innerText = (current + '/' + max_length + ' characters');
+    }
+
     $(document).ready(function () {
         make_field_typeahead('university', '{% static 'schools.json' %}');
         make_field_typeahead('degree', '{% static 'degrees.json' %}');
@@ -142,27 +164,33 @@
             projects.parent().addClass('required');
 
             // check and display remaining characters from the textarea with id description and projects
-            {% comment %} debugger; {% endcomment %}
             var max_length = 500;
-            var description = document.querySelector('#description');
+            var description = $('#description');
+            // remove maxlength
+            description.removeAttr('maxLength');
             var description_remaining = document.querySelector('#description_char_count');
-            var description_length = description.value.length;
-            description_remaining.innerText = description_length + '/' + max_length + ' characters';
+            var description_length = description.val().length;
             
             
-            description.addEventListener('input', function () {
-                var current = description.value.length;
-                description_remaining.innerText = (current + '/' + max_length + ' characters');
+            // base case
+            updateCounter(description, description_remaining, max_length);
+            // onKeyup
+            description.keyup(function () {
+                updateCounter(description, description_remaining, max_length);
             });
             
             // same but on projects 
-            var projects = document.querySelector('#projects');
+            var projects = $('#projects');
+            // remove maxlength
+            projects.removeAttr('maxLength');
             var projects_remaining = document.querySelector('#projects_char_count');
-            var projects_length = projects.value.length;
-            projects_remaining.innerText = (projects_length + '/' + max_length + ' characters');
-            projects.addEventListener('input', function () {
-                var current = projects.value.length;
-                projects_remaining.innerText = (current + '/' + max_length + ' characters');
+            var projects_length = projects.val().length;
+
+            // base case
+            updateCounter(projects, projects_remaining, max_length);
+            // onKeyup
+            projects.keyup(function () {
+                updateCounter(projects, projects_remaining, max_length);
             });
             
             // volunteer stuff
