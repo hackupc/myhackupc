@@ -48,6 +48,7 @@ class MentorApplication(
         blank=True,
         validators=[validate_file_extension],
     )
+    valid = models.BooleanField(default=False)
 
     def can_be_edit(self, app_type="M"):
         return self.status in [APP_PENDING, APP_DUBIOUS] and not utils.is_app_closed(app_type)

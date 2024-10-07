@@ -556,12 +556,19 @@ class ReviewVolunteerApplicationView(TabsViewMixin, HaveVolunteerPermissionMixin
             if m:
                 m.send()
                 messages.success(request, 'Volunteer invited!')
+        elif request.POST.get('reject') and request.user.is_organizer:
+            application.reject()
+            application.save()
         elif request.POST.get('cancel_invite') and request.user.is_organizer:
             application.move_to_pending()
             messages.success(request, 'Volunteer invite canceled')
         elif request.POST.get('add_comment'):
             add_comment(application, request.user, comment_text)
             messages.success(request, 'Comment added')
+        elif request.POST.get('change_valid') and request.user.is_organizer:
+            application.valid = not application.valid
+            application.save()
+            messages.success(request, 'Volunteer valid status changed')
 
         return HttpResponseRedirect(reverse('volunteer_detail', kwargs={'id': application.uuid_str}))
 
@@ -633,13 +640,17 @@ class ReviewMentorApplicationView(TabsViewMixin, HaveMentorPermissionMixin, Temp
             m = emails.create_invite_email(application, self.request)
             if m:
                 m.send()
-                messages.success(request, 'sponsor invited!')
+                messages.success(request, 'Mentor invited!')
         elif request.POST.get('cancel_invite') and request.user.is_organizer:
             application.move_to_pending()
-            messages.success(request, 'Sponsor invite canceled')
+            messages.success(request, 'Mentor invite canceled')
         elif request.POST.get('add_comment'):
             add_comment(application, request.user, comment_text)
             messages.success(request, 'comment added')
+        elif request.POST.get('change_valid') and request.user.is_organizer:
+            application.valid = not application.valid
+            application.save()
+            messages.success(request, 'Mentor valid status changed')
 
         return HttpResponseRedirect(reverse('mentor_detail', kwargs={'id': application.uuid_str}))
 

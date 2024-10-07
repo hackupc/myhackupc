@@ -1,0 +1,16 @@
+{% if value %}
+    <dt>{{ desc }} {% if showlength %} ({{ value | length}}) {% endif %}</dt>
+  {% if value == 'no' %}
+    <dd>
+      <span style="color: darkred; text-transform: uppercase; font-weight: bolder">
+           {{ value }}
+      </span>
+    </dd>
+  {% else %}
+    <dd>
+      <span style="color: darkgreen; text-transform: uppercase; font-weight: bolder">
+        {{ value }}
+      </span>
+    </dd>
+  {% endif %}
+{% endif %}
