@@ -141,6 +141,31 @@
             // Making projects look like required
             projects.parent().addClass('required');
 
+            // check and display remaining characters from the textarea with id description and projects
+            {% comment %} debugger; {% endcomment %}
+            var max_length = 500;
+            var description = document.querySelector('#description');
+            var description_remaining = document.querySelector('#description_char_count');
+            var description_length = description.value.length;
+            description_remaining.innerText = description_length + '/' + max_length + ' characters';
+            
+            
+            description.addEventListener('input', function () {
+                var current = description.value.length;
+                description_remaining.innerText = (current + '/' + max_length + ' characters');
+            });
+            
+            // same but on projects 
+            var projects = document.querySelector('#projects');
+            var projects_remaining = document.querySelector('#projects_char_count');
+            var projects_length = projects.value.length;
+            projects_remaining.innerText = (projects_length + '/' + max_length + ' characters');
+            projects.addEventListener('input', function () {
+                var current = projects.value.length;
+                projects_remaining.innerText = (current + '/' + max_length + ' characters');
+            });
+            
+            // volunteer stuff
             var is_firsttime_volunteer = $('input[name="first_time_volunteer"][value="False"]');
             var experienced_volunteer = $('input[name="first_time_volunteer"][value="True"]');
             var is_firsttime_mentor = $('input[name="first_time_mentor"][value="True"]');
