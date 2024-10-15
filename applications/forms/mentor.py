@@ -16,6 +16,12 @@ class MentorApplicationForm(_BaseApplicationForm):
 
     online = common_online()
 
+    valid = forms.BooleanField(
+        required=False,
+        widget=forms.HiddenInput(),
+        initial=True,
+    )
+
     def clean_resume(self):
         resume = self.cleaned_data["resume"]
         size = getattr(resume, "_size", 0)
