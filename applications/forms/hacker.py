@@ -250,7 +250,7 @@ class HackerApplicationForm(_BaseApplicationForm):
         widgets = {
             "origin": forms.TextInput(attrs={"autocomplete": "off"}),
             "description": forms.Textarea(attrs={"rows": 3, "cols": 40}),
-            "projects": forms.Textarea(attrs={"rows": 3, "cols": 40, 'id': 'projects', 'placeholder': 'Developed a Google Maps feature for optimized routing based on traffic data,\nCreated a Discord bot for automating daily tasks,\nWon 2nd place in Hackathon for a mobile app that recommends eco-friendly travel routes.'}),
+            "projects": forms.Textarea(attrs={"rows": 3, "cols": 40, 'id': 'projects'}),
             "discover": CustomSelect(choices=discover_choices),
             "graduation_year": forms.RadioSelect(),
         }
