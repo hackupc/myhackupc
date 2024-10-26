@@ -209,6 +209,7 @@ class HackerApplicationForm(_BaseApplicationForm):
             "other_diet": "Please fill here in your dietary requirements. We want to make sure we have food for you!",
             "lennyface": 'tip: you can chose from here <a href="http://textsmili.es/" target="_blank">'
             " http://textsmili.es/</a>",
+            "description": "Be original! Using AI to answer this question might penalize your application.",
             "projects": 
             "Tell us about your personal projects, awards, or any work that you are proud of.   <br>",
             "reimb_amount": "We try our best to cover costs for all hackers, but our budget is limited",
