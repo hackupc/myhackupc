@@ -153,13 +153,15 @@
 
             var is_firsttime = $('input[name="first_timer"][value="True"]');
             var experienced = $('input[name="first_timer"][value="False"]');
-            var projects = $('#id_projects');
+            
+            var projects = $('#projects');
             conditional_field(projects, is_firsttime, function () {
                 return experienced.prop("checked");
             }, 1);
             conditional_field(projects, experienced, function () {
                 return experienced.prop("checked");
             }, 1);
+            
             // Making projects look like required
             projects.parent().addClass('required');
 
