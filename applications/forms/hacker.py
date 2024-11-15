@@ -212,12 +212,13 @@ class HackerApplicationForm(_BaseApplicationForm):
             "description": "Be original! Using AI to answer this question might penalize your application.",
             "projects": 
             "Tell us about your personal projects, awards, or any work that you are proud of.   <br>",
+            "<span id=\'projects_char_count\'></span>",
             "reimb_amount": "We try our best to cover costs for all hackers, but our budget is limited",
             "resume": "Accepted file formats: %s"
             % (", ".join(extensions) if extensions else "Any"),
-            "origin": "If you don’t see your city, choose the closest one! "
-            "Please type following this schema: <strong>city, province, country</strong>",
+            "origin": "If you don’t see your city, choose the closest one! <br> Please type following this schema: <strong>city, province, country</strong>",
         }
+
 
         class CustomSelect(forms.Select):
             def create_option(
@@ -249,7 +250,7 @@ class HackerApplicationForm(_BaseApplicationForm):
 
         widgets = {
             "origin": forms.TextInput(attrs={"autocomplete": "off"}),
-            "description": forms.Textarea(attrs={"rows": 3, "cols": 40}),
+            "description": forms.Textarea(attrs={"rows": 3, "cols": 40, 'id': 'description'}),
             "projects": forms.Textarea(attrs={"rows": 3, "cols": 40, 'id': 'projects'}),
             "discover": CustomSelect(choices=discover_choices),
             "graduation_year": forms.RadioSelect(),
