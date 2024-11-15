@@ -209,14 +209,18 @@ class HackerApplicationForm(_BaseApplicationForm):
             "other_diet": "Please fill here in your dietary requirements. We want to make sure we have food for you!",
             "lennyface": 'tip: you can chose from here <a href="http://textsmili.es/" target="_blank">'
             " http://textsmili.es/</a>",
-            "projects": "You can talk about about past hackathons, personal projects, awards etc. "
-            "(we love links) Show us your passion! :D",
+            # specify id of description help text
+            "description": "<span id=\'description_char_count\'></span>",
+            "projects": 
+            "You can talk about about past hackathons, personal projects, awards etc. "
+            "(we love links) Show us your passion! :D<br>"
+            "<span id=\'projects_char_count\'></span>",
             "reimb_amount": "We try our best to cover costs for all hackers, but our budget is limited",
             "resume": "Accepted file formats: %s"
             % (", ".join(extensions) if extensions else "Any"),
-            "origin": "If you don’t see your city, choose the closest one! "
-            "Please type following this schema: <strong>city, province, country</strong>",
+            "origin": "If you don’t see your city, choose the closest one! <br> Please type following this schema: <strong>city, province, country</strong>",
         }
+
 
         class CustomSelect(forms.Select):
             def create_option(
@@ -248,8 +252,8 @@ class HackerApplicationForm(_BaseApplicationForm):
 
         widgets = {
             "origin": forms.TextInput(attrs={"autocomplete": "off"}),
-            "description": forms.Textarea(attrs={"rows": 3, "cols": 40}),
-            "projects": forms.Textarea(attrs={"rows": 3, "cols": 40}),
+            "description": forms.Textarea(attrs={"rows": 3, "cols": 40, 'id': 'description'}),
+            "projects": forms.Textarea(attrs={"rows": 3, "cols": 40, 'id': 'projects'}),
             "discover": CustomSelect(choices=discover_choices),
             "graduation_year": forms.RadioSelect(),
         }
