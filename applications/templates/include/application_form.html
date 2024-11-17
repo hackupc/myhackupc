@@ -16,11 +16,15 @@
 <form class="signup " enctype="multipart/form-data" id="signup_form" method="post" action="">
     {% csrf_token %}
     {% include 'include/bootstrap_form.html' %}
-    <div style="padding-left: 15px; padding-right: 15px">
+    <small><span style="color: red;">*</span> Indicates required field.</small>
+    <div style="padding: 15px; text-align: center;">
       {% if is_hacker %}
-      <p class="team-info"><i class="fa fa-exclamation-triangle"></i> <strong>Remember!</strong> Your team members still have to apply separately.</p>
+      <div style="background-color: #fff3cd; padding: 15px; border-radius: 5px; display: inline-block; border: 1px solid #ffeeba;">
+        <p class="team-info" style="margin: 0; color: #856404;">
+          <i class="fa fa-exclamation-triangle" style="color: #856404;"></i> <strong>Remember!</strong> Your team members still have to apply separately.
+        </p>
+      </div>
       {% endif %}
-      <small><span style="color: red">*</span>Indicates required field.</small>
     </div>
 
     {% if not application or application.can_be_edit %}
