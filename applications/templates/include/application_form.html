@@ -90,9 +90,10 @@
 
             // Changing styles so that the sections (fieldsets) are in blocks
             var sections = $('fieldset');
+
+                // Chaging styles to sections
             sections.each(function (index, section) {
-                // Wrap first child of the section in an anchor tag
-                
+                                
                 if (section.innerText.includes('Education Info')) {
                     section.style.border = '1px solid #007bff';
                     section.style.borderRadius = '10px';
@@ -130,6 +131,22 @@
                     section.style.marginBottom = '15px';
                     section.style.backgroundColor = '#f3e6ff';
                 }
+
+                var title = $(section).find('div').first();
+                title.css('cursor', 'pointer');
+                title.css('user-select', 'none');
+                
+                // Making sections collapsible
+                title[0].addEventListener('click', function () {
+                    this.classList.toggle('active');
+                    var fieldset = this.closest('fieldset');
+                    var content = $(fieldset).children().not(':first'); 
+                    
+                    content.each(function () {
+                        var isVisible = $(this).css('display') === 'block';
+                        $(this).css('display', isVisible ? 'none' : 'block');
+                    });
+                });
             });
 
             var other_gender = $('#id_other_gender');
