@@ -13,7 +13,7 @@ class ReceiptSubmissionReceipt(BootstrapFormMixin, ModelForm):
             'fields': [{'name': 'receipt', 'space': 12}, {'name': 'multiple_hackers', 'space': 12},
                        {'name': 'friend_emails', 'space': 12}, ],
         },
-        'Where should we send you the monies?': {
+        'Where should we send you the moneys?': {
             'fields': [{'name': 'paypal_email', 'space': 12}, ],
         },
         'Where are you joining us from?': {

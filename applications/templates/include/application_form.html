@@ -88,6 +88,50 @@
             });
         });
 
+            // Changing styles so that the sections (fieldsets) are in blocks
+            var sections = $('fieldset');
+            sections.each(function (index, section) {
+                // Wrap first child of the section in an anchor tag
+                
+                if (section.innerText.includes('Education Info')) {
+                    section.style.border = '1px solid #007bff';
+                    section.style.borderRadius = '10px';
+                    section.style.padding = '15px';
+                    section.style.marginBottom = '15px';
+                    section.style.backgroundColor = '#e7f3ff';
+                } else if (section.innerText.includes('Personal Info')) {
+                    section.style.border = '1px solid #28a745';
+                    section.style.borderRadius = '10px';
+                    section.style.padding = '15px';
+                    section.style.marginBottom = '15px';
+                    section.style.backgroundColor = '#e6f7e6';
+                } else if (section.innerText.includes('Logistics Info')) {
+                    section.style.border = '1px solid #ffc107';
+                    section.style.borderRadius = '10px';
+                    section.style.padding = '15px';
+                    section.style.marginBottom = '15px';
+                    section.style.backgroundColor = '#fff8e1';
+                } else if (section.innerText.includes('Hackathons')) {
+                    section.style.border = '1px solid #dc3545';
+                    section.style.borderRadius = '10px';
+                    section.style.padding = '15px';
+                    section.style.marginBottom = '15px';
+                    section.style.backgroundColor = '#ffe6e6';
+                } else if (section.innerText.includes('Show us')) {
+                    section.style.border = '1px solid #17a2b8';
+                    section.style.borderRadius = '10px';
+                    section.style.padding = '15px';
+                    section.style.marginBottom = '15px';
+                    section.style.backgroundColor = '#e6f7f8';
+                } else if (section.innerText.includes('Policies')) {
+                    section.style.border = '1px solid #6f42c1';
+                    section.style.borderRadius = '10px';
+                    section.style.padding = '15px';
+                    section.style.marginBottom = '15px';
+                    section.style.backgroundColor = '#f3e6ff';
+                }
+            });
+
             var other_gender = $('#id_other_gender');
             var gender = $('#id_gender');
             conditional_field(other_gender, gender, () => {

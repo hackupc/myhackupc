@@ -2,30 +2,43 @@ from .base import *
 from .base import _BaseApplicationForm
 
 
+
 class HackerApplicationForm(_BaseApplicationForm):
     bootstrap_field_info = {
-        "Personal Info": {
+        "🎓Education Info": {
             "fields": [
                 {"name": "university", "space": 12},
                 {"name": "degree", "space": 12},
                 {"name": "graduation_year", "space": 12},
+            ],
+            "description": "Tell us about your education background.",
+        },
+        "👤Personal Info": {
+            "fields": [
+                {"name": "origin", "space": 12},
                 {"name": "gender", "space": 12},
-                {"name": "other_gender", "space": 12},
                 {"name": "phone_number", "space": 12},
-                {"name": "tshirt_size", "space": 12},
                 {"name": "under_age", "space": 12},
                 {"name": "lennyface", "space": 12},
             ],
             "description": "Hey there, before we begin we would like to know a little more about you.",
         },
-        "Hackathons": {
+        "🚚Logistics Info": {
+            "fields": [
+                {"name": "discover", "space": 12},
+                {"name": "tshirt_size", "space": 12},
+                {"name": "diet", "space": 12},
+            ],
+            "description": "Logistics information to help us better organize the event.",
+        },
+        "🏆Hackathons": {
             "fields": [
                 {"name": "description", "space": 12},
                 {"name": "first_timer", "space": 12},
                 {"name": "projects", "space": 12},
-            ]
+            ],
         },
-        "Show us what you've built": {
+        "💻Show us what you've built": {
             "fields": [
                 {"name": "github", "space": 12},
                 {"name": "devpost", "space": 12},
@@ -33,10 +46,21 @@ class HackerApplicationForm(_BaseApplicationForm):
                 {"name": "site", "space": 12},
                 {"name": "resume", "space": 12},
             ],
-            "description": "Some of our sponsors may use this information for recruitment purposes,"
+            "description": "Some of our sponsors may use this information for recruitment purposes, "
             "so please include as much as you can.",
         },
+        "📜HackUPC Policies": {
+            "fields": [
+                {"name": "cvs_edition", "space": 12},
+                {"name": "email_subscribe", "space": 12},
+                {"name": "terms_and_conditions", "space": 12},
+            ],
+        },
     }
+
+    # Other fields and methods remain unchanged
+
+    # Other fields and methods remain unchanged
 
     github = social_media_field("github", "https://github.com/biene")
     devpost = social_media_field("devpost", "https://devpost.com/biene")
@@ -154,38 +178,48 @@ class HackerApplicationForm(_BaseApplicationForm):
 
     def get_bootstrap_field_info(self):
         fields = super().get_bootstrap_field_info()
-        # Fieldsets ordered and with description
         discord = getattr(settings, "DISCORD_HACKATHON", False)
         hybrid = getattr(settings, "HYBRID_HACKATHON", False)
-        personal_info_fields = fields["Personal Info"]["fields"]
+
+        sections = {
+            "🎓Education Info": "section-education-info",
+            "👤Personal Info": "section-personal-info",
+            "🚚Logistics Info": "section-logistics-info",
+            "🏆Hackathons": "section-hackathons",
+            "💻Show us what you've built": "section-show-us",
+            "📜HackUPC Policies": "section-policies",
+        }
+    
+        for section, css_class in sections.items():
+            if section in fields:
+                fields[section]["css_class"] = css_class
+
+
+        education_info_fields = fields["🎓Education Info"]["fields"]
+        personal_info_fields = fields["👤Personal Info"]["fields"]
+        logistics_info_fields = fields["🚚Logistics Info"]["fields"]
+        hackathons_fields = fields["🏆Hackathons"]["fields"]
+        show_us_what_youve_built_fields = fields["💻Show us what you've built"]["fields"]
+        polices_fields = fields["📜HackUPC Policies"]["fields"]
         personal_info_fields.append({"name": "online", "space": 12})
         if not hybrid:
             self.fields["online"].widget = forms.HiddenInput()
-        polices_fields = [
-            {"name": "cvs_edition", "space": 12},
-            {"name": "email_subscribe", "space": 12},
-            {"name": "terms_and_conditions", "space": 12},
-        ]
+        
         if not discord:
-            personal_info_fields.extend(
+            logistics_info_fields.extend(
                 [
-                    {"name": "diet", "space": 12},
                     {"name": "other_diet", "space": 12},
                 ]
             )
             polices_fields.append({"name": "diet_notice", "space": 12})
 
-        personal_info_fields.append({"name": "discover", "space": 12})
         deadline = getattr(settings, "REIMBURSEMENT_DEADLINE", False)
         r_enabled = getattr(settings, "REIMBURSEMENT_ENABLED", False)
-        personal_info_fields.append({"name": "origin", "space": 12})
 
-        # Fields that we only need the first time the hacker fills the application
-        # https://stackoverflow.com/questions/9704067/test-if-django-modelform-has-instance
         if not self.instance.pk:
-            fields["HackUPC Policies"] = {
+            fields["📜HackUPC Policies"] = {
                 "fields": polices_fields,
-                "description": '<p style="color: margin-top: 1em;display: block;'
+                "description": '<p style="margin-top: 1em;display: block;'
                 'margin-bottom: 1em;line-height: 1.25em;">We, Hackers at UPC, '
                 "process your information to organize an awesome hackathon. It "
                 "will also include images and videos of yourself during the event. "
