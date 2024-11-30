@@ -236,7 +236,7 @@ class MentorApplicationForm(_BaseApplicationForm):
         labels = {
             "gender": "What gender do you identify as?",
             "other_gender": "Self-describe",
-            "graduation_year": "What year will you graduate?",
+            "graduation_year": "What year are you expecting to graduate?",
             "tshirt_size": "What is your t-shirt size?",
             "diet": "Dietary requirements",
             "lennyface": 'Describe yourself in one "lenny face"?',
