@@ -96,7 +96,7 @@ class MentorApplicationForm(_BaseApplicationForm):
         required=False,
         choices=models.YEARS,
         help_text="What year have you graduated on or when will you graduate",
-        label="What year will you graduate?",
+        label="What year are you expecting to graduate?",
         widget=forms.RadioSelect(),
     )
 
