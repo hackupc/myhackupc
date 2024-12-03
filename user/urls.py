@@ -1,6 +1,4 @@
 from django.conf.urls import url
-from django.urls import reverse_lazy
-from django.views.generic.base import RedirectView
 
 from user import views
 
