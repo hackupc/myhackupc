@@ -1466,3 +1466,31 @@ td.visible-print,th.visible-print{display:table-cell!important}
 @media print{.visible-print-inline-block{display:inline-block!important}
 .hidden-print{display:none!important}
 }
+
+.menu-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.menu-item {
+    padding: 10px 20px;
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    margin: 0 10px;
+    border-bottom: 2px solid transparent;
+    transition: color 0.3s, border-bottom 0.3s;
+}
+
+.menu-item:hover {
+    color: #410658;
+    border-bottom: 2px solid #410658;
+}
+
+.menu-item.active {
+    color: #410658;
+    border-bottom: 2px solid #410658;
+}
+
