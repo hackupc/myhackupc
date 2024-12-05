@@ -39,6 +39,7 @@
 
     function updateCounter(description, description_remaining, max_length) {
 
+        if(description.val() == undefined) return;
         var current = description.val().length;
         if(max_length >= current && current > 450){
              description_remaining.style.color = "#f77f00";
@@ -168,12 +169,12 @@
             // check and display remaining characters from the textarea with id description and projects
             var max_length = 500;
             var description = $('#description');
-            // remove maxlength
+            
+            
             description.removeAttr('maxLength');
+            // remove maxlength
             var description_remaining = document.querySelector('#description_char_count');
-            var description_length = description.val().length;
-            
-            
+
             // base case
             updateCounter(description, description_remaining, max_length);
             // onKeyup
@@ -181,19 +182,22 @@
                 updateCounter(description, description_remaining, max_length);
             });
             
+            
             // same but on projects 
             var projects = $('#projects');
+            
+
             // remove maxlength
             projects.removeAttr('maxLength');
             var projects_remaining = document.querySelector('#projects_char_count');
-            var projects_length = projects.val().length;
-
+            
             // base case
             updateCounter(projects, projects_remaining, max_length);
             // onKeyup
             projects.keyup(function () {
                 updateCounter(projects, projects_remaining, max_length);
             });
+            
             
             // volunteer stuff
             var is_firsttime_volunteer = $('input[name="first_time_volunteer"][value="False"]');
