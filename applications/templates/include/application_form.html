@@ -39,8 +39,9 @@
 
     function updateCounter(description, description_remaining, max_length) {
 
+        if(description.val() == undefined) return;
         var current = description.val().length;
-        if(max_length >= current && current > 450){
+        if(max_length >= current && current >= max_length-50){
              description_remaining.style.color = "#f77f00";
              description.parent().removeClass('has-error');
         }
@@ -165,36 +166,39 @@
             // Making projects look like required
             projects.parent().addClass('required');
 
-            // check and display remaining characters from the textarea with id description and projects
-            var max_length = 500;
-            var description = $('#description');
-            // remove maxlength
-            description.removeAttr('maxLength');
-            var description_remaining = document.querySelector('#description_char_count');
-            var description_length = description.val().length;
             
+            function setUpCharCounterOn(elementStrId, elementCharCounterStrId){
+                var element = $(elementStrId);
+                var max_length = parseInt(element.attr('maxLength')); // to int 
             
-            // base case
-            updateCounter(description, description_remaining, max_length);
-            // onKeyup
-            description.keyup(function () {
-                updateCounter(description, description_remaining, max_length);
-            });
-            
-            // same but on projects 
-            var projects = $('#projects');
-            // remove maxlength
-            projects.removeAttr('maxLength');
-            var projects_remaining = document.querySelector('#projects_char_count');
-            var projects_length = projects.val().length;
 
-            // base case
-            updateCounter(projects, projects_remaining, max_length);
-            // onKeyup
-            projects.keyup(function () {
-                updateCounter(projects, projects_remaining, max_length);
-            });
+                element.removeAttr('maxLength');
+                // remove maxlength
+
+                var elementCharCounter = document.querySelector(elementCharCounterStrId);
+
+                // base case
+                updateCounter(element, elementCharCounter, max_length);
+                // onKeyup
+                element.keyup(function () {
+                    updateCounter(element, elementCharCounter, max_length);
+                });
+            }
             
+            {% if form.hacker %}            
+            
+                // check and display remaining characters from the textarea with id description and projects
+                setUpCharCounterOn('#description', '#description_char_count');
+                
+                setUpCharCounterOn('#projects', '#projects_char_count');
+                
+            {% endif %}
+            {% if form.mentor %}
+                setUpCharCounterOn('#id_fluent', '#fluent_char_count');
+                setUpCharCounterOn('#id_experience', '#experience_char_count');
+                setUpCharCounterOn('#id_why_mentor', '#why_mentor_char_count');
+                setUpCharCounterOn('#id_participated', '#participated_char_count');
+            {% endif %}
             // volunteer stuff
             var is_firsttime_volunteer = $('input[name="first_time_volunteer"][value="False"]');
             var experienced_volunteer = $('input[name="first_time_volunteer"][value="True"]');
@@ -252,6 +256,8 @@
                 university_mentor.parent().addClass('required');
                 degree_mentor.parent().addClass('required');
                 graduation_year.parent().addClass('required');
+
+                
             {% endif %}
             {% if not application %}
                 var timer;

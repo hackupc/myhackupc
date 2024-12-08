@@ -183,6 +183,12 @@ class ApplicationDetailView(TabsViewMixin, IsOrganizerMixin, TemplateView):
         context['app'] = application
         context['vote'] = self.can_vote()
         context['max_vote'] = dict(models.VOTES)
+        if(self.can_vote()):
+            context['apps_left_to_vote'] = \
+                models.HackerApplication.objects.exclude(vote__user_id=self.request.user.id)\
+                .filter(status=APP_PENDING, submission_date__lte=timezone.now() - timedelta(hours=2))\
+                .count()
+
         context['comments'] = models.ApplicationComment.objects.filter(hacker=application)
         if application and getattr(application.user, 'team', False) and settings.TEAMS_ENABLED:
             context['teammates'] = Team.objects.filter(team_code=application.user.team.team_code) \
