@@ -38,12 +38,24 @@ class HackerApplicationForm(_BaseApplicationForm):
         },
     }
 
+    # make phone mandatory, override the base form
+    phone_number = forms.CharField(required=True, widget=forms.TextInput(
+        attrs={'class': 'form-control', 'placeholder': '+#########'}),
+        label='Phone number',
+    )
+
     github = social_media_field("github", "https://github.com/biene")
     devpost = social_media_field("devpost", "https://devpost.com/biene")
     linkedin = social_media_field("linkedin", "https://www.linkedin.com/in/biene")
     site = social_media_field("site", "https://biene.space")
 
     online = common_online()
+
+    def clean_phone_number(self):
+        data = self.cleaned_data["phone_number"]
+        if not data:
+            raise forms.ValidationError("Please enter a valid phone number.")
+        return data
 
     def clean_resume(self):
         resume = self.cleaned_data["resume"]
@@ -263,7 +275,7 @@ class HackerApplicationForm(_BaseApplicationForm):
             "graduation_year": "What year are you expecting to graduate?",
             "tshirt_size": "What's your t-shirt size?",
             "diet": "Dietary requirements",
-            "phone_number": "Phone number (Optional)",
+            "phone_number": "Phone number",
             "lennyface": 'Which "lenny face" represents you better?',
             "discover": "How did you hear about us?",
             "origin": "Where are you joining us from?",
