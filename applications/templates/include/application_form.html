@@ -228,18 +228,18 @@
                     return is_not_hackathon_mentor.prop("checked");
                 });
                 conditional_field(which_hack, is_firsttime_mentor, function () {
-                    return is_firsttime_mentor.prop("checked");
-                });
+                        return is_firsttime_mentor.prop("checked");
+                    });
                 conditional_field(which_hack, experienced_mentor, function () {
                     return is_firsttime_mentor.prop("checked");
-                });
+                });            
                 conditional_field(which_hack, is_first_hackathon_mentor, function () {
                     return is_not_hackathon_mentor.prop("checked");
                 });
                 conditional_field(which_hack, is_not_hackathon_mentor, function () {
-                    return is_not_hackathon_mentor.prop("checked");
+                    return is_firsttime_mentor.prop("checked");
                 });
-                
+
                 is_not_hackathon_mentor.parent().addClass('required');
 
                 var company_mentor = $('#id_company');
