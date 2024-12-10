@@ -29,6 +29,16 @@
             </div>
         {% elif not application %}
             <div class="col-md-12">
+                <p style="text-align: center; font-size: 1.5em; font-weight: bold;">
+                    You are applying as a 
+                    {% if app_type == 'H' %}
+                    <span style="color: #C379E0;">Hacker</span>
+                    {% elif app_type == 'V' %}
+                    <span style="color: #C379E0;">Volunteer</span>
+                    {% elif app_type == 'M' %}
+                    <span style="color: #C379E0;">Mentor</span>
+                    {% endif %}
+                </p>
                 {% if app_type == 'H' and h_app_timeleft and not is_sponsor %}
                     <div class="alert alert-info">
                         <p> Time until applications close: <strong
