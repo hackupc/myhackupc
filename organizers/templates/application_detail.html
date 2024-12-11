@@ -12,7 +12,13 @@
 {% block panel %}
     {% if app %}
         <div class="col-md-8 margin-right">
-            <h2>{% if vote %}Review applications{% else %}{{ app.user.name }}'s application{% endif %}</h2>
+            <h2>{% if vote %}Review applications{% else %}{{ app.user.name }}'s application{% endif %}
+                {% if vote %}
+                <span style="font-size:18px"> 
+                    ({{ apps_left_to_vote }} left)
+                </span>
+                {% endif %}
+            </h2>
             <a target="_blank" style="color:black; text-decoration: none;" class="pull-right fa fa-link"
                href="{% url 'app_detail' app.uuid_str %}">
             </a>

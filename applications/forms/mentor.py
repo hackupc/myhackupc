@@ -213,11 +213,15 @@ class MentorApplicationForm(_BaseApplicationForm):
             "other_diet": "Please fill here in your dietary requirements. We want to make sure we have food for you!",
             "lennyface": 'tip: you can chose from here <a href="http://textsmili.es/" target="_blank">'
             " http://textsmili.es/</a>",
-            "participated": "You can talk about about past hackathons or any other events. ",
+            "participated": "<span id=\'participated_char_count\'></span><br>"
+            "You can talk about about past hackathons or any other events. ",
             "resume": "Accepted file formats: %s"
             % (", ".join(extensions) if extensions else "Any"),
-            "fluent": "Catalan, French, Chinese, Arabic…",
-            "experience": "C++, Java, Docker, Vue, AWS…",
+            "fluent": "<span id=\'fluent_char_count\'></span><br>"
+            "Catalan, French, Chinese, Arabic…",
+            "experience": "<span id=\'experience_char_count\'></span><br>"
+            "C++, Java, Docker, Vue, AWS…",
+            "why_mentor": "<span id=\'why_mentor_char_count\'></span><br>"
         }
 
         widgets = {
