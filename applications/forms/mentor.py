@@ -22,6 +22,13 @@ class MentorApplicationForm(_BaseApplicationForm):
         initial=True,
     )
 
+    def clean_first_time_mentor(self):
+        data = self.cleaned_data["first_time_mentor"]
+        if data:
+            return data
+        else:
+            return False
+
     def clean_resume(self):
         resume = self.cleaned_data["resume"]
         size = getattr(resume, "_size", 0)
@@ -58,7 +65,7 @@ class MentorApplicationForm(_BaseApplicationForm):
         return data
 
     first_time_mentor = forms.TypedChoiceField(
-        required=True,
+        required=False,
         label="Have you participated as mentor in past HackUPC editions?",
         coerce=lambda x: x == "True",
         choices=((False, "No"), (True, "Yes")),
