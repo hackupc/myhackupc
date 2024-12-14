@@ -90,7 +90,7 @@
             conditional_field(other_gender, gender, () => {
               return gender.val() === 'X';
             })
-
+            
             var online = $('input[name="online"][value="True"]');
             var face_to_face = $('input[name="online"][value="False"]');
 
@@ -202,8 +202,15 @@
             // volunteer stuff
             var is_firsttime_volunteer = $('input[name="first_time_volunteer"][value="False"]');
             var experienced_volunteer = $('input[name="first_time_volunteer"][value="True"]');
+            
+            // mentor stuff
+            // debugger;
             var is_firsttime_mentor = $('input[name="first_time_mentor"][value="True"]');
+            var id_participated = $('#id_participated');
             var experienced_mentor = $('input[name="first_time_mentor"][value="False"]')
+            var is_first_hackathon_mentor = $('input[name="first_timer"][value="True"]');
+            var is_not_first_hackathon_mentor = $('input[name="first_timer"][value="False"]')
+            var first_time_mentor =  $('#id_first_time_mentor');
             var which_hack = $('#id_which_hack');
             {% if form.volunteer %}
               conditional_field(which_hack, is_firsttime_volunteer, function () {
@@ -215,13 +222,31 @@
             {% endif %}
             // Making projects look like required
             which_hack.parent().addClass('required');
+            
             {% if form.mentor %}
-                conditional_field(which_hack, is_firsttime_mentor, function () {
-                    return is_firsttime_mentor.prop("checked");
+                
+                conditional_field(first_time_mentor, is_not_first_hackathon_mentor, function () {
+                    return is_not_first_hackathon_mentor.prop("checked");
                 });
+                conditional_field(first_time_mentor, is_first_hackathon_mentor, function () {
+                    return is_not_first_hackathon_mentor.prop("checked");
+                });
+                conditional_field(which_hack, is_firsttime_mentor, function () {
+                        return is_firsttime_mentor.prop("checked");
+                    });
                 conditional_field(which_hack, experienced_mentor, function () {
                     return is_firsttime_mentor.prop("checked");
                 });
+                conditional_field(which_hack, is_not_first_hackathon_mentor, function () {
+                    return is_firsttime_mentor.prop("checked");
+                });        
+                conditional_field(which_hack, is_first_hackathon_mentor, function () {
+                    return is_not_first_hackathon_mentor.prop("checked");
+                });
+                
+                first_time_mentor.parent().addClass('required');
+                id_participated.parent().addClass('required');
+
                 var company_mentor = $('#id_company');
                 var university_mentor = $('#id_university');
                 var degree_mentor = $('#id_degree');
