@@ -202,7 +202,11 @@
             // volunteer stuff
             var is_firsttime_volunteer = $('input[name="first_time_volunteer"][value="False"]');
             var experienced_volunteer = $('input[name="first_time_volunteer"][value="True"]');
+            
+            // mentor stuff
+            // debugger;
             var is_firsttime_mentor = $('input[name="first_time_mentor"][value="True"]');
+            var id_participated = $('#id_participated');
             var experienced_mentor = $('input[name="first_time_mentor"][value="False"]')
             var is_first_hackathon_mentor = $('input[name="first_timer"][value="True"]');
             var is_not_first_hackathon_mentor = $('input[name="first_timer"][value="False"]')
@@ -241,6 +245,7 @@
                 });
                 
                 first_time_mentor.parent().addClass('required');
+                id_participated.parent().addClass('required');
 
                 var company_mentor = $('#id_company');
                 var university_mentor = $('#id_university');
