@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'django_jwt',
     'django_jwt.server',
     'corsheaders',
+    'whoareu',
 ]
 
 GOOGLE_WALLET_ENABLED = True  # Set to false to disable google wallet

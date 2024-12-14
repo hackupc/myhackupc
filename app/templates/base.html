@@ -129,6 +129,8 @@
                             {% if request.user.is_organizer %}
                                 <li class="{% if 'stats' in request.build_absolute_uri %}active{% endif %}"><a
                                         href="{% url 'stats_home' %}">Stats</a></li>
+                                <li class="{% if 'whoareu' in request.build_absolute_uri %} active {% endif %}"><a
+                                        href="{% url 'whoareu' %}"> WhoAreU</a></li>
                             {% endif %}
                         {% endif %}
                     {% elif cas != 'True' %}
