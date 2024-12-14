@@ -44,8 +44,9 @@ HEARABOUTUS_ES = [
 ("Posters", "Posters"),
 ("Redes Sociales", "Redes Sociales"),
 ("Mesas en el bar de la FIB","Mesas en el bar de la FIB"),
-("Whatsapp, amigos u otras personas","Whatsapp, amigos u otras personas"),
-("Web", "Web"),
+("Mensajes por grupos de Whatsapp","Mensajes por grupos de Whatsapp"),
+("Amigos, compañeros u otras personas","Amigos, compañeros u otras personas"),
+("Anuncios online", "Anuncios online"),
 ("Otros", "Otros")
 ]
 
@@ -97,7 +98,7 @@ class VolunteerApplication(BaseApplication):
     first_time_volunteer = models.BooleanField()
     quality = models.CharField(max_length=150, null=False)
     weakness = models.CharField(max_length=150, null=False)
-    fav_movie = models.CharField(max_length=60, null=True, blank=True)
+   
     friends = models.CharField(max_length=100, null=True, blank=True)
     pronouns = models.CharField(max_length=100, null=True, blank=True)
     night_shifts = MultiSelectField(choices=NIGHT_SHIFT_ES, default='No')

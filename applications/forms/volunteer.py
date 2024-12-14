@@ -47,7 +47,7 @@ class VolunteerApplicationForm(_BaseApplicationForm):
 
     hear_about_us = forms.TypedChoiceField(
         required=True,
-        label="¿Cómo nos has conocido?",
+        label="¿Cómo escuchaste sobre nosotros por primera vez?",
         choices=models.HEARABOUTUS_ES,
         widget=forms.RadioSelect,
     )
@@ -112,7 +112,6 @@ class VolunteerApplicationForm(_BaseApplicationForm):
         },
         "Intereses Personales": {
             "fields": [
-                {"name": "fav_movie", "space": 12},
                 {"name": "quality", "space": 12},
                 {"name": "weakness", "space": 12},
                 {"name": "hobbies", "space": 12},
@@ -122,7 +121,7 @@ class VolunteerApplicationForm(_BaseApplicationForm):
                 {"name": "university", "space": 12},
                 {"name": "degree", "space": 12},
             ],
-            "description": "¡Queremos conocerte!",
+            "description": "¡Queremos conocerte!🫰",
         },
     }
 
@@ -202,7 +201,6 @@ class VolunteerApplicationForm(_BaseApplicationForm):
             "other_diet": "Porfavor indica tus restricciones alimentarias. ¡Queremos assegurarnos que tenemos comida para ti!",
             "attendance": "Será una gran experiencia disfrutar de principio a fin con muchas cosas que hacer, pero está bien si no puedes venir todo el fin de semana",
             "languages": "No se necesita nivel de inglés para ser voluntari@, solo queremos comprobar quién se sentiría cómod@ realizando tareas que requieran comunicación en inglés",
-            "fav_movie": "e.g.: Interstellar, Juego de Tronos,  Avatar, La Casa de Papel, etc.",
             "cool_skill": "Las 3 respuestas más originales tendrán un pequeño premio que se entregará en el 2º encuentro de voluntarios 😛",
             "friends": "Recuerda que todos tienen que aplicar por separado",
             "origin": "Ejemplo: Barcelona, Lleida",
@@ -239,7 +237,6 @@ class VolunteerApplicationForm(_BaseApplicationForm):
             "quality": "Nombra una cualidad tuya:",
             "weakness": "Ahora un punto débil:",
             "cool_skill": "¿Qué habilidad interesante o dato curioso tienes? ¡Sorpréndenos! 🎉",
-            "fav_movie": " ¿Cuál es tu película o serie favorita?",
             "friends": "¿Estás aplicando con otr@s amig@s? Escribe sus nombres completos",
             "hobbies": "¿Cuáles son tus hobbies o qué haces en tu tiempo libre?",
             "volunteer_motivation": "¿Por qué quieres asistir como voluntari@ a HackUPC?",
