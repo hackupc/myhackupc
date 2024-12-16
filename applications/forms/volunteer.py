@@ -45,13 +45,6 @@ class VolunteerApplicationForm(_BaseApplicationForm):
     )
     lennyface = forms.CharField(initial="NA", widget=forms.HiddenInput(), required=False)
 
-    hear_about_us = forms.TypedChoiceField(
-        required=True,
-        label="¿Cómo nos has conocido?",
-        choices=models.HEARABOUTUS_ES,
-        widget=forms.RadioSelect,
-    )
-
     university = forms.CharField(
         initial="NA", widget=forms.HiddenInput(), required=False
     )
@@ -112,7 +105,6 @@ class VolunteerApplicationForm(_BaseApplicationForm):
         },
         "Intereses Personales": {
             "fields": [
-                {"name": "fav_movie", "space": 12},
                 {"name": "quality", "space": 12},
                 {"name": "weakness", "space": 12},
                 {"name": "hobbies", "space": 12},
@@ -122,7 +114,7 @@ class VolunteerApplicationForm(_BaseApplicationForm):
                 {"name": "university", "space": 12},
                 {"name": "degree", "space": 12},
             ],
-            "description": "¡Queremos conocerte!",
+            "description": "¡Queremos conocerte!🫰",
         },
     }
 
@@ -202,12 +194,27 @@ class VolunteerApplicationForm(_BaseApplicationForm):
             "other_diet": "Porfavor indica tus restricciones alimentarias. ¡Queremos assegurarnos que tenemos comida para ti!",
             "attendance": "Será una gran experiencia disfrutar de principio a fin con muchas cosas que hacer, pero está bien si no puedes venir todo el fin de semana",
             "languages": "No se necesita nivel de inglés para ser voluntari@, solo queremos comprobar quién se sentiría cómod@ realizando tareas que requieran comunicación en inglés",
-            "fav_movie": "e.g.: Interstellar, Juego de Tronos,  Avatar, La Casa de Papel, etc.",
             "cool_skill": "Las 3 respuestas más originales tendrán un pequeño premio que se entregará en el 2º encuentro de voluntarios 😛",
             "friends": "Recuerda que todos tienen que aplicar por separado",
             "origin": "Ejemplo: Barcelona, Lleida",
             "volunteer_motivation": "¡Puede ser una respuesta corta, solo tenemos curiosidad 😛!",
         }
+
+        class CustomSelect(forms.Select):
+                    def create_option(
+                        self, name, value, label, selected, index, subindex=None, attrs=None
+                    ):
+                        if index == 0:
+                            attrs = {"disabled": "disabled"}
+                        return super().create_option(
+                            name, value, label, selected, index, subindex=subindex, attrs=attrs
+                        )
+
+        def clean_hear_about_us(self):
+            hear_about_us = self.cleaned_data.get("hear_about_us")
+            if hear_about_us == "":
+                raise forms.ValidationError("Please select an option.")
+            return hear_about_us
 
         widgets = {
             "origin": forms.TextInput(attrs={"autocomplete": "off"}),
@@ -221,7 +228,7 @@ class VolunteerApplicationForm(_BaseApplicationForm):
             ),
             "graduation_year": forms.HiddenInput(),
             "phone_number": forms.HiddenInput(),
-            "hear_about_us": forms.RadioSelect(),
+            "hear_about_us": CustomSelect(choices=models.HEARABOUTUS_ES),
         }
 
         labels = {
@@ -239,9 +246,9 @@ class VolunteerApplicationForm(_BaseApplicationForm):
             "quality": "Nombra una cualidad tuya:",
             "weakness": "Ahora un punto débil:",
             "cool_skill": "¿Qué habilidad interesante o dato curioso tienes? ¡Sorpréndenos! 🎉",
-            "fav_movie": " ¿Cuál es tu película o serie favorita?",
             "friends": "¿Estás aplicando con otr@s amig@s? Escribe sus nombres completos",
             "hobbies": "¿Cuáles son tus hobbies o qué haces en tu tiempo libre?",
+            "hear_about_us": "¿Cómo escuchaste sobre nosotros por primera vez?",
             "volunteer_motivation": "¿Por qué quieres asistir como voluntari@ a HackUPC?",
         }
 
