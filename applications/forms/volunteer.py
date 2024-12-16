@@ -45,13 +45,6 @@ class VolunteerApplicationForm(_BaseApplicationForm):
     )
     lennyface = forms.CharField(initial="NA", widget=forms.HiddenInput(), required=False)
 
-    hear_about_us = forms.TypedChoiceField(
-        required=True,
-        label="¿Cómo escuchaste sobre nosotros por primera vez?",
-        choices=models.HEARABOUTUS_ES,
-        widget=forms.RadioSelect,
-    )
-
     university = forms.CharField(
         initial="NA", widget=forms.HiddenInput(), required=False
     )
@@ -207,6 +200,22 @@ class VolunteerApplicationForm(_BaseApplicationForm):
             "volunteer_motivation": "¡Puede ser una respuesta corta, solo tenemos curiosidad 😛!",
         }
 
+        class CustomSelect(forms.Select):
+                    def create_option(
+                        self, name, value, label, selected, index, subindex=None, attrs=None
+                    ):
+                        if index == 0:
+                            attrs = {"disabled": "disabled"}
+                        return super().create_option(
+                            name, value, label, selected, index, subindex=subindex, attrs=attrs
+                        )
+
+        def clean_hear_about_us(self):
+            hear_about_us = self.cleaned_data.get("hear_about_us")
+            if hear_about_us == "":
+                raise forms.ValidationError("Please select an option.")
+            return hear_about_us
+
         widgets = {
             "origin": forms.TextInput(attrs={"autocomplete": "off"}),
             "languages": forms.CheckboxSelectMultiple(),
@@ -219,7 +228,7 @@ class VolunteerApplicationForm(_BaseApplicationForm):
             ),
             "graduation_year": forms.HiddenInput(),
             "phone_number": forms.HiddenInput(),
-            "hear_about_us": forms.RadioSelect(),
+            "hear_about_us": CustomSelect(choices=models.HEARABOUTUS_ES),
         }
 
         labels = {
@@ -239,6 +248,7 @@ class VolunteerApplicationForm(_BaseApplicationForm):
             "cool_skill": "¿Qué habilidad interesante o dato curioso tienes? ¡Sorpréndenos! 🎉",
             "friends": "¿Estás aplicando con otr@s amig@s? Escribe sus nombres completos",
             "hobbies": "¿Cuáles son tus hobbies o qué haces en tu tiempo libre?",
+            "hear_about_us": "¿Cómo escuchaste sobre nosotros por primera vez?",
             "volunteer_motivation": "¿Por qué quieres asistir como voluntari@ a HackUPC?",
         }
 
