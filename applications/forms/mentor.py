@@ -22,6 +22,13 @@ class MentorApplicationForm(_BaseApplicationForm):
         initial=True,
     )
 
+    def clean_first_time_mentor(self):
+        data = self.cleaned_data["first_time_mentor"]
+        if data:
+            return data
+        else:
+            return False
+
     def clean_resume(self):
         resume = self.cleaned_data["resume"]
         size = getattr(resume, "_size", 0)
@@ -58,7 +65,7 @@ class MentorApplicationForm(_BaseApplicationForm):
         return data
 
     first_time_mentor = forms.TypedChoiceField(
-        required=True,
+        required=False,
         label="Have you participated as mentor in past HackUPC editions?",
         coerce=lambda x: x == "True",
         choices=((False, "No"), (True, "Yes")),
@@ -96,7 +103,7 @@ class MentorApplicationForm(_BaseApplicationForm):
         required=False,
         choices=models.YEARS,
         help_text="What year have you graduated on or when will you graduate",
-        label="What year will you graduate?",
+        label="What year are you expecting to graduate?",
         widget=forms.RadioSelect(),
     )
 
@@ -240,7 +247,7 @@ class MentorApplicationForm(_BaseApplicationForm):
         labels = {
             "gender": "What gender do you identify as?",
             "other_gender": "Self-describe",
-            "graduation_year": "What year will you graduate?",
+            "graduation_year": "What year are you expecting to graduate?",
             "tshirt_size": "What is your t-shirt size?",
             "diet": "Dietary requirements",
             "lennyface": 'Describe yourself in one "lenny face"?',
