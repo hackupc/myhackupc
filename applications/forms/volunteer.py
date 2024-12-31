@@ -107,7 +107,6 @@ class VolunteerApplicationForm(_BaseApplicationForm):
             "fields": [
                 {"name": "quality", "space": 12},
                 {"name": "weakness", "space": 12},
-                {"name": "hobbies", "space": 12},
                 {"name": "cool_skill", "space": 12},
                 # Hidden
                 {"name": "graduation_year", "space": 12},
@@ -222,7 +221,6 @@ class VolunteerApplicationForm(_BaseApplicationForm):
             "friends": forms.Textarea(attrs={"rows": 2, "cols": 40}),
             "weakness": forms.Textarea(attrs={"rows": 2, "cols": 40}),
             "quality": forms.Textarea(attrs={"rows": 2, "cols": 40}),
-            "hobbies": forms.Textarea(attrs={"rows": 2, "cols": 40}),
             "pronouns": forms.TextInput(
                 attrs={"autocomplete": "off", "placeholder": "their/them"}
             ),
@@ -247,7 +245,6 @@ class VolunteerApplicationForm(_BaseApplicationForm):
             "weakness": "Ahora un punto débil:",
             "cool_skill": "¿Qué habilidad interesante o dato curioso tienes? ¡Sorpréndenos! 🎉",
             "friends": "¿Estás aplicando con otr@s amig@s? Escribe sus nombres completos",
-            "hobbies": "¿Cuáles son tus hobbies o qué haces en tu tiempo libre?",
             "hear_about_us": "¿Cómo escuchaste sobre nosotros por primera vez?",
             "volunteer_motivation": "¿Por qué quieres asistir como voluntari@ a HackUPC?",
         }
