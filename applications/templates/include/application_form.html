@@ -98,13 +98,13 @@
             // Chaging styles to sections
         sections.each(function (index, section) {
                             
-            if (section.innerText.includes('Education Info')) {
+            if (section.innerText.includes('Education Info') || section.innerText.includes('Background Info') || section.innerText.includes('Voluntariado')) {
                 section.style.border = '1px solid #007bff';
                 section.style.borderRadius = '10px';
                 section.style.padding = '15px';
                 section.style.marginBottom = '15px';
                 section.style.backgroundColor = '#e7f3ff';
-            } else if (section.innerText.includes('Personal Info')) {
+            } else if (section.innerText.includes('Personal Info') || section.innerText.includes('Información Personal')) {
                 section.style.border = '1px solid #28a745';
                 section.style.borderRadius = '10px';
                 section.style.padding = '15px';
@@ -116,19 +116,19 @@
                 section.style.padding = '15px';
                 section.style.marginBottom = '15px';
                 section.style.backgroundColor = '#fff8e1';
-            } else if (section.innerText.includes('Hackathons')) {
+            } else if (section.innerText.includes('Hackathons') || section.innerText.includes('Otras Preguntas')) {
                 section.style.border = '1px solid #dc3545';
                 section.style.borderRadius = '10px';
                 section.style.padding = '15px';
                 section.style.marginBottom = '15px';
                 section.style.backgroundColor = '#ffe6e6';
-            } else if (section.innerText.includes('Show us')) {
+            } else if (section.innerText.includes('Show us') || section.innerText.includes('Intereses')) {
                 section.style.border = '1px solid #17a2b8';
                 section.style.borderRadius = '10px';
                 section.style.padding = '15px';
                 section.style.marginBottom = '15px';
                 section.style.backgroundColor = '#e6f7f8';
-            } else if (section.innerText.includes('Policies')) {
+            } else if (section.innerText.includes('Policies') || section.innerText.includes('Políticas')) {
                 section.style.border = '1px solid #6f42c1';
                 section.style.borderRadius = '10px';
                 section.style.padding = '15px';
