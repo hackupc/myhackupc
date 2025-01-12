@@ -15,6 +15,8 @@ RE_WAITLISTED = 'W'
 RE_PEND_TICKET = 'PT'
 RE_PEND_APPROVAL = 'PA'
 RE_APPROVED = 'A'
+RE_PEND_DEMO_VAL = 'PD'
+RE_FINALIZED = 'F'
 RE_EXPIRED = 'X'
 RE_FRIEND_SUBMISSION = 'FS'
 
@@ -25,6 +27,8 @@ RE_STATUS = [
     (RE_APPROVED, 'Receipt approved'),
     (RE_EXPIRED, 'Expired'),
     (RE_FRIEND_SUBMISSION, 'Friend submission'),
+    (RE_FINALIZED, 'Reimbursement Approved'),
+    (RE_PEND_DEMO_VAL, 'Pending demo validation'),
 ]
 
 
@@ -150,6 +154,12 @@ class Reimbursement(models.Model):
 
     def is_accepted(self):
         return self.status in RE_APPROVED
+
+    def is_finalized(self):
+        return self.status == RE_FINALIZED
+
+    def is_pending_demo_validation(self):
+        return self.status == RE_PEND_DEMO_VAL
 
     def waitlisted(self):
         return self.status == RE_WAITLISTED
