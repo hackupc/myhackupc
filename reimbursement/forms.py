@@ -136,3 +136,38 @@ class EditReimbursementForm(ModelForm):
             'reimbursement_money': 'Amount to be reimbursed',
             'expiration_time': 'When is the reimbursement expiring?'
         }
+
+class DevpostValidationForm(BootstrapFormMixin, ModelForm):
+    bootstrap_field_info = {
+        'Devpost URL': {
+            'fields': [{'name': 'devpost', 'space': 12}],
+        },
+    }
+
+    def __init__(self, *args, **kwargs):
+        super(DevpostValidationForm, self).__init__(*args, **kwargs)
+        self.fields['devpost'].required = True
+
+    class Meta:
+        model = Reimbursement
+        fields = ('devpost',)
+        labels = {
+            'devpost': 'Devpost URL'
+        }
+        help_texts = {
+            'devpost': 'Please provide the URL of your Devpost project'
+        }
+        widgets = {
+            'devpost': forms.TextInput(attrs={'autocomplete': 'off'}),
+        }
+
+    def clean_devpost(self):
+        devpost = self.cleaned_data['devpost']
+        if not devpost:
+            raise forms.ValidationError("Please provide a Devpost URL")
+        return devpost  
+    
+    
+
+    
+

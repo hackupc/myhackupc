@@ -64,6 +64,8 @@ class Reimbursement(models.Model):
     reimbursement_money = models.FloatField(null=True, blank=True)
     public_comment = models.CharField(max_length=300, null=True, blank=True)
 
+    devpost = models.URLField(blank=True, null=True, default='')
+
     # User controlled
     paypal_email = models.EmailField(null=True, blank=True)
     address = models.CharField(max_length=300, null=True, blank=True)

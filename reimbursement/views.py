@@ -32,23 +32,46 @@ class ReimbursementHacker(IsHackerMixin, TabsView):
         return c
 
     def post(self, request, *args, **kwargs):
-        try:
-            form = forms.ReceiptSubmissionReceipt(request.POST, request.FILES, instance=request.user.reimbursement)
-        except Exception:
-            form = forms.ReceiptSubmissionReceipt(request.POST, request.FILES)
-        if form.is_valid():
-            reimb = form.save(commit=False)
-            reimb.hacker = request.user
-            reimb.save()
-            messages.success(request,
-                             'We have now received your reimbursement. '
-                             'Processing will take some time, so please be patient.')
+        if 'reimbursement_form' in request.POST:
+            try:
+                form = forms.ReceiptSubmissionReceipt(request.POST, request.FILES, instance=request.user.reimbursement)
+            except Exception:
+                form = forms.ReceiptSubmissionReceipt(request.POST, request.FILES)
+            if form.is_valid():
+                reimb = form.save(commit=False)
+                reimb.hacker = request.user
+                reimb.save()
+                messages.success(request,
+                                'We have now received your reimbursement. '
+                                'Processing will take some time, so please be patient.')
 
-            return HttpResponseRedirect(reverse('reimbursement_dashboard'))
+                return HttpResponseRedirect(reverse('reimbursement_dashboard'))
+            else:
+                c = self.get_context_data()
+                c.update({'form': form})
+                return render(request, self.template_name, c)
         else:
-            c = self.get_context_data()
-            c.update({'form': form})
-            return render(request, self.template_name, c)
+            try:
+                form = forms.DevpostValidationForm(request.POST, instance=request.user.reimbursement)
+            except Exception:
+                form = forms.DevpostValidationForm(request.POST)
+            if form.is_valid():
+                print('valid')
+                reimb = form.save(commit=False)
+                reimb.devpost = form.cleaned_data.get('devpost')
+                reimb.status = models.RE_PEND_DEMO_VAL
+                reimb.save()
+                messages.success(request,
+                                'We have now received your demo link. '
+                                'Processing will take some time, so please be patient.')
+                
+                return HttpResponseRedirect(reverse('reimbursement_dashboard'))
+            else:
+                print(form.errors)
+                print('invalid')
+                c = self.get_context_data()
+                c.update({'form': form})
+                return render(request, self.template_name, c)
 
 
 class ReimbursementDetail(IsOrganizerMixin, TabsView):
