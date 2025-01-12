@@ -136,6 +136,13 @@ class Reimbursement(models.Model):
             self.expiration_time = DEFAULT_EXPIRY_DATE
             self.save()
 
+    def validate(self, user):
+        if self.status == RE_PEND_DEMO_VAL:
+            self.status = RE_FINALIZED
+            self.status_update_date = timezone.now()
+            self.reimbursed_by = user
+            self.save()
+
     def no_reimb(self, user):
         if self.status == RE_PEND_TICKET:
             self.status = RE_WAITLISTED

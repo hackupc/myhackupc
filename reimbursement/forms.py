@@ -118,6 +118,13 @@ class AcceptReceiptForm(ModelForm):
             'origin': forms.TextInput(attrs={'autocomplete': 'off'}),
         }
 
+class ValidateReimbursementForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(ValidateReimbursementForm, self).__init__(*args, **kwargs)
+
+    class Meta:
+        model = Reimbursement
+        fields = ()
 
 class EditReimbursementForm(ModelForm):
     def __getitem__(self, item):
