@@ -58,7 +58,7 @@ def check_friend_emails(friend_emails, user_email):
 
 class Reimbursement(models.Model):
     # Admin controlled
-    assigned_money = models.FloatField()
+    assigned_money = models.FloatField(default=0)
     reimbursement_money = models.FloatField(null=True, blank=True)
     public_comment = models.CharField(max_length=300, null=True, blank=True)
 
@@ -113,7 +113,10 @@ class Reimbursement(models.Model):
         if self.status != RE_DRAFT:
             return
         self.origin = application.origin
-        self.assigned_money = application.reimb_amount
+        if not application.reimb_amount:
+            self.assigned_money = 0
+        else: 
+            self.assigned_money = application.reimb_amount
         self.hacker = application.user
         self.save()
 
