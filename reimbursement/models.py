@@ -11,7 +11,6 @@ from user.models import User
 
 DEFAULT_EXPIRY_DATE = settings.REIMBURSEMENT_EXPIRY_DATE
 
-RE_DRAFT = 'D'
 RE_WAITLISTED = 'W'
 RE_PEND_TICKET = 'PT'
 RE_PEND_APPROVAL = 'PA'
@@ -20,7 +19,6 @@ RE_EXPIRED = 'X'
 RE_FRIEND_SUBMISSION = 'FS'
 
 RE_STATUS = [
-    (RE_DRAFT, 'Pending review'),
     (RE_WAITLISTED, 'Wait listed'),
     (RE_PEND_TICKET, 'Pending receipt submission'),
     (RE_PEND_APPROVAL, 'Pending receipt approval'),
@@ -83,7 +81,7 @@ class Reimbursement(models.Model):
     update_time = models.DateTimeField(default=timezone.now)
     creation_time = models.DateTimeField(default=timezone.now)
     status = models.CharField(max_length=2, choices=RE_STATUS,
-                              default=RE_DRAFT)
+                              default=RE_PEND_TICKET)
 
     @property
     def max_assignable_money(self):
@@ -110,7 +108,7 @@ class Reimbursement(models.Model):
         return self.status == RE_EXPIRED
 
     def generate_draft(self, application):
-        if self.status != RE_DRAFT:
+        if self.status != RE_PEND_TICKET:
             return
         self.origin = application.origin
         if not application.reimb_amount:
@@ -128,7 +126,7 @@ class Reimbursement(models.Model):
         if not self.assigned_money:
             raise ValidationError('Reimbursement can\'t be sent because '
                                   'there\'s no assigned money')
-        if self.status == RE_DRAFT:
+        if self.status == RE_PEND_TICKET:
             self.status = RE_PEND_TICKET
             self.status_update_date = timezone.now()
             self.reimbursed_by = user
@@ -137,7 +135,7 @@ class Reimbursement(models.Model):
             self.save()
 
     def no_reimb(self, user):
-        if self.status == RE_DRAFT:
+        if self.status == RE_PEND_TICKET:
             self.status = RE_WAITLISTED
             self.status_update_date = timezone.now()
             self.reimbursed_by = user
@@ -152,7 +150,7 @@ class Reimbursement(models.Model):
         return self.status == RE_FRIEND_SUBMISSION
 
     def is_draft(self):
-        return self.status == RE_DRAFT
+        return self.status == RE_PEND_TICKET
 
     def is_accepted(self):
         return self.status in RE_APPROVED
