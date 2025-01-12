@@ -1,5 +1,5 @@
 {% extends "base_tabs.html" %}
-
+{% load static %}
 {% load i18n %}
 {% load bootstrap3 %}
 {% block head_title %}Reimbursement{% endblock %}
@@ -9,6 +9,31 @@
 
     {% if reimbursement.can_submit_receipt %}
         {% include 'include/r_status.html' %}
+        <script src="{% static 'lib/typeahead.min.js' %}"></script>
+        <script src="{% static 'js/form_modifiers.js' %}"></script>
+        <script>
+            $(document).ready(function () {
+                fetch('{% static 'cities.json' %}')
+                .then((response) => response.json())
+                .then((json) => {
+                    let cities_dict = {};
+                    $("#id_origin").typeahead({
+                        minLength: 3,
+                        source: function (query, process) {
+                            // read from cities.json and check if the query matches any city
+                            var matches = [];
+                            // find the strings starting with the query
+                            $.each(json, function (i, city) {
+                                if (city.toLowerCase().indexOf(query.toLowerCase()) !== -1) {
+                                    matches.push(city);
+                                }
+                            });
+                            return process(matches);
+                        }
+                    });
+                })
+            });
+        </script>
         <h3>Reimbursement information</h3>
         <dl>
             <dt>Amount</dt>
@@ -27,7 +52,7 @@
             <p class="reimb-info" style="margin: 0; color: #856404;">
                 <i class="fa fa-exclamation-triangle" style="color: #856404;"></i> <strong>Remember!</strong> 
                 You have to submit only one document containing all travel expenses. Do not worry if you have more than one ticket, or if your document
-                contains tickets for more than one hacker. However, make sure that each of your team submits the document.
+                contains tickets for more than one hacker. However, make sure that each of your team members submits the document.
             </p>
         </div>
         <div>
@@ -82,8 +107,7 @@
                 {% endif %}
             </dl>
 
-
-
+            
             {% if h_r_requirements %}<p><span class="text-warning">WARNING:</span> {{ h_r_requirements }}</p>{% endif %}
         {% endif %}
     {% endif %}
