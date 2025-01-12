@@ -10,7 +10,7 @@ from reimbursement.models import Reimbursement, check_friend_emails
 class ReceiptSubmissionReceipt(BootstrapFormMixin, ModelForm):
     bootstrap_field_info = {
         'Upload your receipt': {
-            'fields': [{'name': 'receipt', 'space': 12}, {'name': 'multiple_hackers', 'space': 12},
+            'fields': [{'name': 'receipt', 'space': 12},
                        {'name': 'friend_emails', 'space': 12}, ],
         },
         'Where should we send you the monies?': {
@@ -58,13 +58,12 @@ class ReceiptSubmissionReceipt(BootstrapFormMixin, ModelForm):
     class Meta:
         model = Reimbursement
         fields = (
-            'paypal_email', 'receipt', 'multiple_hackers', 'friend_emails', 'origin',)
+            'paypal_email', 'receipt', 'friend_emails', 'origin',)
         widgets = {
             'origin': forms.TextInput(attrs={'autocomplete': 'off'}),
         }
 
         labels = {
-            'multiple_hackers': 'This receipt covers multiple hackers',
             'friend_emails': 'Hackers emails',
             'paypal_email': 'PayPal email'
         }
