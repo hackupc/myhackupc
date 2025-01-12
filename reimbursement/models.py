@@ -85,11 +85,7 @@ class Reimbursement(models.Model):
 
     @property
     def max_assignable_money(self):
-        if self.friend_submission:
-            return 0
-        if not self.multiple_hackers:
-            return self.assigned_money
-        return sum([reimb.assigned_money for reimb in self.friend_submissions.all()]) + self.assigned_money
+        return self.assigned_money
 
     @property
     def friend_emails_list(self):
@@ -144,7 +140,7 @@ class Reimbursement(models.Model):
             self.save()
 
     def is_sent(self):
-        return self.status in [RE_PEND_APPROVAL, RE_PEND_TICKET, ]
+        return self.status in [RE_PEND_APPROVAL, RE_PEND_TICKET]
 
     def has_friend_submitted(self):
         return self.status == RE_FRIEND_SUBMISSION
@@ -183,7 +179,6 @@ class Reimbursement(models.Model):
     def accept_receipt(self, user):
         self.status = RE_APPROVED
         self.reimbursed_by = user
-        self.reimbursement_money = min(self.reimbursement_money, self.max_assignable_money)
 
     def submit_receipt(self):
         self.status = RE_PEND_APPROVAL

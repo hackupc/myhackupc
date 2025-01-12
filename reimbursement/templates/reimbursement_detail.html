@@ -38,8 +38,6 @@
                 {% if reimb.receipt %}
                     {% include 'include/field.html' with desc='Receipt' value='<a href="'|add:reimb.receipt.url|add:'" target="_blank">'|add:reimb.receipt.name|add:"</a>"|safe %}
                 {% endif %}
-                {% include 'include/field.html' with desc='Multiple hackers covered' value=reimb.multiple_hackers|yesno %}
-                {% include 'include/field.html' with desc='Other hackers covered' value=reimb.friend_emails %}
                 {% include 'include/field.html' with desc='Maximum assignable' value=reimb.max_assignable_money %}
 
                 {% if reimb.is_accepted %}
