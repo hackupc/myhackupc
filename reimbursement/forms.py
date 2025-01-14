@@ -1,22 +1,23 @@
+import os
+import json
 from django import forms
 from django.conf import settings
 from django.forms import ModelForm
 from django.template.defaultfilters import filesizeformat
 
 from app.mixins import BootstrapFormMixin
-from reimbursement.models import Reimbursement, check_friend_emails
+from reimbursement.models import Reimbursement
 
 
 class ReceiptSubmissionReceipt(BootstrapFormMixin, ModelForm):
     bootstrap_field_info = {
         'Upload your receipt': {
-            'fields': [{'name': 'receipt', 'space': 12}, {'name': 'multiple_hackers', 'space': 12},
-                       {'name': 'friend_emails', 'space': 12}, ],
+            'fields': [{'name': 'receipt', 'space': 12}],
         },
-        'Where should we send you the monies?': {
+        'Where should we send you the money?': {
             'fields': [{'name': 'paypal_email', 'space': 12}, ],
         },
-        'Where are you joining us from?': {
+        'Where are you travelling from?': {
             'fields': [{'name': 'origin', 'space': 12}, ],
         }
     }
@@ -24,15 +25,7 @@ class ReceiptSubmissionReceipt(BootstrapFormMixin, ModelForm):
     def __init__(self, *args, **kwargs):
         super(ReceiptSubmissionReceipt, self).__init__(*args, **kwargs)
         self.fields['receipt'].required = True
-
-    def clean_friend_emails(self):
-        multipl_hacks = self.cleaned_data.get('friend_emails', '')
-        if multipl_hacks:
-            try:
-                check_friend_emails(multipl_hacks, self.instance.hacker.email)
-            except Exception as e:
-                raise forms.ValidationError(str(e))
-        return multipl_hacks
+        self.fields['paypal_email'].required = True
 
     def clean_paypal_email(self):
         paypal = self.cleaned_data.get('paypal_email', '')
@@ -48,6 +41,24 @@ class ReceiptSubmissionReceipt(BootstrapFormMixin, ModelForm):
                 filesizeformat(settings.MAX_UPLOAD_SIZE), filesizeformat(size)))
         return receipt
 
+    def clean_origin(self):
+        origin = self.cleaned_data['origin']
+        # read from json file on local machine
+
+        # actual file path
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+
+        # get static relative path
+        STATIC_ROOT = os.path.join(dir_path, "./static")
+        # open relative file
+        with open(os.path.join(STATIC_ROOT,'cities.json')) as f:
+            countries = json.load(f)
+
+            # check if is part of the list
+            if origin not in countries:
+                raise forms.ValidationError("Please select one of the dropdown options and don't forget to add commas")
+            return origin
+
     def save(self, commit=True):
         reimb = super(ReceiptSubmissionReceipt, self).save(commit=False)
         reimb.submit_receipt()
@@ -58,19 +69,20 @@ class ReceiptSubmissionReceipt(BootstrapFormMixin, ModelForm):
     class Meta:
         model = Reimbursement
         fields = (
-            'paypal_email', 'receipt', 'multiple_hackers', 'friend_emails', 'origin',)
+            'paypal_email', 'receipt', 'origin',)
         widgets = {
             'origin': forms.TextInput(attrs={'autocomplete': 'off'}),
         }
 
         labels = {
-            'multiple_hackers': 'This receipt covers multiple hackers',
-            'friend_emails': 'Hackers emails',
             'paypal_email': 'PayPal email'
         }
-
+        extensions = getattr(settings, "SUPPORTED_RESUME_EXTENSIONS", None)
         help_texts = {
-            'friend_emails': 'Comma separated, use emails your friends used to register'
+            'paypal_email': 'We will send the reimbursement to this email. If you don\'t have a PayPal account, please create a free one <a target="_blank" href="https://www.paypal.com">here</a>.',
+            "receipt": "Accepted file formats: %s"
+            % (", ".join(extensions) if extensions else "Any"),
+            "origin": "If you don’t see your city, choose the closest one! <br> Please type following this schema: <strong>city, province, country</strong>",
         }
 
 
@@ -106,6 +118,13 @@ class AcceptReceiptForm(ModelForm):
             'origin': forms.TextInput(attrs={'autocomplete': 'off'}),
         }
 
+class ValidateReimbursementForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(ValidateReimbursementForm, self).__init__(*args, **kwargs)
+
+    class Meta:
+        model = Reimbursement
+        fields = ()
 
 class EditReimbursementForm(ModelForm):
     def __getitem__(self, item):
@@ -124,3 +143,38 @@ class EditReimbursementForm(ModelForm):
             'reimbursement_money': 'Amount to be reimbursed',
             'expiration_time': 'When is the reimbursement expiring?'
         }
+
+class DevpostValidationForm(BootstrapFormMixin, ModelForm):
+    bootstrap_field_info = {
+        'Devpost URL': {
+            'fields': [{'name': 'devpost', 'space': 12}],
+        },
+    }
+
+    def __init__(self, *args, **kwargs):
+        super(DevpostValidationForm, self).__init__(*args, **kwargs)
+        self.fields['devpost'].required = True
+
+    class Meta:
+        model = Reimbursement
+        fields = ('devpost',)
+        labels = {
+            'devpost': 'Devpost URL'
+        }
+        help_texts = {
+            'devpost': 'Please provide the URL of your Devpost project'
+        }
+        widgets = {
+            'devpost': forms.TextInput(attrs={'autocomplete': 'off'}),
+        }
+
+    def clean_devpost(self):
+        devpost = self.cleaned_data['devpost']
+        if not devpost:
+            raise forms.ValidationError("Please provide a Devpost URL")
+        return devpost  
+    
+    
+
+    
+

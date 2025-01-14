@@ -11,22 +11,24 @@ from user.models import User
 
 DEFAULT_EXPIRY_DATE = settings.REIMBURSEMENT_EXPIRY_DATE
 
-RE_DRAFT = 'D'
 RE_WAITLISTED = 'W'
 RE_PEND_TICKET = 'PT'
 RE_PEND_APPROVAL = 'PA'
 RE_APPROVED = 'A'
+RE_PEND_DEMO_VAL = 'PD'
+RE_FINALIZED = 'F'
 RE_EXPIRED = 'X'
 RE_FRIEND_SUBMISSION = 'FS'
 
 RE_STATUS = [
-    (RE_DRAFT, 'Pending review'),
     (RE_WAITLISTED, 'Wait listed'),
     (RE_PEND_TICKET, 'Pending receipt submission'),
     (RE_PEND_APPROVAL, 'Pending receipt approval'),
     (RE_APPROVED, 'Receipt approved'),
     (RE_EXPIRED, 'Expired'),
     (RE_FRIEND_SUBMISSION, 'Friend submission'),
+    (RE_FINALIZED, 'Reimbursement Approved'),
+    (RE_PEND_DEMO_VAL, 'Pending demo validation'),
 ]
 
 
@@ -58,9 +60,11 @@ def check_friend_emails(friend_emails, user_email):
 
 class Reimbursement(models.Model):
     # Admin controlled
-    assigned_money = models.FloatField()
+    assigned_money = models.FloatField(default=0)
     reimbursement_money = models.FloatField(null=True, blank=True)
     public_comment = models.CharField(max_length=300, null=True, blank=True)
+
+    devpost = models.URLField(blank=True, null=True, default='')
 
     # User controlled
     paypal_email = models.EmailField(null=True, blank=True)
@@ -83,15 +87,11 @@ class Reimbursement(models.Model):
     update_time = models.DateTimeField(default=timezone.now)
     creation_time = models.DateTimeField(default=timezone.now)
     status = models.CharField(max_length=2, choices=RE_STATUS,
-                              default=RE_DRAFT)
+                              default=RE_PEND_TICKET)
 
     @property
     def max_assignable_money(self):
-        if self.friend_submission:
-            return 0
-        if not self.multiple_hackers:
-            return self.assigned_money
-        return sum([reimb.assigned_money for reimb in self.friend_submissions.all()]) + self.assigned_money
+        return self.assigned_money
 
     @property
     def friend_emails_list(self):
@@ -110,10 +110,13 @@ class Reimbursement(models.Model):
         return self.status == RE_EXPIRED
 
     def generate_draft(self, application):
-        if self.status != RE_DRAFT:
+        if self.status != RE_PEND_TICKET:
             return
         self.origin = application.origin
-        self.assigned_money = application.reimb_amount
+        if not application.reimb_amount:
+            self.assigned_money = 0
+        else: 
+            self.assigned_money = application.reimb_amount
         self.hacker = application.user
         self.save()
 
@@ -125,7 +128,7 @@ class Reimbursement(models.Model):
         if not self.assigned_money:
             raise ValidationError('Reimbursement can\'t be sent because '
                                   'there\'s no assigned money')
-        if self.status == RE_DRAFT:
+        if self.status == RE_PEND_TICKET:
             self.status = RE_PEND_TICKET
             self.status_update_date = timezone.now()
             self.reimbursed_by = user
@@ -133,8 +136,15 @@ class Reimbursement(models.Model):
             self.expiration_time = DEFAULT_EXPIRY_DATE
             self.save()
 
+    def validate(self, user):
+        if self.status == RE_PEND_DEMO_VAL:
+            self.status = RE_FINALIZED
+            self.status_update_date = timezone.now()
+            self.reimbursed_by = user
+            self.save()
+
     def no_reimb(self, user):
-        if self.status == RE_DRAFT:
+        if self.status == RE_PEND_TICKET:
             self.status = RE_WAITLISTED
             self.status_update_date = timezone.now()
             self.reimbursed_by = user
@@ -143,16 +153,22 @@ class Reimbursement(models.Model):
             self.save()
 
     def is_sent(self):
-        return self.status in [RE_PEND_APPROVAL, RE_PEND_TICKET, ]
+        return self.status in [RE_PEND_APPROVAL, RE_PEND_TICKET]
 
     def has_friend_submitted(self):
         return self.status == RE_FRIEND_SUBMISSION
 
     def is_draft(self):
-        return self.status == RE_DRAFT
+        return self.status == RE_PEND_TICKET
 
     def is_accepted(self):
         return self.status in RE_APPROVED
+
+    def is_finalized(self):
+        return self.status == RE_FINALIZED
+
+    def is_pending_demo_validation(self):
+        return self.status == RE_PEND_DEMO_VAL
 
     def waitlisted(self):
         return self.status == RE_WAITLISTED
@@ -182,7 +198,6 @@ class Reimbursement(models.Model):
     def accept_receipt(self, user):
         self.status = RE_APPROVED
         self.reimbursed_by = user
-        self.reimbursement_money = min(self.reimbursement_money, self.max_assignable_money)
 
     def submit_receipt(self):
         self.status = RE_PEND_APPROVAL

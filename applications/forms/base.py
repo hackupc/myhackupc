@@ -144,7 +144,7 @@ class ConfirmationInvitationForm(BootstrapFormMixin, forms.ModelForm):
         '': {
             'fields': [{'name': 'tshirt_size', 'space': 4}, {'name': 'diet', 'space': 4},
                        {'name': 'other_diet', 'space': 4},
-                       {'name': 'reimb', 'space': 12}, {'name': 'reimb_amount', 'space': 12},
+                       {'name': 'reimb', 'space': 12},
                        {'name': 'terms_and_conditions', 'space': 12},
                        {'name': 'mlh_required_terms', 'space': 12},
                        {'name': 'mlh_required_privacy', 'space': 12}, {'name': 'mlh_subscribe', 'space': 12},
@@ -253,16 +253,6 @@ class ConfirmationInvitationForm(BootstrapFormMixin, forms.ModelForm):
             raise forms.ValidationError("Please tell us your specific dietary requirements")
         return data
 
-    def clean_reimb_amount(self):
-        data = self.cleaned_data['reimb_amount']
-        reimb = self.cleaned_data.get('reimb', False)
-        if reimb and not data:
-            raise forms.ValidationError("To apply for reimbursement please set a valid amount.")
-        deadline = getattr(settings, 'REIMBURSEMENT_DEADLINE', False)
-        if data and deadline and deadline <= timezone.now():
-            raise forms.ValidationError("Reimbursement applications are now closed. Trying to hack us?")
-        return data
-
     def clean_reimb(self):
         reimb = self.cleaned_data.get('reimb', False)
         deadline = getattr(settings, 'REIMBURSEMENT_DEADLINE', False)
@@ -276,11 +266,8 @@ class ConfirmationInvitationForm(BootstrapFormMixin, forms.ModelForm):
         help_texts = {
             'other_diet': 'If you have any special dietary requirements, please write write them here. '
                           'We want to make sure we have food for you!',
-            'reimb_amount': 'We try our best to cover costs for all hackers, but our budget is limited',
         }
         labels = {
             'tshirt_size': 'What\'s your t-shirt size?',
             'diet': 'Dietary requirements',
-            'reimb_amount': 'How much money (%s) would you need to afford traveling to %s?' % (
-                getattr(settings, 'CURRENCY', '$'), settings.HACKATHON_NAME),
         }
