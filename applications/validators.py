@@ -9,9 +9,11 @@ def validate_file_extension(value):
     if valid_extensions and not ext.lower() in valid_extensions:
         raise ValidationError('Unsupported file extension.')
 
+
 def validate_file_size(value):
     if value.size > settings.MAX_UPLOAD_SIZE:
         raise ValidationError(
             f'Please keep resume size under {settings.MAX_UPLOAD_SIZE / (1024 * 1024):.2f}MB. '
             f'Current filesize: {value.size / (1024 * 1024):.2f}MB'
         )
+        
