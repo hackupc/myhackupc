@@ -16,4 +16,3 @@ def validate_file_size(value):
             f'Please keep resume size under {settings.MAX_UPLOAD_SIZE / (1024 * 1024):.2f}MB. '
             f'Current filesize: {value.size / (1024 * 1024):.2f}MB'
         )
-        
