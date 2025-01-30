@@ -107,7 +107,7 @@ class HackerApplicationForm(_BaseApplicationForm):
 
     cvs_edition = forms.BooleanField(
         required=False,
-        label='I authorize "Hackers at UPC" to share my CV with HackUPC 2024 Sponsors.',
+        label='I authorize "Hackers at UPC" to share my CV with HackUPC 2025 Sponsors.',
     )
 
     def __init__(
