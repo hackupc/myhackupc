@@ -145,7 +145,8 @@
                     confirm
                     your attendance as soon as possible.
                 </div>
-
+                
+                
 
                 {% if application.user.is_hacker %}
                     {% if h_hybrid %}
@@ -160,7 +161,9 @@
                     </p>
                     <p>Please confirm that this information regarding your application is correct. If you see that something's not right, now is the time to change it!</p>
                     <p><b><span style="color:#E23532;">Disclaimer:</span></b> <span style="color:#FC5C5A;">We cannot guarantee that the meat provided at the event will be Halal. We strongly advise to consider opting for a vegetarian diet instead.</span></p>
-                    {% include 'include/bootstrap_form.html' with form=confirm_form %}
+                    
+                    <p id="origin" hidden>{{application.origin}}</p>
+                    {% include 'include/bootstrap_form.html' with form=confirm_form  %}
                     <script src="{% static 'js/form_modifiers.js' %}"></script>
                     <script>
                         $(document).ready(() => {
@@ -188,19 +191,28 @@
                             diet.on('change', function () {
                                 checkDietNotice();
                             });
-                            
-                            let needs_reimb = $('input[name="reimb"][value="True"]');
-                            let no_reimb = $('input[name="reimb"][value="False"]');
-                            let reimb_amout = $('#id_reimb_amount');
-                            let reimb = $('#id_reimb');
-                            conditional_field(reimb_amout, needs_reimb, function () {
-                                return needs_reimb.prop("checked");
-                            }, 1);
-                            conditional_field(reimb_amout, no_reimb, function () {
-                                return needs_reimb.prop("checked");
-                            }, 1);
-                            reimb.parent().addClass('required');
-                            reimb_amout.parent().addClass('required');
+
+                            let origin = $('#origin').text().trim();
+                            origin = origin.toLowerCase().split(',');                            
+                            if (origin[1].includes('barcelona') || origin[1].includes('tarragona') || origin[1].includes('lleida') || origin[1].includes('girona')){
+                                // hide the reimbursement field
+                                $('#id_reimb').parent().parent().hide();
+                                let no_reimb = $('input[name="reimb"][value="False"]');
+                                no_reimb.prop("checked", true);
+                            }
+                            else{
+                                let needs_reimb = $('input[name="reimb"][value="True"]');
+                                let no_reimb = $('input[name="reimb"][value="False"]');
+                                let reimb = $('#id_reimb');
+                                
+                                //conditional_field(reimb_amout, needs_reimb, function () {
+                                //    return needs_reimb.prop("checked");
+                                //}, 1);
+                                //conditional_field(reimb_amout, no_reimb, function () {
+                                //    return needs_reimb.prop("checked");
+                                //}, 1);
+                                reimb.parent().addClass('required');
+                            }
                         })
                     </script>
                 {% else %}

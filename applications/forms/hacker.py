@@ -141,20 +141,6 @@ class HackerApplicationForm(_BaseApplicationForm):
         cc = self.cleaned_data.get("cvs_edition", False)
         return cc
 
-    def clean_reimb_amount(self):
-        data = self.cleaned_data["reimb_amount"]
-        reimb = self.cleaned_data.get("reimb", False)
-        if reimb and not data:
-            raise forms.ValidationError(
-                "To apply for reimbursement please set a valid amount."
-            )
-        deadline = getattr(settings, "REIMBURSEMENT_DEADLINE", False)
-        if data and deadline and deadline <= timezone.now():
-            raise forms.ValidationError(
-                "Reimbursement applications are now closed. Trying to hack us?"
-            )
-        return data
-
     def clean_reimb(self):
         reimb = self.cleaned_data.get("reimb", False)
         deadline = getattr(settings, "REIMBURSEMENT_DEADLINE", False)
@@ -188,8 +174,6 @@ class HackerApplicationForm(_BaseApplicationForm):
             polices_fields.append({"name": "diet_notice", "space": 12})
 
         personal_info_fields.append({"name": "discover", "space": 12})
-        deadline = getattr(settings, "REIMBURSEMENT_DEADLINE", False)
-        r_enabled = getattr(settings, "REIMBURSEMENT_ENABLED", False)
         personal_info_fields.append({"name": "origin", "space": 12})
 
         # Fields that we only need the first time the hacker fills the application
@@ -226,7 +210,6 @@ class HackerApplicationForm(_BaseApplicationForm):
             "projects": 
             "Tell us about your personal projects, awards, or any work that you are proud of.   <br>"
             "<span id=\'projects_char_count\'></span>",
-            "reimb_amount": "We try our best to cover costs for all hackers, but our budget is limited",
             "resume": "Accepted file formats: %s"
             % (", ".join(extensions) if extensions else "Any"),
             "origin": "If you don’t see your city, choose the closest one! <br> Please type following this schema: <strong>city, province, country</strong>",

@@ -1,5 +1,5 @@
 {% load static %}
-<form class="signup " enctype="multipart/form-data" id="signup_form" method="post" action="">
+<form class="signup " enctype="multipart/form-data" id="signup_form" method="post" action="" name="reimbursement_form">
     {% csrf_token %}
     {% include 'include/bootstrap_form.html' %}
     <small><span style="color: red">*</span>Indicates required field</small>
@@ -14,16 +14,24 @@
 <script>
 
     $(document).ready(function () {
-            $("#id_origin").typeahead({
-                minLength: 3,
-                source: function (query, process) {
-                    $.get('https://api.teleport.org/api/cities/', {search: query}, function (data) {
-                        var cities = jQuery.map(data._embedded["city:search-results"], function (c) {
-                            return c.matching_full_name;
+            fetch('{% static 'cities.json' %}')
+            .then((response) => response.json())
+            .then((json) => {
+                let cities_dict = {};
+                $("#id_origin").typeahead({
+                    minLength: 3,
+                    source: function (query, process) {
+                        // read from cities.json and check if the query matches any city
+                        var matches = [];
+                        // find the strings starting with the query
+                        $.each(json, function (i, city) {
+                            if (city.toLowerCase().indexOf(query.toLowerCase()) !== -1) {
+                                matches.push(city);
+                            }
                         });
-                        return process(cities);
-                    });
-                }
+                        return process(matches);
+                    }
+                });
             });
             var multiple_hacker = $('#id_multiple_hackers');
             var teammates = $('#id_friend_emails');

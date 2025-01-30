@@ -3,7 +3,7 @@
 {% load bootstrap3 %}
 {% load static %}
 {% block head_title %}
-    {% if review %} Review receipts{% else %}{{ reimb.hacker.get_full_name }}'s reimbursement{% endif %}
+    Review {{ reimb.hacker.get_full_name }}'s reimbursement
 {% endblock %}
 {% block extra_head %}
     <link rel="stylesheet" href="{% static 'lib/bars-square.css' %}">
@@ -13,8 +13,7 @@
 {% block panel %}
     {% if reimb %}
         <div class="{% if user.is_director or reimb %}col-md-8 margin-right{% else %}col-md-12{% endif %}">
-            <h2>{% if review %} Review receipts{% else %}{{ reimb.hacker.get_full_name }}'s
-                reimbursement{% endif %}</h2>
+            <h2>Review {{ reimb.hacker.get_full_name }}'s reimbursement</h2>
             <a target="_blank" style="color:black; text-decoration: none;" class="pull-right fa fa-link"
                href="{% url 'reimbursement_detail' reimb.pk %}">
             </a>
@@ -27,9 +26,26 @@
                 {% include 'include/field.html' with desc='Full name' value=reimb.hacker.name %}
                 {% include 'include/field.html' with desc='Email' value=reimb.hacker.email %}
                 {% include 'include/field.html' with desc='Deadline' value=reimb.expiration_time|naturaltime %}
-                {% include 'include/field.html' with desc='Status' value=reimb.get_status_display %}
                 {% include 'include/field.html' with desc='Country' value=reimb.origin_country %}
                 {% include 'include/field.html' with desc='City' value=reimb.origin %}
+                <hr>
+                <dt>
+                <dt>
+                <h3>Status</h3>
+                </dt>
+                <dd></dd>
+                {% include 'include/field.html' with desc='Status' value=reimb.get_status_display %}
+                {% if reimb.public_comment %}
+                    {% include 'include/field.html' with desc='Reject reason' value=reimb.public_comment %}
+                {% endif %}
+                {% if reimb.is_pending_demo_validation %}
+                    <form action="" method="post" name="validate_form">
+                        {% csrf_token %}
+                        <input type="hidden" name="id" value="{{ reimb.pk }}"/>
+                        <button name="validate" class="btn btn-success btn-block"
+                                value="validate">Validate
+                        </button>
+                {% endif %}
                 <hr>
                 <dt>
                 <h3>Receipt</h3>
@@ -38,64 +54,60 @@
                 {% if reimb.receipt %}
                     {% include 'include/field.html' with desc='Receipt' value='<a href="'|add:reimb.receipt.url|add:'" target="_blank">'|add:reimb.receipt.name|add:"</a>"|safe %}
                 {% endif %}
-                {% include 'include/field.html' with desc='Multiple hackers covered' value=reimb.multiple_hackers|yesno %}
-                {% include 'include/field.html' with desc='Other hackers covered' value=reimb.friend_emails %}
                 {% include 'include/field.html' with desc='Maximum assignable' value=reimb.max_assignable_money %}
 
-                {% if reimb.is_accepted %}
+                {% if reimb.is_accepted or reimb.is_pending_demo_validation or reimb.is_finalized %}
                     <hr>
                     <dt>
-                    <h3>Sending the monies</h3>
+                    <h3>Accepted</h3>
                     </dt>
                     <dd></dd>
                     {% include 'include/field.html' with desc='Reimbursement money' value=reimb.reimbursement_money %}
                     {% include 'include/field.html' with desc='PayPal email' value=reimb.paypal_email %}
-                    {% include 'include/field.html' with desc='Venmo user' value=reimb.venmo_user %}
+                    {% include 'include/field.html' with desc='Devpost URL' value=reimb.devpost %}
                 {% endif %}
             </dl>
         </div>
 
+        {% if user.is_director %}
+        <div class="col-md-4 margin-left">
 
-        {% if review %}
-            <div class="col-md-4 margin-left">
-                <hr>
-                <h4 class="text-center">Reject receipt</h4>
-                <form action="" method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="id" value="{{ reimb.pk }}"/>
-                    {% bootstrap_form reject_form %}
-                    <button name="reject" class="btn btn-danger btn-block"
-                            value="reject">Reject
-                    </button>
-
-                </form>
-                <hr>
-                <h4 class="text-center">Accept receipt</h4>
-                <form action="" method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="id" value="{{ reimb.pk }}"/>
-                    {% bootstrap_form accept_form %}
-                    <button name="accept" class="btn btn-success btn-block"
-                            value="accept">Accept
-                    </button>
-                </form>
-
-            </div>
-        {% else %}
-            {% if user.is_director %}
-                <div class="col-md-4 margin-left">
-
-                    <form action="" method="post" class="form">
-                        {% csrf_token %}
-                        <h4>Edit reimbursement</h4>
-                        {% bootstrap_form edit_form %}
-                        <button name="invite" class="btn btn-success btn-block"
-                                value="invite">Submit changes
-                        </button>
-                    </form>
-                </div>
-            {% endif %}
+            <form action="" method="post" class="form" name="edit_form">
+                {% csrf_token %}
+                <h4>Edit reimbursement</h4>
+                {% bootstrap_form edit_form %}
+                <button name="invite" class="btn btn-success btn-block"
+                        value="invite">Submit changes
+                </button>
+            </form>
+            <br>
+        </div>
         {% endif %}
+        <div class="col-md-4 margin-left">
+            <hr>
+            <h4 class="text-center">Reject receipt</h4>
+            <form action="" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="id" value="{{ reimb.pk }}"/>
+                {% bootstrap_form reject_form %}
+                <button name="reject" class="btn btn-danger btn-block"
+                        value="reject">Reject
+                </button>
+            <hr>
+            <hr>
+            </form>
+            <h4 class="text-center">Accept receipt</h4>
+            <form action="" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="id" value="{{ reimb.pk }}"/>
+                {% bootstrap_form accept_form %}
+                <button name="accept" class="btn btn-success btn-block"
+                        value="accept">Accept
+                </button>
+            </form>
+
+        </div>
+        
 
 
 
@@ -127,16 +139,24 @@
                 });
             }
         );
-        $("#id_origin").typeahead({
-            minLength: 3,
-            source: function (query, process) {
-                $.get('https://api.teleport.org/api/cities/', {search: query}, function (data) {
-                    var cities = jQuery.map(data._embedded["city:search-results"], function (c) {
-                        return c.matching_full_name;
+        fetch('{% static 'cities.json' %}')
+        .then((response) => response.json())
+        .then((json) => {
+            let cities_dict = {};
+            $("#id_origin").typeahead({
+                minLength: 3,
+                source: function (query, process) {
+                    // read from cities.json and check if the query matches any city
+                    var matches = [];
+                    // find the strings starting with the query
+                    $.each(json, function (i, city) {
+                        if (city.toLowerCase().indexOf(query.toLowerCase()) !== -1) {
+                            matches.push(city);
+                        }
                     });
-                    return process(cities);
-                });
-            }
+                    return process(matches);
+                }
+            });
         });
 
     </script>
