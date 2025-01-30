@@ -173,21 +173,21 @@ class MentorApplicationForm(_BaseApplicationForm):
             polices_fields.append({"name": "diet_notice", "space": 12})
         # Fields that we only need the first time the hacker fills the application
         # https://stackoverflow.com/questions/9704067/test-if-django-modelform-has-instance
-        if not self.instance.pk:
-            fields["HackUPC Policies"] = {
-                "fields": polices_fields,
-                "description": '<p style="color: margin-top: 1em;display: block;'
-                'margin-bottom: 1em;line-height: 1.25em;">We, Hackers at UPC, '
-                "process your information to organize an awesome hackathon. It "
-                "will also include images and videos of yourself during the event. "
-                "Your data will be used for admissions mainly. We may also reach "
-                "out to you (sending you an e-mail) about other events that we are "
-                "organizing and that are of a similar nature to those previously "
-                "requested by you. For more information on the processing of your "
-                "personal data and on how to exercise your rights of access, "
-                "rectification, suppression, limitation, portability and opposition "
-                "please visit our Privacy and Cookies Policy.</p>",
-            }
+        
+        fields["HackUPC Policies"] = {
+            "fields": polices_fields,
+            "description": '<p style="color: margin-top: 1em;display: block;'
+            'margin-bottom: 1em;line-height: 1.25em;">We, Hackers at UPC, '
+            "process your information to organize an awesome hackathon. It "
+            "will also include images and videos of yourself during the event. "
+            "Your data will be used for admissions mainly. We may also reach "
+            "out to you (sending you an e-mail) about other events that we are "
+            "organizing and that are of a similar nature to those previously "
+            "requested by you. For more information on the processing of your "
+            "personal data and on how to exercise your rights of access, "
+            "rectification, suppression, limitation, portability and opposition "
+            "please visit our Privacy and Cookies Policy.</p>",
+        }
         return fields
 
     def clean(self):

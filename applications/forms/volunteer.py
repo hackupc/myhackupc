@@ -170,20 +170,20 @@ class VolunteerApplicationForm(_BaseApplicationForm):
             polices_fields.append({"name": "diet_notice", "space": 12})
         # Fields that we only need the first time the hacker fills the application
         # https://stackoverflow.com/questions/9704067/test-if-django-modelform-has-instance
-        if not self.instance.pk:
-            fields["Políticas HackUPC"] = {
-                "fields": polices_fields,
-                "description": '<p style="color: margin-top: 1em;display: block;'
-                'margin-bottom: 1em;line-height: 1.25em;">Nosotros, Hackers at UPC, '
-                "procesamos tu información para organizar la mejor hackathon posible. "
-                "También incluirá imágenes y videos tuyos durante el evento. "
-                "Tus datos se utilizarán principalmente para admisiones. También podríamos contactarte "
-                "(enviándote un correo electrónico) sobre otros eventos que estamos organizando y "
-                "que son de una naturaleza similar a los que previamente solicitaste. Para más "
-                "información sobre el procesamiento de tus datos personales y sobre cómo ejercer tus "
-                "derechos de acceso, rectificación, supresión, limitación, portabilidad y oposición, por "
-                "favor visita nuestra Política de Privacidad y Cookies.</p>",
-            }
+        
+        fields["Políticas HackUPC"] = {
+            "fields": polices_fields,
+            "description": '<p style="color: margin-top: 1em;display: block;'
+            'margin-bottom: 1em;line-height: 1.25em;">Nosotros, Hackers at UPC, '
+            "procesamos tu información para organizar la mejor hackathon posible. "
+            "También incluirá imágenes y videos tuyos durante el evento. "
+            "Tus datos se utilizarán principalmente para admisiones. También podríamos contactarte "
+            "(enviándote un correo electrónico) sobre otros eventos que estamos organizando y "
+            "que son de una naturaleza similar a los que previamente solicitaste. Para más "
+            "información sobre el procesamiento de tus datos personales y sobre cómo ejercer tus "
+            "derechos de acceso, rectificación, supresión, limitación, portabilidad y oposición, por "
+            "favor visita nuestra Política de Privacidad y Cookies.</p>",
+        }
         return fields
 
     class Meta(_BaseApplicationForm.Meta):
