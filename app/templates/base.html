@@ -49,7 +49,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css/custom-bootstrap.css' %}">
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <link rel="stylesheet" href="{% static 'lib/snackbar.min.css' %}">
@@ -181,44 +181,44 @@
             <div class="social-icons col-sm-6 text-right text-center-xs">
                 {% if h_me %}
                     <a class="btns" target="_blank" href="https://medium.com/@{{ h_me }}">
-                        <i aria-hidden="true" class="fa fa-medium fa-lg"></i>
+                        <i aria-hidden="true" class="fa-brands fa-medium fa-lg"></i>
                     </a>
                 {% endif %}
                 {% if h_repo %}
                     <a class="btns" target="_blank" href="{{ h_repo }}">
-                        <i aria-hidden="true" class="fa fa-github fa-lg"></i>
+                        <i aria-hidden="true" class="fa-brands fa-github fa-lg"></i>
                     </a>
                 {% endif %}
                 {% if h_ig %}
                     <a class="btns" target="_blank" href="https://instagram.com/{{ h_ig }}">
-                        <i aria-hidden="true" class="fa fa-instagram fa-lg"></i>
+                        <i aria-hidden="true" class="fa-brands fa-instagram fa-lg"></i>
                     </a>
                 {% endif %}
                 {% if h_fb %}
                     <a class="btns" target="_blank" href="https://fb.com/{{ h_fb }}">
-                        <i aria-hidden="true" class="fa fa-facebook fa-lg"></i>
+                        <i aria-hidden="true" class="fa-brands fa-facebook fa-lg"></i>
                     </a>
                 {% endif %}
                 {% if h_yt %}
                     <a class="btns" target="_blank" href="https://youtube.com/channel/{{ h_yt }}">
-                        <i aria-hidden="true" class="fa fa-youtube fa-lg"></i>
+                        <i aria-hidden="true" class="fa-brands fa-youtube fa-lg"></i>
                     </a>
                 {% endif %}
                 {% if h_tw %}
                     <a class="btns" target="_blank" href="https://twitter.com/{{ h_tw }}">
-                        <i aria-hidden="true" class="fa fa-twitter fa-lg"></i>
+                        <i aria-hidden="true" class="fa-brands fa-x-twitter fa-lg"></i>
                     </a>
                 {% endif %}
                 {% if h_contact_email %}
                     <a class="btns" target="_blank" href="mailto:{{ h_contact_email }}">
-                        <i aria-hidden="true" class="fa fa-envelope-o fa-lg"></i>
+                        <i aria-hidden="true" class="fa-regular fa-envelope fa-lg"></i>
                     </a>
                 {% endif %}
             </div>
         </div>
         <div class="row">
             <div class="col-md-12 text-center">
-                <small>Made with <i class="fa fa-laptop" aria-hidden="true"></i> and <i class="fa fa-heart" aria-hidden="true"></i> by {{ h_name }} </small>
+                <small>Made with <i class="fa-solid fa-laptop" aria-hidden="true"></i> and <i class="fa-solid fa-heart" aria-hidden="true"></i> by {{ h_name }} </small>
                 {# OH NO YOU FOUND ME! This is just an internal joke that appeared at the first edition of HackUPC. #}
                 {# You can remove it, but if you dont care, please keep it. I'm a sentimental - Gerard Casas contact@gerard.space #}
                 <span style="display: none">BIENE {{ h_name }}</span>
