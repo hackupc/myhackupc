@@ -46,7 +46,7 @@ class MentorApplication(
         upload_to=resume_path_mentors,
         null=True,
         blank=True,
-        validators=[validate_file_extension],
+        validators=[validate_file_extension, validate_file_size],
     )
     valid = models.BooleanField(default=False)
 
