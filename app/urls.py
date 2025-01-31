@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^judging/', include('judging.urls')),
     url(r'^offer/', include('offer.urls')),
     url(r'^openid/', include('django_jwt.server.urls')),
+    url(r'^413_request_entity_too_large/$', views.error_413, name='request_entity_too_large'),
 ]
 
 if settings.BAGGAGE_ENABLED:
