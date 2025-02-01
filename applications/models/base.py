@@ -16,7 +16,7 @@ from multiselectfield import MultiSelectField
 from app import utils, hackathon_variables
 from user.models import User, BlacklistUser
 from user import models as userModels
-from applications.validators import validate_file_extension, validate_file_size
+from applications.validators import validate_file_extension, validate_file_extension_size
 from .constants import *
 
 
