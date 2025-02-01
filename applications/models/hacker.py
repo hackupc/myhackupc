@@ -61,7 +61,7 @@ class HackerApplication(
         upload_to=resume_path_hackers,
         null=True,
         blank=True,
-        validators=[validate_file_extension, validate_file_size],
+        validators=[validate_file_extension_size],
     )
 
     @classmethod
