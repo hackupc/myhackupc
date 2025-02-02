@@ -52,7 +52,7 @@
             {% csrf_token %}
             {% bootstrap_form form  %}
             {% if not is_sposnor_form %}
-	              <p class="team-info team-info-margin"><i class="fa fa-exclamation-triangle"></i> <strong>Remember!</strong> Your team members still have to register separately.</p>
+	              <p class="team-info team-info-margin"><i class="fa-solid fa-triangle-exclamation"></i> <strong>Remember!</strong> Your team members still have to register separately.</p>
             {% endif %}
             {% if captcha_site_key %}
                 <script src='https://www.google.com/recaptcha/api.js'></script>
