@@ -41,6 +41,10 @@
 
         if(description.val() == undefined) return;
         var current = description.val().length;
+
+        // add extra to current to fix newline characters (1 \n = 2 characters)
+        current += description.val().split('\n').length - 1;
+
         if(max_length >= current && current >= max_length-50){
              description_remaining.style.color = "#f77f00";
              description.parent().removeClass('has-error');
