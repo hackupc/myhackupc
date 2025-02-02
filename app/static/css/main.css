@@ -17,8 +17,11 @@
 }
 
 body {
-
-    background: url("../img/background.jpeg") #f2ede6 center center repeat fixed;
+    background-image: url("../img/background.svg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    
+    
     font-family: ProximaNovaRegular, 'Roboto', sans-serif;
     font-size: 15px;
 }
