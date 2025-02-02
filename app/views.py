@@ -121,5 +121,9 @@ def protectedMedia(request, file_):
     return HttpResponseRedirect(reverse('account_login'))
 
 
+def error_413(request):
+    return render(request, '413.html', status=413)
+
+
 class TabsView(mixins.TabsViewMixin, TemplateView):
     pass
