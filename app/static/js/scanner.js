@@ -13,13 +13,13 @@ function Scanner(videoId, scanFunction=null, extraOpts={}) {
     } else {
         video.wrap('<div id="video-scan-all" style="display: none; position: relative; overflow: hidden; border-radius: 5px; width: 100%" class="mt-2 bg-primary">')
     }
-    video.after('<i id="toggle-flash" class="fa fa-bolt fs-1" style="display: none; position: absolute; z-index: 1252; right: 3%; top: 3%; cursor: pointer; font-size: xx-large;"></i>')
-    video.after('<i id="toggle-cam" class="fa fa-repeat fs-1" style="display: none; position: absolute; z-index: 1252; right: 3%; bottom: 3%; cursor: pointer; font-size: xx-large;"></i>')
+    video.after('<i id="toggle-flash" class="fa-solid fa-bolt fs-1" style="display: none; position: absolute; z-index: 1252; right: 3%; top: 3%; cursor: pointer; font-size: xx-large;"></i>')
+    video.after('<i id="toggle-cam" class="fa-solid fa-repeat fs-1" style="display: none; position: absolute; z-index: 1252; right: 3%; bottom: 3%; cursor: pointer; font-size: xx-large;"></i>')
     video.show()
     if (this.popup) {
         let video_wrap = video.parent()
         video_wrap.before('<div class="row m-0 mt-3">' +
-    '                          <div class="col-2 text-start"><h2><i id="close-button" class="fa fa-arrow-left" style="cursor: pointer"></i></h2></div>' +
+    '                          <div class="col-2 text-start"><h2><i id="close-button" class="fa-solid fa-arrow-left" style="cursor: pointer"></i></h2></div>' +
     `                          <div class="col-8"><h2>${extraOpts.popup_title ?? 'QR scanner'}</h2></div>` +
     '                      </div>')
         let all = $.merge(video_wrap.prev(), video_wrap)
