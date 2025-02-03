@@ -7,7 +7,7 @@
 {% block content %}
     <div class="menu-container">
         <a href="{% url 'signup_hacker' %}" 
-        class="menu-item {% if request.resolver_match.url_name == 'signup_hacker' %}active{% endif %}">
+        class="menu-item {% if request.resolver_match.url_name != 'signup_mentor' and request.resolver_match.url_name != 'signup_volunteer' %}active{% endif %}">
         Hacker
         </a>
         <a href="{% url 'signup_mentor' %}" 
