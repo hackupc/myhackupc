@@ -300,7 +300,7 @@ def generateGTicketUrl(qrValue: str):
         },
         "dateTime": {"start": "2024-05-03T16:00", "end": "2024-05-05T17:00"},
         "reviewStatus": "UNDER_REVIEW",
-        "hexBackgroundColor": "#240059",
+        "hexBackgroundColor": "#0060BF",
         "heroImage": {
             "sourceUri": {
                 "uri": "https://i.ibb.co/2ytdRvf/Gpay-2.png",
