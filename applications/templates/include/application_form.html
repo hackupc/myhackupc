@@ -136,11 +136,12 @@
                 section.style.backgroundColor = '#f3e6ff';
             }
 
+            // Making sections collapsible - Commented out for further testing
+            /*
             var title = $(section).find('div').first();
             title.css('cursor', 'pointer');
             title.css('user-select', 'none');
             
-            // Making sections collapsible
             title[0].addEventListener('click', function () {
                 this.classList.toggle('active');
                 var fieldset = this.closest('fieldset');
@@ -150,10 +151,12 @@
                     var isVisible = $(this).css('display') === 'block';
                     $(this).css('display', isVisible ? 'none' : 'block');
                 });
-            });            
+            });           
+            */ 
         });
         
-        // Handles the sending of the form --> Expands sections with errors
+        // Handles the sending of the form --> Expands sections with errors - Commented out for further testing
+        /*
         document.querySelector("#signup_form > button").addEventListener('click', function () {
             var sections = document.querySelectorAll('fieldset');
             sections.forEach(function (section) {
@@ -194,6 +197,7 @@
                 
             });
         });
+        */
         
 
         var other_gender = $('#id_other_gender');
