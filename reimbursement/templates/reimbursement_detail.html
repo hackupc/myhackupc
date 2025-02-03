@@ -14,7 +14,7 @@
     {% if reimb %}
         <div class="{% if user.is_director or reimb %}col-md-8 margin-right{% else %}col-md-12{% endif %}">
             <h2>Review {{ reimb.hacker.get_full_name }}'s reimbursement</h2>
-            <a target="_blank" style="color:black; text-decoration: none;" class="pull-right fa fa-link"
+            <a target="_blank" style="color:black; text-decoration: none;" class="pull-right fa-solid fa-link"
                href="{% url 'reimbursement_detail' reimb.pk %}">
             </a>
 
