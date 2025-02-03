@@ -17,8 +17,9 @@
 }
 
 body {
-
-    background: url("../img/background.jpeg") #f2ede6 center center repeat fixed;
+    background-image: url("../img/background.svg");
+    background-size: contain; 
+    background-repeat: repeat; 
     font-family: ProximaNovaRegular, 'Roboto', sans-serif;
     font-size: 15px;
 }
@@ -71,7 +72,7 @@ a:hover, a:active, a:focus {
     /*-moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);*/
     /*box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);*/
     border: 0;
-    border-top: 5px solid #E3C3FF;
+    border-top: 5px solid #0060BF;
 }
 
 .btn-primary {
@@ -110,7 +111,7 @@ nav.navbar {
     /*-moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);*/
     /*box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);*/
     border: 0;
-    border-bottom: 5px solid #E3C3FF;
+    border-bottom: 5px solid #0060BF;
 }
 
 .table {
@@ -121,7 +122,7 @@ div.panel {
     -webkit-border-radius: 10px;
     -moz-border-radius: 10px;
     border-radius: 10px;
-    border: 5px solid #E3C3FF;
+    border: 5px solid #0060BF;
     z-index: 3;
 }
 
@@ -260,7 +261,7 @@ img {
     padding: 0.5em 1em;
     text-align: center;
     transition: bottom 1s;
-    background-color: #E3C3FF;
+    background-color: #0060BF;
     z-index:1031; /*footer was set to 1030*/
     box-shadow: 0px 15px 15px 15px black;
     color: black;
