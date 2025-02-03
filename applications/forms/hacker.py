@@ -37,7 +37,7 @@ class HackerApplicationForm(_BaseApplicationForm):
                 {"name": "first_timer", "space": 12},
                 {"name": "projects", "space": 12},
             ],
-            "description": "Let us know what your experience is in similar events!",,
+            "description": "Let us know what your experience is in similar events!",
             "description": "Let us know what your experience is in similar events!",
         },
         "💻 💻 Show us what you've built": {
