@@ -9,7 +9,7 @@
     line-height: normal;
     z-index: -1;
     font-size: 15px;
-    color: black;
+    color: white;
     border-bottom: 0;
     -webkit-transition: all .1s linear;
     -moz-transition: all .1s linear;
@@ -23,6 +23,7 @@
     -moz-border-radius: 0;
     border-radius: 0;
     background: white;
+    color: #0060BF;
     border-bottom: 0;
 }
 
@@ -76,9 +77,11 @@
 
 .active_tab {
     background-color: white;
+    color: #0060BF !important;
 }
 
 .active_tab > a {
     background: none !important;
     box-shadow: none !important;
+    color: #0060BF !important;
 }
