@@ -119,9 +119,9 @@ nav.navbar {
 }
 
 div.panel {
-    -webkit-border-radius: 10px;
-    -moz-border-radius: 10px;
-    border-radius: 10px;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
     border: 5px solid #0060BF;
     z-index: 3;
 }

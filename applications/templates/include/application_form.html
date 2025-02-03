@@ -99,45 +99,52 @@
         sections.each(function (index, section) {
                             
             if (section.innerText.includes('Education Info') || section.innerText.includes('Background Info') || section.innerText.includes('Voluntariado')) {
-                section.style.border = '1px solid #007bff';
-                section.style.borderRadius = '10px';
+                section.style.border = '1px solid #a2d5f2';
+                section.style.borderRadius = '8px';
                 section.style.padding = '15px';
                 section.style.marginBottom = '15px';
+                section.style.marginTop = '15px';
                 section.style.backgroundColor = '#e7f3ff';
             } else if (section.innerText.includes('Personal Info') || section.innerText.includes('Información Personal')) {
-                section.style.border = '1px solid #28a745';
-                section.style.borderRadius = '10px';
+                section.style.border = '1px solid #a2d5c6';
+                section.style.borderRadius = '8px';
                 section.style.padding = '15px';
                 section.style.marginBottom = '15px';
-                section.style.backgroundColor = '#e6f7e6';
+                section.style.marginTop = '15px';
+                section.style.backgroundColor = '#e0f2ef';
             } else if (section.innerText.includes('Logistics Info')) {
-                section.style.border = '1px solid #ffc107';
-                section.style.borderRadius = '10px';
+                section.style.border = '1px solid #d8a5c2';
+                section.style.borderRadius = '8px';
                 section.style.padding = '15px';
                 section.style.marginBottom = '15px';
-                section.style.backgroundColor = '#fff8e1';
+                section.style.marginTop = '15px';
+                section.style.backgroundColor = '#f2e6ed';
             } else if (section.innerText.includes('Hackathons') || section.innerText.includes('Otras Preguntas')) {
-                section.style.border = '1px solid #dc3545';
-                section.style.borderRadius = '10px';
-                section.style.padding = '15px';
-                section.style.marginBottom = '15px';
-                section.style.backgroundColor = '#ffe6e6';
-            } else if (section.innerText.includes('Show us') || section.innerText.includes('Intereses')) {
                 section.style.border = '1px solid #17a2b8';
-                section.style.borderRadius = '10px';
+                section.style.borderRadius = '8px';
                 section.style.padding = '15px';
                 section.style.marginBottom = '15px';
+                section.style.marginTop = '15px';
                 section.style.backgroundColor = '#e6f7f8';
-            } else if (section.innerText.includes('Policies') || section.innerText.includes('Políticas')) {
-                section.style.border = '1px solid #6f42c1';
-                section.style.borderRadius = '10px';
+            } else if (section.innerText.includes('Show us') || section.innerText.includes('Intereses')) {
+                section.style.border = '1px solid #f5b28c';
+                section.style.borderRadius = '8px';
                 section.style.padding = '15px';
                 section.style.marginBottom = '15px';
-                section.style.backgroundColor = '#f3e6ff';
+                section.style.marginTop = '15px';
+                section.style.backgroundColor = '#ffe0cc';
+            } else if (section.innerText.includes('Policies') || section.innerText.includes('Políticas')) {
+                section.style.border = '1px solid #b2c8ff';
+                section.style.borderRadius = '8px';
+                section.style.padding = '15px';
+                section.style.marginBottom = '15px';
+                section.style.marginTop = '15px';
+                section.style.backgroundColor = '#e0e7ff';
             }
 
             var title = $(section).find('div').first().find('h3');
             title.css('font-family', 'Silkscreen, sans-serif');
+            title.css('margin-top', '15px');
             // Making sections collapsible - Commented out for further testing
             /*
             title.css('cursor', 'pointer');
