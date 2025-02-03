@@ -21,7 +21,7 @@
       {% if is_hacker %}
       <div style="background-color: #fff3cd; padding: 15px; border-radius: 5px; display: inline-block; border: 1px solid #ffeeba;">
         <p class="team-info" style="margin: 0; color: #856404;">
-          <i class="fa fa-exclamation-triangle" style="color: #856404;"></i> <strong>Remember!</strong> Your team members still have to apply separately.
+          <i class="fa-solid fa-triangle-exclamation" style="color: #856404;"></i> <strong>Remember!</strong> Your team members still have to apply separately.
         </p>
       </div>
       {% endif %}
@@ -296,7 +296,7 @@
                 });
             }
             
-            {% if form.hacker %}            
+            {% if app_type == 'H' %}            
             
                 // check and display remaining characters from the textarea with id description and projects
                 setUpCharCounterOn('#description', '#description_char_count');
@@ -304,7 +304,7 @@
                 setUpCharCounterOn('#projects', '#projects_char_count');
                 
             {% endif %}
-            {% if form.mentor %}
+            {% if app_type == 'M' %}
                 setUpCharCounterOn('#id_fluent', '#fluent_char_count');
                 setUpCharCounterOn('#id_experience', '#experience_char_count');
                 setUpCharCounterOn('#id_why_mentor', '#why_mentor_char_count');
@@ -323,7 +323,7 @@
             var is_not_first_hackathon_mentor = $('input[name="first_timer"][value="False"]')
             var first_time_mentor =  $('#id_first_time_mentor');
             var which_hack = $('#id_which_hack');
-            {% if form.volunteer %}
+            {% if app_type == 'V' %}
               conditional_field(which_hack, is_firsttime_volunteer, function () {
                   return is_firsttime_volunteer.prop("checked");
               });
@@ -334,7 +334,7 @@
             // Making projects look like required
             which_hack.parent().addClass('required');
             
-            {% if form.mentor %}
+            {% if app_type == 'M' %}
                 
                 conditional_field(first_time_mentor, is_not_first_hackathon_mentor, function () {
                     return is_not_first_hackathon_mentor.prop("checked");

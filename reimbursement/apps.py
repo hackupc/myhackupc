@@ -4,9 +4,10 @@ from django.apps import AppConfig
 
 
 class ReimbursementConfig(AppConfig):
-    name = 'reimbursement'
+    name = "reimbursement"
 
     def ready(self):
         super(ReimbursementConfig, self).ready()
         from .signals import reimbursement_create
+
         reimbursement_create

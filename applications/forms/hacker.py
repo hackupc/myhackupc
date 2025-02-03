@@ -132,7 +132,7 @@ class HackerApplicationForm(_BaseApplicationForm):
 
     cvs_edition = forms.BooleanField(
         required=False,
-        label='I authorize "Hackers at UPC" to share my CV with HackUPC 2024 Sponsors.',
+        label='I authorize "Hackers at UPC" to share my CV with HackUPC 2025 Sponsors.',
     )
 
     def __init__(
@@ -165,20 +165,6 @@ class HackerApplicationForm(_BaseApplicationForm):
     def clean_cvs_edition(self):
         cc = self.cleaned_data.get("cvs_edition", False)
         return cc
-
-    def clean_reimb_amount(self):
-        data = self.cleaned_data["reimb_amount"]
-        reimb = self.cleaned_data.get("reimb", False)
-        if reimb and not data:
-            raise forms.ValidationError(
-                "To apply for reimbursement please set a valid amount."
-            )
-        deadline = getattr(settings, "REIMBURSEMENT_DEADLINE", False)
-        if data and deadline and deadline <= timezone.now():
-            raise forms.ValidationError(
-                "Reimbursement applications are now closed. Trying to hack us?"
-            )
-        return data
 
     def clean_reimb(self):
         reimb = self.cleaned_data.get("reimb", False)
@@ -215,23 +201,25 @@ class HackerApplicationForm(_BaseApplicationForm):
         deadline = getattr(settings, "REIMBURSEMENT_DEADLINE", False)
         r_enabled = getattr(settings, "REIMBURSEMENT_ENABLED", False)
 
-        if not self.instance.pk:
-            fields["📜 HackUPC Policies"] = {
-                "fields": polices_fields,
-                "description": '<p style="margin-top: 1em;display: block;'
-                'margin-bottom: 1em;line-height: 1.25em;">We, Hackers at UPC, '
-                "process your information to organize an awesome hackathon. It "
-                "will also include images and videos of yourself during the event. "
-                "Your data will be used for admissions mainly. We may also reach "
-                "out to you (sending you an e-mail) about other events that we are "
-                "organizing and that are of a similar nature to those previously "
-                "requested by you. For more information on the processing of your "
-                "personal data and on how to exercise your rights of access, "
-                "rectification, suppression, limitation, portability and opposition "
-                "please visit our Privacy and Cookies Policy.</p>",
-            }
+        # Fields that we only need the first time the hacker fills the application
+        # https://stackoverflow.com/questions/9704067/test-if-django-modelform-has-instance
+        
+        fields["📜 HackUPC Policies"] = {
+            "fields": polices_fields,
+            "description": '<p style="color: margin-top: 1em;display: block;'
+            'margin-bottom: 1em;line-height: 1.25em;">We, Hackers at UPC, '
+            "process your information to organize an awesome hackathon. It "
+            "will also include images and videos of yourself during the event. "
+            "Your data will be used for admissions mainly. We may also reach "
+            "out to you (sending you an e-mail) about other events that we are "
+            "organizing and that are of a similar nature to those previously "
+            "requested by you. For more information on the processing of your "
+            "personal data and on how to exercise your rights of access, "
+            "rectification, suppression, limitation, portability and opposition "
+            "please visit our Privacy and Cookies Policy.</p>",
+        }
         return fields
-
+    
     class Meta(_BaseApplicationForm.Meta):
         model = models.HackerApplication
         extensions = getattr(settings, "SUPPORTED_RESUME_EXTENSIONS", None)
@@ -247,7 +235,6 @@ class HackerApplicationForm(_BaseApplicationForm):
             "projects": 
             "Tell us about your personal projects, awards, or any work that you are proud of.   <br>"
             "<span id=\'projects_char_count\'></span>",
-            "reimb_amount": "We try our best to cover costs for all hackers, but our budget is limited",
             "resume": "Accepted file formats: %s"
             % (", ".join(extensions) if extensions else "Any"),
             "origin": "If you don’t see your city, choose the closest one! <br> Please type following this schema: <strong>city, province, country</strong>",
