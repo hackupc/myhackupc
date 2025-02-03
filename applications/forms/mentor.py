@@ -54,6 +54,17 @@ class MentorApplicationForm(_BaseApplicationForm):
         validate_url(data, "linkedin.com")
         return data
 
+    def clean_shirt_size(self):
+        data = self.cleaned_data["tshirt_size"]
+        if not data or data == "":
+            raise forms.ValidationError("Please select a size.")
+        return data
+    
+    def clean_diet(self):
+        data = self.cleaned_data["diet"]
+        if not data or data == "":
+            raise forms.ValidationError("Please select a diet.")
+        return data
 
     def clean_projects(self):
         data = self.cleaned_data["projects"]
@@ -254,6 +265,8 @@ class MentorApplicationForm(_BaseApplicationForm):
             "first_timer": forms.HiddenInput(),
             "lennyface": forms.HiddenInput(),
             "resume": forms.FileInput(),
+            "tshirt_size": forms.Select(),
+            "diet": forms.Select(),
         }
 
         labels = {
