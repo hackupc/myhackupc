@@ -75,7 +75,7 @@ class VolunteerApplicationForm(_BaseApplicationForm):
     )
 
     bootstrap_field_info = {
-        "Información Personal": {
+        "👤 Información Personal": {
             "fields": [
                 {"name": "pronouns", "space": 12},
                 {"name": "gender", "space": 12},
@@ -86,7 +86,7 @@ class VolunteerApplicationForm(_BaseApplicationForm):
             ],
             "description": "Hola voluntari@, necesitamos un poco de información antes de empezar :)",
         },
-        "Voluntariado": {
+        "⛑️ Voluntariado": {
             "fields": [
                 {"name": "first_time_volunteer", "space": 12},
                 {"name": "which_hack", "space": 12},
@@ -94,8 +94,9 @@ class VolunteerApplicationForm(_BaseApplicationForm):
                 {"name": "attendance", "space": 12},
                 {"name": "volunteer_motivation", "space": 12},
             ],
+            "description": "Has participado en eventos similares? Cuéntanos más!"
         },
-        "Otras preguntas": {
+        "❓ Otras Preguntas": {
             "fields": [
                 {"name": "friends", "space": 12},
                 {"name": "night_shifts", "space": 12},
@@ -103,7 +104,7 @@ class VolunteerApplicationForm(_BaseApplicationForm):
             ],
             "description": "¡No te asustes! Solo quedan algunas preguntas más 🤯",
         },
-        "Intereses Personales": {
+        "🎮 Intereses Personales": {
             "fields": [
                 {"name": "quality", "space": 12},
                 {"name": "weakness", "space": 12},
@@ -155,7 +156,7 @@ class VolunteerApplicationForm(_BaseApplicationForm):
     def get_bootstrap_field_info(self):
         fields = super().get_bootstrap_field_info()
         discord = getattr(settings, "DISCORD_HACKATHON", False)
-        other_fields = fields["Otras preguntas"]["fields"]
+        other_fields = fields["❓ Otras Preguntas"]["fields"]
         polices_fields = [
             {"name": "terms_and_conditions", "space": 12},
             {"name": "email_subscribe", "space": 12},
@@ -171,7 +172,7 @@ class VolunteerApplicationForm(_BaseApplicationForm):
         # Fields that we only need the first time the hacker fills the application
         # https://stackoverflow.com/questions/9704067/test-if-django-modelform-has-instance
         
-        fields["Políticas HackUPC"] = {
+        fields["📜 Políticas HackUPC"] = {
             "fields": polices_fields,
             "description": '<p style="color: margin-top: 1em;display: block;'
             'margin-bottom: 1em;line-height: 1.25em;">Nosotros, Hackers at UPC, '
