@@ -108,18 +108,17 @@ class MentorApplicationForm(_BaseApplicationForm):
     )
 
     bootstrap_field_info = {
-        "Personal Information": {
+        "👤 Personal Info": {
             "fields": [
                 {"name": "origin", "space": 12},
                 {"name": "gender", "space": 12},
                 {"name": "other_gender", "space": 12},
-                {"name": "tshirt_size", "space": 12},
                 {"name": "under_age", "space": 12},
                 {"name": "lennyface", "space": 12},
             ],
             "description": "Hey there, before we begin we would like to know a little more about you.",
         },
-        "Background information": {
+        "🎓 Background Info": {
             "fields": [
                 {"name": "study_work", "space": 12},
                 {"name": "company", "space": 12},
@@ -129,22 +128,36 @@ class MentorApplicationForm(_BaseApplicationForm):
                 {"name": "english_level", "space": 12},
                 {"name": "fluent", "space": 12},
                 {"name": "experience", "space": 12},
+            ],
+            "description": "Mind telling us a little more about your background?",
+        },
+        "🚚 Logistics Info": {
+            "fields": [
+                {"name": "tshirt_size", "space": 12},
+                {"name": "attendance", "space": 12},
+                {"name": "diet", "space": 12},
+            ],
+            "description": "To prepare for the event, we would appreciate you giving us this information.",
+        },
+        "💻 Show us what you've built": {
+            "fields": [
                 {"name": "linkedin", "space": 12},
                 {"name": "site", "space": 12},
                 {"name": "github", "space": 12},
                 {"name": "devpost", "space": 12},
                 {"name": "resume", "space": 12},
             ],
+            "description": "Show us your work! We want to know more about you.",
         },
-        "Hackathons": {
+        "🏆 Hackathons": {
             "fields": [
                 {"name": "why_mentor", "space": 12},
                 {"name": "first_timer", "space": 12},
                 {"name": "first_time_mentor", "space": 12},
                 {"name": "which_hack", "space": 12},
                 {"name": "participated", "space": 12},
-                {"name": "attendance", "space": 12},
             ],
+            "description": "Let us know what your experience is in similar events!",
         },
     }
 
@@ -155,18 +168,17 @@ class MentorApplicationForm(_BaseApplicationForm):
         fields = super().get_bootstrap_field_info()
         discord = getattr(settings, "DISCORD_HACKATHON", False)
         hybrid = getattr(settings, "HYBRID_HACKATHON", False)
-        personal_info_fields = fields["Personal Information"]["fields"]
+        logistics_info_fields = fields["🚚 Logistics Info"]["fields"]
         polices_fields = [
             {"name": "terms_and_conditions", "space": 12},
             {"name": "email_subscribe", "space": 12},
         ]
-        personal_info_fields.append({"name": "online", "space": 12})
+        logistics_info_fields.append({"name": "online", "space": 12})
         if not hybrid:
             self.fields["online"].widget = forms.HiddenInput()
         if not discord:
-            personal_info_fields.extend(
+            logistics_info_fields.extend(
                 [
-                    {"name": "diet", "space": 12},
                     {"name": "other_diet", "space": 12},
                 ]
             )

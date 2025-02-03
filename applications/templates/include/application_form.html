@@ -16,12 +16,17 @@
 <form class="signup " enctype="multipart/form-data" id="signup_form" method="post" action="">
     {% csrf_token %}
     {% include 'include/bootstrap_form.html' %}
-    <div style="padding-left: 15px; padding-right: 15px">
+    <small><span style="color: red;">*</span> Indicates required field.</small>
+    <div style="padding: 15px; text-align: center;">
       {% if is_hacker %}
-      <p class="team-info"><i class="fa fa-exclamation-triangle"></i> <strong>Remember!</strong> Your team members still have to apply separately.</p>
+      <div style="background-color: #fff3cd; padding: 15px; border-radius: 5px; display: inline-block; border: 1px solid #ffeeba;">
+        <p class="team-info" style="margin: 0; color: #856404;">
+          <i class="fa-solid fa-triangle-exclamation" style="color: #856404;"></i> <strong>Remember!</strong> Your team members still have to apply separately.
+        </p>
+      </div>
       {% endif %}
-      <small><span style="color: red">*</span>Indicates required field.</small>
     </div>
+    <p id="error_message" style="display: none;"></p>
 
     {% if not application or application.can_be_edit %}
         <button class="btn btn-success btn-block" type="submit" {% if application and not application.can_be_edit %} disabled {% endif %}>{% if application %}Update application{% else %}
@@ -97,97 +102,207 @@
             });
         });
 
-            var other_gender = $('#id_other_gender');
-            var gender = $('#id_gender');
-            conditional_field(other_gender, gender, () => {
-              return gender.val() === 'X';
-            })
+        
+
+        // Changing styles so that the sections (fieldsets) are in blocks
+        var sections = $('fieldset');
+        
+            // Chaging styles to sections
+        sections.each(function (index, section) {
+                            
+            if (section.innerText.includes('Education Info') || section.innerText.includes('Background Info') || section.innerText.includes('Voluntariado')) {
+                section.style.border = '1px solid #007bff';
+                section.style.borderRadius = '10px';
+                section.style.padding = '15px';
+                section.style.marginBottom = '15px';
+                section.style.backgroundColor = '#e7f3ff';
+            } else if (section.innerText.includes('Personal Info') || section.innerText.includes('Información Personal')) {
+                section.style.border = '1px solid #28a745';
+                section.style.borderRadius = '10px';
+                section.style.padding = '15px';
+                section.style.marginBottom = '15px';
+                section.style.backgroundColor = '#e6f7e6';
+            } else if (section.innerText.includes('Logistics Info')) {
+                section.style.border = '1px solid #ffc107';
+                section.style.borderRadius = '10px';
+                section.style.padding = '15px';
+                section.style.marginBottom = '15px';
+                section.style.backgroundColor = '#fff8e1';
+            } else if (section.innerText.includes('Hackathons') || section.innerText.includes('Otras Preguntas')) {
+                section.style.border = '1px solid #dc3545';
+                section.style.borderRadius = '10px';
+                section.style.padding = '15px';
+                section.style.marginBottom = '15px';
+                section.style.backgroundColor = '#ffe6e6';
+            } else if (section.innerText.includes('Show us') || section.innerText.includes('Intereses')) {
+                section.style.border = '1px solid #17a2b8';
+                section.style.borderRadius = '10px';
+                section.style.padding = '15px';
+                section.style.marginBottom = '15px';
+                section.style.backgroundColor = '#e6f7f8';
+            } else if (section.innerText.includes('Policies') || section.innerText.includes('Políticas')) {
+                section.style.border = '1px solid #6f42c1';
+                section.style.borderRadius = '10px';
+                section.style.padding = '15px';
+                section.style.marginBottom = '15px';
+                section.style.backgroundColor = '#f3e6ff';
+            }
+
+            // Making sections collapsible - Commented out for further testing
+            /*
+            var title = $(section).find('div').first();
+            title.css('cursor', 'pointer');
+            title.css('user-select', 'none');
             
-            var online = $('input[name="online"][value="True"]');
-            var face_to_face = $('input[name="online"][value="False"]');
+            title[0].addEventListener('click', function () {
+                this.classList.toggle('active');
+                var fieldset = this.closest('fieldset');
+                var content = $(fieldset).children().not(':first'); 
+                
+                content.each(function () {
+                    var isVisible = $(this).css('display') === 'block';
+                    $(this).css('display', isVisible ? 'none' : 'block');
+                });
+            });           
+            */ 
+        });
+        
+        // Handles the sending of the form --> Expands sections with errors - Commented out for further testing
+        /*
+        document.querySelector("#signup_form > button").addEventListener('click', function () {
+            var sections = document.querySelectorAll('fieldset');
+            sections.forEach(function (section) {
+                var title = section.querySelector('div');
+                var content = $(section).children().not(':first');
+                var hasError = section.querySelector('.has-error');
+                var hasEmptyFields = Array.from(section.querySelectorAll('input, select, textarea')).some(function (input) {
+                    if (input.type === 'radio') {
+                        return Array.from(document.querySelectorAll('input[name="' + input.name + '"]')).every(function (radio) {
+                            return !radio.checked;
+                        });
+                    }
+                    else if (input.type === 'checkbox') {
+                        return !input.checked && input.required;
+                    }
+                    else if (input.type === 'file') {
+                        return input.files.length === 0 && input.required;
+                    }
+                    else if (input.type === 'select-one') {
+                        return input.value === '' && input.required;
+                    }
+                    return input.value === '' && input.required;
+                });
 
-            var other_diet = $('#id_other_diet');
-            var diet = $('#id_diet');
-            var hardware = $('#id_hardware');
-            conditional_field(hardware, online, function () {
-                return face_to_face.length > 0;
-            }, 1);
-            conditional_field(hardware, face_to_face, function () {
-                return face_to_face.length > 0;
-            }, 1);
-            //conditional_field(diet, online, function () {
-            //    return face_to_face.length > 0;
-            //}, 1);
-            //conditional_field(diet, face_to_face, function () {
-            //    return face_to_face.length <= 0;
-            //}, 1);
-            conditional_field(other_diet, online, function () {
-                return face_to_face.length > 0;
-            }, 1);
-            conditional_field(other_diet, diet, function () {
-                return diet.val() === 'Others';
-            }, 1);
-            var diet_notice = $('#id_diet_notice');
-            conditional_field(diet_notice, diet, function () {
-                return diet.val() !== 'None';
-            }, 2);
+                if (hasError || hasEmptyFields) {
+                    console.log('hasError', hasError);
+                    console.log('hasEmptyFields', hasEmptyFields);
+                    if (content.css('display') === 'none') {
+                        title.click();
+                    }
+                }
+                //Show an error message on error_message p in red
+                if (hasError || hasEmptyFields) {
+                    var errorMessage = document.querySelector("#error_message");
+                    errorMessage.style = 'display: block; color: #8f1007; font-weight: bold; background-color: #f8d7da; border-color: #f5c6cb; padding: 10px; margin-bottom: 15px; border: 1px solid transparent; border-radius: 4px; text-align: center;';
+                    errorMessage.innerText = '* Please correctly fill in all required fields before submitting.';
+                }
+                
+            });
+        });
+        */
+        
 
-            var has_team = $('input[name="team"][value="True"]');
-            var no_team = $('input[name="team"][value="False"]');
-            var teammates = $('#id_teammates');
-            conditional_field(teammates, has_team, function () {
-                return has_team.prop("checked");
-            }, 1);
-            conditional_field(teammates, no_team, function () {
-                return has_team.prop("checked");
-            }, 1);
-
-            var needs_reimb = $('input[name="reimb"][value="True"]');
-            var no_reimb = $('input[name="reimb"][value="False"]');
-            var reimb_amout = $('#id_reimb_amount');
-            var reimb = $('#id_reimb');
-            conditional_field(reimb, online, function () {
-                return face_to_face.length > 0;
-            }, 1);
-            conditional_field(reimb, face_to_face, function () {
-                return face_to_face.length > 0;
-            }, 1);
-            conditional_field(reimb_amout, online, function () {
-                return face_to_face.length > 0;
-            }, 1);
-            conditional_field(reimb_amout, needs_reimb, function () {
-                return needs_reimb.prop("checked");
-            }, 1);
-            conditional_field(reimb_amout, no_reimb, function () {
-                return needs_reimb.prop("checked");
-            }, 1);
-            reimb.parent().addClass('required');
-            reimb_amout.parent().addClass('required');
-
-            var is_firsttime = $('input[name="first_timer"][value="True"]');
-            var experienced = $('input[name="first_timer"][value="False"]');
+        var other_gender = $('#id_other_gender');
+        var gender = $('#id_gender');
+        conditional_field(other_gender, gender, () => {
+            return gender.val() === 'X';
+        })
             
-            var projects = $('#projects');
-            conditional_field(projects, is_firsttime, function () {
-                return experienced.prop("checked");
-            }, 1);
-            conditional_field(projects, experienced, function () {
-                return experienced.prop("checked");
-            }, 1);
-            
-            // Making projects look like required
-            projects.parent().addClass('required');
+        var online = $('input[name="online"][value="True"]');
+        var face_to_face = $('input[name="online"][value="False"]');
 
-            
-            function setUpCharCounterOn(elementStrId, elementCharCounterStrId){
-                var element = $(elementStrId);
-                var max_length = parseInt(element.attr('maxLength')); // to int 
-            
+        var other_diet = $('#id_other_diet');
+        var diet = $('#id_diet');
+        var hardware = $('#id_hardware');
+        conditional_field(hardware, online, function () {
+            return face_to_face.length > 0;
+        }, 1);
+        conditional_field(hardware, face_to_face, function () {
+            return face_to_face.length > 0;
+        }, 1);
+        //conditional_field(diet, online, function () {
+        //    return face_to_face.length > 0;
+        //}, 1);
+        //conditional_field(diet, face_to_face, function () {
+        //    return face_to_face.length <= 0;
+        //}, 1);
+        conditional_field(other_diet, online, function () {
+            return face_to_face.length > 0;
+        }, 1);
+        conditional_field(other_diet, diet, function () {
+            return diet.val() === 'Others';
+        }, 1);
+        var diet_notice = $('#id_diet_notice');
+        conditional_field(diet_notice, diet, function () {
+            return diet.val() !== 'None';
+        }, 2);
 
-                element.removeAttr('maxLength');
-                // remove maxlength
+        var has_team = $('input[name="team"][value="True"]');
+        var no_team = $('input[name="team"][value="False"]');
+        var teammates = $('#id_teammates');
+        conditional_field(teammates, has_team, function () {
+            return has_team.prop("checked");
+        }, 1);
+        conditional_field(teammates, no_team, function () {
+            return has_team.prop("checked");
+        }, 1);
 
-                var elementCharCounter = document.querySelector(elementCharCounterStrId);
+        var needs_reimb = $('input[name="reimb"][value="True"]');
+        var no_reimb = $('input[name="reimb"][value="False"]');
+        var reimb_amout = $('#id_reimb_amount');
+        var reimb = $('#id_reimb');
+        conditional_field(reimb, online, function () {
+            return face_to_face.length > 0;
+        }, 1);
+        conditional_field(reimb, face_to_face, function () {
+            return face_to_face.length > 0;
+        }, 1);
+        conditional_field(reimb_amout, online, function () {
+            return face_to_face.length > 0;
+        }, 1);
+        conditional_field(reimb_amout, needs_reimb, function () {
+            return needs_reimb.prop("checked");
+        }, 1);
+        conditional_field(reimb_amout, no_reimb, function () {
+            return needs_reimb.prop("checked");
+        }, 1);
+        reimb.parent().addClass('required');
+        reimb_amout.parent().addClass('required');
+
+        var is_firsttime = $('input[name="first_timer"][value="True"]');
+        var experienced = $('input[name="first_timer"][value="False"]');
+        
+        var projects = $('#projects');
+        conditional_field(projects, is_firsttime, function () {
+            return experienced.prop("checked");
+        }, 1);
+        conditional_field(projects, experienced, function () {
+            return experienced.prop("checked");
+        }, 1);
+        
+        // Making projects look like required
+        projects.parent().addClass('required');
+
+        
+        function setUpCharCounterOn(elementStrId, elementCharCounterStrId){
+            var element = $(elementStrId);
+            var max_length = parseInt(element.attr('maxLength')); // to int 
+        
+
+            element.removeAttr('maxLength');
+            // remove maxlength
+
+            var elementCharCounter = document.querySelector(elementCharCounterStrId);
 
                 // base case
                 updateCounter(element, elementCharCounter, max_length, true);
@@ -294,61 +409,61 @@
                 degree_mentor.parent().addClass('required');
                 graduation_year.parent().addClass('required');
 
-                
-            {% endif %}
-            {% if not application %}
-                var timer;
-                var clear_timer;
-                var timeout = 5000; // Timout duration
-                $('input,textarea').keyup(function () {
-                    if (timer) {
-                        clearTimeout(timer);
-                    }
-                    timer = setTimeout(saveData, timeout);
-
-                });
-                $('input[type=radio],select').change(function () {
-                    if (timer) {
-                        clearTimeout(timer);
-                    }
-                    timer = setTimeout(saveData, timeout);
-
-                });
-
-                // Save data
-                function saveData() {
-                    if (clear_timer) {
-                        clearTimeout(clear_timer);
-                    }
-                    $('.saved-string').html('Saving...');
-                    var form_obj = {};
-                    var form_array = $('form').serializeArray();
-                    $.each(form_array, function () {
-                        if (form_obj[this.name]) {
-                            if (!form_obj[this.name].push) {
-                                form_obj[this.name] = [form_obj[this.name]];
-                            }
-                            form_obj[this.name].push(this.value || '');
-                        } else {
-                            form_obj[this.name] = this.value || '';
-                        }
-                    });
-
-
-                    // AJAX request
-                    $.ajax({
-                        url: '{% url 'save_draft' %}',
-                        type: 'post',
-                        data: form_obj,
-                        success: function (response) {
-                            $('.saved-string').html('Saved!');
-                            clear_timer = setTimeout(function () {
-                                $('.saved-string').html('');
-                            }, timeout)
-                        }
-                    });
+            
+        {% endif %}
+        {% if not application %}
+            var timer;
+            var clear_timer;
+            var timeout = 5000; // Timout duration
+            $('input,textarea').keyup(function () {
+                if (timer) {
+                    clearTimeout(timer);
                 }
-            {% endif %}
+                timer = setTimeout(saveData, timeout);
+
+            });
+            $('input[type=radio],select').change(function () {
+                if (timer) {
+                    clearTimeout(timer);
+                }
+                timer = setTimeout(saveData, timeout);
+
+            });
+
+            // Save data
+            function saveData() {
+                if (clear_timer) {
+                    clearTimeout(clear_timer);
+                }
+                $('.saved-string').html('Saving...');
+                var form_obj = {};
+                var form_array = $('form').serializeArray();
+                $.each(form_array, function () {
+                    if (form_obj[this.name]) {
+                        if (!form_obj[this.name].push) {
+                            form_obj[this.name] = [form_obj[this.name]];
+                        }
+                        form_obj[this.name].push(this.value || '');
+                    } else {
+                        form_obj[this.name] = this.value || '';
+                    }
+                });
+
+
+                // AJAX request
+                $.ajax({
+                    url: '{% url 'save_draft' %}',
+                    type: 'post',
+                    data: form_obj,
+                    success: function (response) {
+                        $('.saved-string').html('Saved!');
+                        clear_timer = setTimeout(function () {
+                            $('.saved-string').html('');
+                        }, timeout)
+                    }
+                });
+            }
+        {% endif %}
         }
     )
 
