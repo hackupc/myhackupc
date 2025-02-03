@@ -35,7 +35,7 @@
     {% endif %}
 </form>
 
-
+<link href='https://fonts.googleapis.com/css?family=Silkscreen' rel='stylesheet'>
 <script src="{% static 'lib/typeahead.min.js' %}"></script>
 <script src="{% static 'js/form_modifiers.js' %}"></script>
 <!-- <script type="text/javascript" src=""></script> -->
@@ -136,9 +136,10 @@
                 section.style.backgroundColor = '#f3e6ff';
             }
 
+            var title = $(section).find('div').first().find('h3');
+            title.css('font-family', 'Silkscreen, sans-serif');
             // Making sections collapsible - Commented out for further testing
             /*
-            var title = $(section).find('div').first();
             title.css('cursor', 'pointer');
             title.css('user-select', 'none');
             

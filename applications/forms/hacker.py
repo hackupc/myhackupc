@@ -59,9 +59,6 @@ class HackerApplicationForm(_BaseApplicationForm):
         },
     }
 
-    # Other fields and methods remain unchanged
-
-    # Other fields and methods remain unchanged
 
     # make phone mandatory, override the base form
     phone_number = forms.CharField(required=True, widget=forms.TextInput(
