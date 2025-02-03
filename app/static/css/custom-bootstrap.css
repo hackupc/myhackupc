@@ -348,7 +348,7 @@ dt,kbd kbd,label{font-weight:700}
 }
 .small,small{font-size:85%}
 .mark,mark{padding:.2em;background-color:#fcf8e3}
-.bg-primary,.btn-default{background-color:#0060BF}
+.bg-primary,.btn-default{color:#fff; background-color:#0060BF}
 .list-inline,.list-unstyled{list-style:none;padding-left:0}
 .text-left{text-align:left}
 .text-right{text-align:right}
@@ -774,12 +774,12 @@ a.btn.disabled,fieldset[disabled] a.btn{pointer-events:none}
 .btn-default.active.focus,.btn-default.active:focus,.btn-default.active:hover,.btn-default:active.focus,.btn-default:active:focus,.btn-default:active:hover,.open>.dropdown-toggle.btn-default.focus,.open>.dropdown-toggle.btn-default:focus,.open>.dropdown-toggle.btn-default:hover{color:#fff;background-color:#231F20;border-color:#231F20}
 .btn-default.disabled.focus,.btn-default.disabled:focus,.btn-default.disabled:hover,.btn-default[disabled].focus,.btn-default[disabled]:focus,.btn-default[disabled]:hover,fieldset[disabled] .btn-default.focus,fieldset[disabled] .btn-default:focus,fieldset[disabled] .btn-default:hover{background-color:#0060BF;border-color:#0060BF}
 .btn-default .badge{color:#0060BF;background-color:#fff}
-.btn-primary{color:#fff;background-color:#0060BF;border-color:#0060BF}
+.btn-primary{color:#fff;background-color:#002b56;border-color:#002b56}
 .btn-primary.focus,.btn-primary:focus{color:#fff;background-color:#231F20;border-color:#231F20}
 .btn-primary:hover{color:#fff;background-color:#231F20;border-color:#231F20}
 .btn-primary.active,.btn-primary:active,.open>.dropdown-toggle.btn-primary{color:#fff;background-color:#231F20;background-image:none;border-color:#231F20}
 .btn-primary.active.focus,.btn-primary.active:focus,.btn-primary.active:hover,.btn-primary:active.focus,.btn-primary:active:focus,.btn-primary:active:hover,.open>.dropdown-toggle.btn-primary.focus,.open>.dropdown-toggle.btn-primary:focus,.open>.dropdown-toggle.btn-primary:hover{color:#fff;background-color:#231F20;border-color:#231F20}
-.btn-primary.disabled.focus,.btn-primary.disabled:focus,.btn-primary.disabled:hover,.btn-primary[disabled].focus,.btn-primary[disabled]:focus,.btn-primary[disabled]:hover,fieldset[disabled] .btn-primary.focus,fieldset[disabled] .btn-primary:focus,fieldset[disabled] .btn-primary:hover{background-color:#0060BF;border-color:#0060BF}
+.btn-primary.disabled.focus,.btn-primary.disabled:focus,.btn-primary.disabled:hover,.btn-primary[disabled].focus,.btn-primary[disabled]:focus,.btn-primary[disabled]:hover,fieldset[disabled] .btn-primary.focus,fieldset[disabled] .btn-primary:focus,fieldset[disabled] .btn-primary:hover{background-color:#002b56;border-color:#002b56}
 .btn-primary .badge{color:#0060BF;background-color:#fff}
 .btn-success{color:#fff;background-color:#178c54;border-color:#137647}
 .btn-success.focus,.btn-success:focus{color:#fff;background-color:#10603a;border-color:#010905}

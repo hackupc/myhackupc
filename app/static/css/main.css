@@ -18,10 +18,8 @@
 
 body {
     background-image: url("../img/background.svg");
-    background-size: cover;
-    background-repeat: no-repeat;
-    
-    
+    background-size: contain; 
+    background-repeat: repeat; 
     font-family: ProximaNovaRegular, 'Roboto', sans-serif;
     font-size: 15px;
 }
