@@ -37,30 +37,38 @@
 
 <script>
 
-    function updateCounter(description, description_remaining, max_length) {
+    function updateCounter(description, description_remaining, max_length, first_check=false) {
 
         if(description.val() == undefined) return;
-        var current = description.val().length;
 
+        var validText = description.val().trim(); // only count stripped text
+        var current = validText.length;
+        
         // add extra to current to fix newline characters (1 \n = 2 characters)
-        current += description.val().split('\n').length - 1;
+        current += validText.split('\n').length - 1;
 
-        if(max_length >= current && current >= max_length-50){
-             description_remaining.style.color = "#f77f00";
-             description.parent().removeClass('has-error');
-        }
-        else{
-            description_remaining.style.color = "";
-                if(current > max_length){
-                
-                description.parent().removeClass('has-success');
-                description.parent().addClass('has-error');
-                
-            } else {
-            description.parent().removeClass('has-error');
+        
 
+        // if first frame of check (on DOM load) the has-error class is present, means that
+        // the user has submitted the form, and we leave native django errors on.
+        if(!(first_check && description.parent().hasClass('has-error'))){
+            if(max_length >= current && current >= max_length-50){
+                // if while writing the user hasn't reached the limit, but is close to it, we show the remaining characters in orange
+                description_remaining.style.color = "#f77f00";
+                description.parent().removeClass('has-error');
+            }
+            else{
+                description_remaining.style.color = "";
+                    if(current > max_length){
+                    
+                    description.parent().removeClass('has-success');
+                    description.parent().addClass('has-error');
+                    
+                } else {
+                    description.parent().removeClass('has-error');
+                }
+            } 
         }
-    } 
         description_remaining.innerText = (current + '/' + max_length + ' characters');
     }
 
@@ -182,7 +190,7 @@
                 var elementCharCounter = document.querySelector(elementCharCounterStrId);
 
                 // base case
-                updateCounter(element, elementCharCounter, max_length);
+                updateCounter(element, elementCharCounter, max_length, true);
                 // onKeyup
                 element.keyup(function () {
                     updateCounter(element, elementCharCounter, max_length);
