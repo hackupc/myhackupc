@@ -153,6 +153,18 @@ class VolunteerApplicationForm(_BaseApplicationForm):
             )
         return reimb
 
+    def clean_shirt_size(self):
+        data = self.cleaned_data["tshirt_size"]
+        if not data or data == "":
+            raise forms.ValidationError("Please select a size.")
+        return data
+    
+    def clean_diet(self):
+        data = self.cleaned_data["diet"]
+        if not data or data == "":
+            raise forms.ValidationError("Please select a diet.")
+        return data
+
     def get_bootstrap_field_info(self):
         fields = super().get_bootstrap_field_info()
         discord = getattr(settings, "DISCORD_HACKATHON", False)
@@ -228,6 +240,8 @@ class VolunteerApplicationForm(_BaseApplicationForm):
             "graduation_year": forms.HiddenInput(),
             "phone_number": forms.HiddenInput(),
             "hear_about_us": CustomSelect(choices=models.HEARABOUTUS_ES),
+            "tshirt_size": forms.Select(),
+            "diet": forms.Select(),
         }
 
         labels = {

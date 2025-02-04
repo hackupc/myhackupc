@@ -78,7 +78,7 @@ class LoginForm(forms.Form):
 class RegisterForm(LoginForm):
     password2 = forms.CharField(widget=forms.PasswordInput, label='Repeat password', max_length=100,
                                 help_text=' '.join(password_validators_help_texts()))
-    name = forms.CharField(label='Full name', max_length=225, help_text='What is your preferred full name?')
+    name = forms.CharField(label='Full name', max_length=50, help_text='What is your preferred full name?')
 
     terms_and_conditions = forms.BooleanField(
         label='I\'ve read, understand and accept <a href="/privacy_and_cookies" target="_blank">HackUPC '
