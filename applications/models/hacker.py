@@ -12,7 +12,7 @@ class HackerApplication(
     first_timer = models.BooleanField(default=False)
 
     # Random lenny face
-    lennyface = models.CharField(max_length=300, default='-.-')
+    lennyface = models.CharField(max_length=20, default='-.-')
 
     # University
     graduation_year = models.IntegerField(choices=YEARS, default=DEFAULT_YEAR)

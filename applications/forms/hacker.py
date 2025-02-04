@@ -38,6 +38,7 @@ class HackerApplicationForm(_BaseApplicationForm):
                 {"name": "projects", "space": 12},
             ],
             "description": "Let us know what your experience is in similar events!",
+            "description": "Let us know what your experience is in similar events!",
         },
         "💻 Show us what you've built": {
             "fields": [
@@ -59,9 +60,6 @@ class HackerApplicationForm(_BaseApplicationForm):
         },
     }
 
-    # Other fields and methods remain unchanged
-
-    # Other fields and methods remain unchanged
 
     # make phone mandatory, override the base form
     phone_number = forms.CharField(required=True, widget=forms.TextInput(
@@ -91,6 +89,22 @@ class HackerApplicationForm(_BaseApplicationForm):
                 % (filesizeformat(settings.MAX_UPLOAD_SIZE), filesizeformat(size))
             )
         return resume
+    
+    def clean_shirt_size(self):
+        data = self.cleaned_data["tshirt_size"]
+        print("shirt size")
+        print(data)
+        if not data or data == "":
+            raise forms.ValidationError("Please select a size.")
+        return data
+    
+    def clean_diet(self):
+        data = self.cleaned_data["diet"]
+        print("diet")
+        print(data)
+        if not data or data == "":
+            raise forms.ValidationError("Please select a diet.")
+        return data
 
     def clean_github(self):
         data = self.cleaned_data["github"]
@@ -121,14 +135,7 @@ class HackerApplicationForm(_BaseApplicationForm):
 
     university = common_university()
 
-    degree = forms.CharField(
-        required=True,
-        label="What's your major/degree?",
-        help_text="Current or most recent degree you've received",
-        widget=forms.TextInput(
-            attrs={"class": "typeahead-degrees", "autocomplete": "off"}
-        ),
-    )
+    degree = common_degree()
 
     cvs_edition = forms.BooleanField(
         required=False,
@@ -274,6 +281,8 @@ class HackerApplicationForm(_BaseApplicationForm):
             "description": forms.Textarea(attrs={"rows": 3, "cols": 40, 'id': 'description'}),
             "projects": forms.Textarea(attrs={"rows": 3, "cols": 40, 'id': 'projects'}),
             "discover": CustomSelect(choices=discover_choices),
+            "tshirt_size": forms.Select(),
+            "diet": forms.Select(),
             "graduation_year": forms.RadioSelect(),
         }
 
