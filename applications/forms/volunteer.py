@@ -74,6 +74,10 @@ class VolunteerApplicationForm(_BaseApplicationForm):
         initial=True,
     )
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["gender"].required = False
+
     bootstrap_field_info = {
         "👤 Información Personal": {
             "fields": [
@@ -158,7 +162,7 @@ class VolunteerApplicationForm(_BaseApplicationForm):
         if not data or data == "":
             raise forms.ValidationError("Please select a size.")
         return data
-    
+
     def clean_diet(self):
         data = self.cleaned_data["diet"]
         if not data or data == "":
@@ -183,7 +187,7 @@ class VolunteerApplicationForm(_BaseApplicationForm):
             polices_fields.append({"name": "diet_notice", "space": 12})
         # Fields that we only need the first time the hacker fills the application
         # https://stackoverflow.com/questions/9704067/test-if-django-modelform-has-instance
-        
+
         fields["📜 Políticas HackUPC"] = {
             "fields": polices_fields,
             "description": '<p style="color: margin-top: 1em;display: block;'

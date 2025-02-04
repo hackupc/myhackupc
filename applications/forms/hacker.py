@@ -89,7 +89,7 @@ class HackerApplicationForm(_BaseApplicationForm):
                 % (filesizeformat(settings.MAX_UPLOAD_SIZE), filesizeformat(size))
             )
         return resume
-    
+
     def clean_shirt_size(self):
         data = self.cleaned_data["tshirt_size"]
         print("shirt size")
@@ -97,7 +97,7 @@ class HackerApplicationForm(_BaseApplicationForm):
         if not data or data == "":
             raise forms.ValidationError("Please select a size.")
         return data
-    
+
     def clean_diet(self):
         data = self.cleaned_data["diet"]
         print("diet")
@@ -168,6 +168,7 @@ class HackerApplicationForm(_BaseApplicationForm):
             use_required_attribute,
         )
         self.fields["resume"].required = True
+        self.fields["gender"].required = False
 
     def clean_cvs_edition(self):
         cc = self.cleaned_data.get("cvs_edition", False)
@@ -196,7 +197,7 @@ class HackerApplicationForm(_BaseApplicationForm):
         personal_info_fields.append({"name": "online", "space": 12})
         if not hybrid:
             self.fields["online"].widget = forms.HiddenInput()
-        
+
         if not discord:
             logistics_info_fields.extend(
                 [
@@ -210,7 +211,7 @@ class HackerApplicationForm(_BaseApplicationForm):
 
         # Fields that we only need the first time the hacker fills the application
         # https://stackoverflow.com/questions/9704067/test-if-django-modelform-has-instance
-        
+
         fields["📜 HackUPC Policies"] = {
             "fields": polices_fields,
             "description": '<p style="color: margin-top: 1em;display: block;'
@@ -226,7 +227,7 @@ class HackerApplicationForm(_BaseApplicationForm):
             "please visit our Privacy and Cookies Policy.</p>",
         }
         return fields
-    
+
     class Meta(_BaseApplicationForm.Meta):
         model = models.HackerApplication
         extensions = getattr(settings, "SUPPORTED_RESUME_EXTENSIONS", None)
@@ -239,7 +240,7 @@ class HackerApplicationForm(_BaseApplicationForm):
             " http://textsmili.es/</a>",
             "description": "<span id=\'description_char_count\'></span><br>"
             "Be original! Using AI to answer this question might penalize your application.",
-            "projects": 
+            "projects":
             "Tell us about your personal projects, awards, or any work that you are proud of.   <br>"
             "<span id=\'projects_char_count\'></span>",
             "resume": "Accepted file formats: %s"
