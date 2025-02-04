@@ -44,7 +44,7 @@ GENDERS = [
     (GENDER_OTHER, 'Prefer to self-describe'),
 ]
 
-
+D_SELECT = ''
 D_NONE = 'None'
 D_VEGETARIAN = 'Vegetarian'
 D_VEGAN = 'Vegan'
@@ -53,6 +53,7 @@ D_GLUTEN_FREE = 'Gluten-free'
 D_OTHER = 'Others'
 
 DIETS = [
+    (D_SELECT, '- Select a diet -'),
     (D_NONE, 'No requirements'),
     (D_VEGETARIAN, 'Vegetarian'),
     (D_VEGAN, 'Vegan'),
@@ -61,6 +62,7 @@ DIETS = [
     (D_OTHER, 'Others')
 ]
 
+T_SELECT = ''
 T_XXS = 'XXS'
 T_XS = 'XS'
 T_S = 'S'
@@ -71,6 +73,7 @@ T_XXL = 'XXL'
 T_XXXL = 'XXXL'
 
 TSHIRT_SIZES = [
+    (T_SELECT, '- Select a t-shirt size -'),
     (T_XS, "Unisex - XS"),
     (T_S, "Unisex - S"),
     (T_M, "Unisex - M"),
@@ -80,7 +83,7 @@ TSHIRT_SIZES = [
     (T_XXXL, "Unisex - XXXL"),
 ]
 
-DEFAULT_TSHIRT_SIZE = T_M
+DEFAULT_TSHIRT_SIZE = T_SELECT
 
 ATTENDANCE = [
     (0, "Friday"),

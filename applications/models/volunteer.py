@@ -79,7 +79,7 @@ class VolunteerApplication(BaseApplication):
     first_timer = models.BooleanField(default=False)
 
     # Random lenny face
-    lennyface = models.CharField(max_length=300, default="-.-")
+    lennyface = models.CharField(max_length=20, default="-.-")
 
     #About us
     hear_about_us = models.CharField(max_length=300, choices=HEARABOUTUS_ES, default="")
