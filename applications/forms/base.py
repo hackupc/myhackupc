@@ -14,6 +14,7 @@ from applications import models
 import requests
 
 from .common_fields import *
+from ..models import NO_ANSWER
 
 
 def set_field_html_name(cls, new_name):
@@ -44,6 +45,13 @@ class _BaseApplicationForm(OverwriteOnlyModelFormMixin, BootstrapFormMixin, Mode
         attrs={'class': 'form-control', 'placeholder': '+#########'}),
         label='Phone number (Optional)',
         help_text='This field is not mandatory.'
+    )
+    gender = forms.ChoiceField(
+        label="Gender",
+        choices=models.GENDERS,
+        required=False,
+        initial=NO_ANSWER,
+        widget=forms.Select(attrs={'class': 'form-control'})
     )
     under_age = forms.TypedChoiceField(
         required=True,
