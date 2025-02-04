@@ -137,14 +137,7 @@ class HackerApplicationForm(_BaseApplicationForm):
 
     university = common_university()
 
-    degree = forms.CharField(
-        required=True,
-        label="What's your major/degree?",
-        help_text="Current or most recent degree you've received",
-        widget=forms.TextInput(
-            attrs={"class": "typeahead-degrees", "autocomplete": "off"}
-        ),
-    )
+    degree = common_degree()
 
     cvs_edition = forms.BooleanField(
         required=False,

@@ -101,15 +101,6 @@ class MentorApplicationForm(_BaseApplicationForm):
     #    initial="NA", widget=forms.HiddenInput(), required=False
     #)
 
-    degree = forms.CharField(
-        required=False,
-        label="What's your major/degree of study?",
-        help_text="Current or most recent degree you've received",
-        widget=forms.TextInput(
-            attrs={"class": "typeahead-degrees", "autocomplete": "off"}
-        ),
-    )
-
     graduation_year = forms.ChoiceField(
         required=False,
         choices=models.YEARS,
