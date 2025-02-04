@@ -38,6 +38,7 @@ class HackerApplicationForm(_BaseApplicationForm):
                 {"name": "projects", "space": 12},
             ],
             "description": "Let us know what your experience is in similar events!",
+            "description": "Let us know what your experience is in similar events!",
         },
         "💻 Show us what you've built": {
             "fields": [
@@ -59,9 +60,6 @@ class HackerApplicationForm(_BaseApplicationForm):
         },
     }
 
-    # Other fields and methods remain unchanged
-
-    # Other fields and methods remain unchanged
 
     # make phone mandatory, override the base form
     phone_number = forms.CharField(required=True, widget=forms.TextInput(
