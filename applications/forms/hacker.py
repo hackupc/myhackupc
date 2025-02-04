@@ -91,6 +91,22 @@ class HackerApplicationForm(_BaseApplicationForm):
                 % (filesizeformat(settings.MAX_UPLOAD_SIZE), filesizeformat(size))
             )
         return resume
+    
+    def clean_shirt_size(self):
+        data = self.cleaned_data["tshirt_size"]
+        print("shirt size")
+        print(data)
+        if not data or data == "":
+            raise forms.ValidationError("Please select a size.")
+        return data
+    
+    def clean_diet(self):
+        data = self.cleaned_data["diet"]
+        print("diet")
+        print(data)
+        if not data or data == "":
+            raise forms.ValidationError("Please select a diet.")
+        return data
 
     def clean_github(self):
         data = self.cleaned_data["github"]
@@ -267,6 +283,8 @@ class HackerApplicationForm(_BaseApplicationForm):
             "description": forms.Textarea(attrs={"rows": 3, "cols": 40, 'id': 'description'}),
             "projects": forms.Textarea(attrs={"rows": 3, "cols": 40, 'id': 'projects'}),
             "discover": CustomSelect(choices=discover_choices),
+            "tshirt_size": forms.Select(),
+            "diet": forms.Select(),
             "graduation_year": forms.RadioSelect(),
         }
 
