@@ -44,7 +44,7 @@ GENDERS = [
     (GENDER_OTHER, 'Prefer to self-describe'),
 ]
 
-
+D_SELECT = ''
 D_NONE = 'None'
 D_VEGETARIAN = 'Vegetarian'
 D_VEGAN = 'Vegan'
@@ -53,6 +53,7 @@ D_GLUTEN_FREE = 'Gluten-free'
 D_OTHER = 'Others'
 
 DIETS = [
+    (D_SELECT, '- Select a diet -'),
     (D_NONE, 'No requirements'),
     (D_VEGETARIAN, 'Vegetarian'),
     (D_VEGAN, 'Vegan'),
@@ -61,6 +62,7 @@ DIETS = [
     (D_OTHER, 'Others')
 ]
 
+T_SELECT = ''
 T_XXS = 'XXS'
 T_XS = 'XS'
 T_S = 'S'
@@ -71,6 +73,7 @@ T_XXL = 'XXL'
 T_XXXL = 'XXXL'
 
 TSHIRT_SIZES = [
+    (T_SELECT, '- Select a t-shirt size -'),
     (T_XS, "Unisex - XS"),
     (T_S, "Unisex - S"),
     (T_M, "Unisex - M"),
@@ -80,7 +83,7 @@ TSHIRT_SIZES = [
     (T_XXXL, "Unisex - XXXL"),
 ]
 
-DEFAULT_TSHIRT_SIZE = T_M
+DEFAULT_TSHIRT_SIZE = T_SELECT
 
 ATTENDANCE = [
     (0, "Friday"),
@@ -89,10 +92,10 @@ ATTENDANCE = [
 ]
 
 HACK_NAME = getattr(hackathon_variables, 'HACKATHON_NAME', "HackAssistant")
-EXTRA_NAME = [' 2016 Fall', ' 2016 Winter', ' 2017 Fall', ' 2017 Winter', ' 2018', ' 2019', ' 2021', ' 2022', ' 2023']
+EXTRA_NAME = [' 2016 Fall', ' 2016 Winter', ' 2017 Fall', ' 2017 Winter', ' 2018', ' 2019', ' 2021', ' 2022', ' 2023', ' 2024']
 PREVIOUS_HACKS = [(i, HACK_NAME + EXTRA_NAME[i]) for i in range(0, len(EXTRA_NAME))]
 
-YEARS = [(int(size), size) for size in ('2023 2024 2025 2026 2027 2028 2029 2030'.split(' '))]
+YEARS = [(int(size), size) for size in ('2024 2025 2026 2027 2028 2029 2030 2031'.split(' '))]
 DEFAULT_YEAR = datetime.now().year + 1
 
 ENGLISH_LEVEL = [(i, str(i)) for i in range(1, 5 + 1)]

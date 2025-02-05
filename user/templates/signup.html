@@ -5,7 +5,20 @@
 {% block head_title %}{% trans "Sign Up" %}{% endblock %}
 
 {% block content %}
-
+    <div class="menu-container">
+        <a href="{% url 'signup_hacker' %}" 
+        class="menu-item {% if request.resolver_match.url_name != 'signup_mentor' and request.resolver_match.url_name != 'signup_volunteer' %}active{% endif %}">
+        Hacker
+        </a>
+        <a href="{% url 'signup_mentor' %}" 
+        class="menu-item {% if request.resolver_match.url_name == 'signup_mentor' %}active{% endif %}">
+        Mentor
+        </a>
+        <a href="{% url 'signup_volunteer' %}" 
+        class="menu-item {% if request.resolver_match.url_name == 'signup_volunteer' %}active{% endif %}">
+        Volunteer
+        </a>
+    </div>
     {% if app_type == 'H' and h_app_closed and not is_sposnor_form %}
         <h1>Applications are closed</h1>
         {% include 'include/applications_closed.html' %}
@@ -22,14 +35,16 @@
         <a class="btn btn-default btn-block"
             href="{% url 'account_login' %}">{% trans "Log in " %}</a>
     {% else %}
-        <h1>Sign up</h1>
         {% if app_type == 'H' and h_app_timeleft and not is_sposnor_form %}
-            <p class="lead">Application deadline:{% include 'include/deadline_countdown.html' %}</p>
+        <h1>Sign up as a Hacker</h1>
+        <p class="lead">Application deadline:{% include 'include/deadline_countdown.html' %}</p>
         {% endif %}
         {% if app_type == 'V' and h_app_volunteer_timeleft and not is_sposnor_form %}
-            <p class="lead">Application deadline:{% include 'include/deadline_countdown.html' with timeleft=h_app_volunteer_timeleft %}</p>
+        <h1>Sign up as a Volunteer</h1>
+        <p class="lead">Application deadline:{% include 'include/deadline_countdown.html' with timeleft=h_app_volunteer_timeleft %}</p>
         {% endif %}
         {% if app_type == 'M' and h_app_mentor_timeleft and not is_sposnor_form %}
+        <h1>Sign up as a Mentor</h1>
             <p class="lead">Application deadline:{% include 'include/deadline_countdown.html' with timeleft=h_app_mentor_timeleft %}</p>
         {% endif %}
 
@@ -37,7 +52,7 @@
             {% csrf_token %}
             {% bootstrap_form form  %}
             {% if not is_sposnor_form %}
-	              <p class="team-info team-info-margin"><i class="fa fa-exclamation-triangle"></i> <strong>Remember!</strong> Your team members still have to register separately.</p>
+	              <p class="team-info team-info-margin"><i class="fa-solid fa-triangle-exclamation"></i> <strong>Remember!</strong> Your team members still have to register separately.</p>
             {% endif %}
             {% if captcha_site_key %}
                 <script src='https://www.google.com/recaptcha/api.js'></script>

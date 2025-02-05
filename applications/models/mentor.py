@@ -17,7 +17,7 @@ class MentorApplication(
     first_timer = models.BooleanField(default=False)
 
     # Random lenny face
-    lennyface = models.CharField(max_length=300, default='-.-')
+    lennyface = models.CharField(max_length=20, default='-.-')
 
     # University
     graduation_year = models.IntegerField(choices=YEARS, default=DEFAULT_YEAR)
@@ -35,7 +35,7 @@ class MentorApplication(
 
     company = models.CharField(max_length=100, null=True, blank=True)
     why_mentor = models.CharField(max_length=500, null=False)
-    first_time_mentor = models.BooleanField(null=False)
+    first_time_mentor = models.BooleanField(null=False, default=False)
     fluent = models.CharField(max_length=150, null=False)
     experience = models.CharField(max_length=300, null=False)
     study_work = models.BooleanField(max_length=300, null=False)
@@ -46,8 +46,9 @@ class MentorApplication(
         upload_to=resume_path_mentors,
         null=True,
         blank=True,
-        validators=[validate_file_extension],
+        validators=[validate_file_extension_size],
     )
+    valid = models.BooleanField(default=False)
 
     def can_be_edit(self, app_type="M"):
         return self.status in [APP_PENDING, APP_DUBIOUS] and not utils.is_app_closed(app_type)

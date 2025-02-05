@@ -27,7 +27,7 @@ class SponsorApplication(models.Model):
     # Info for swag and food
     diet = models.CharField(max_length=300, choices=DIETS, default=D_NONE)
     other_diet = models.CharField(max_length=600, blank=True, null=True)
-    tshirt_size = models.CharField(max_length=5, default=DEFAULT_TSHIRT_SIZE, choices=TSHIRT_SIZES)
+    tshirt_size = models.CharField(max_length=300, default=DEFAULT_TSHIRT_SIZE, choices=TSHIRT_SIZES)
     position = models.CharField(max_length=50, null=False)
 
     email = models.EmailField(verbose_name='email', max_length=255, null=True)

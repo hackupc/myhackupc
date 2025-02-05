@@ -45,13 +45,6 @@ class VolunteerApplicationForm(_BaseApplicationForm):
     )
     lennyface = forms.CharField(initial="NA", widget=forms.HiddenInput(), required=False)
 
-    hear_about_us = forms.TypedChoiceField(
-        required=True,
-        label="¿Cómo nos has conocido?",
-        choices=models.HEARABOUTUS_ES,
-        widget=forms.RadioSelect,
-    )
-
     university = forms.CharField(
         initial="NA", widget=forms.HiddenInput(), required=False
     )
@@ -75,8 +68,18 @@ class VolunteerApplicationForm(_BaseApplicationForm):
         label='Autorizo a "HackersAtUpc" a utilizar mi información sobre alergias e intolerancias alimentarias únicamente para gestionar el servicio de catering.<span style="color: red; font-weight: bold;"> *</span>'
     )
 
+    valid = forms.BooleanField(
+        required=False,
+        widget=forms.HiddenInput(),
+        initial=True,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["gender"].required = False
+
     bootstrap_field_info = {
-        "Información Personal": {
+        "👤 Información Personal": {
             "fields": [
                 {"name": "pronouns", "space": 12},
                 {"name": "gender", "space": 12},
@@ -87,7 +90,7 @@ class VolunteerApplicationForm(_BaseApplicationForm):
             ],
             "description": "Hola voluntari@, necesitamos un poco de información antes de empezar :)",
         },
-        "Voluntariado": {
+        "⛑️ Voluntariado": {
             "fields": [
                 {"name": "first_time_volunteer", "space": 12},
                 {"name": "which_hack", "space": 12},
@@ -95,8 +98,9 @@ class VolunteerApplicationForm(_BaseApplicationForm):
                 {"name": "attendance", "space": 12},
                 {"name": "volunteer_motivation", "space": 12},
             ],
+            "description": "Has participado en eventos similares? Cuéntanos más!"
         },
-        "Otras preguntas": {
+        "❓ Otras Preguntas": {
             "fields": [
                 {"name": "friends", "space": 12},
                 {"name": "night_shifts", "space": 12},
@@ -104,19 +108,17 @@ class VolunteerApplicationForm(_BaseApplicationForm):
             ],
             "description": "¡No te asustes! Solo quedan algunas preguntas más 🤯",
         },
-        "Intereses Personales": {
+        "🎮 Intereses Personales": {
             "fields": [
-                {"name": "fav_movie", "space": 12},
                 {"name": "quality", "space": 12},
                 {"name": "weakness", "space": 12},
-                {"name": "hobbies", "space": 12},
                 {"name": "cool_skill", "space": 12},
                 # Hidden
                 {"name": "graduation_year", "space": 12},
                 {"name": "university", "space": 12},
                 {"name": "degree", "space": 12},
             ],
-            "description": "¡Queremos conocerte!",
+            "description": "¡Queremos conocerte!🫰",
         },
     }
 
@@ -155,10 +157,22 @@ class VolunteerApplicationForm(_BaseApplicationForm):
             )
         return reimb
 
+    def clean_shirt_size(self):
+        data = self.cleaned_data["tshirt_size"]
+        if not data or data == "":
+            raise forms.ValidationError("Please select a size.")
+        return data
+
+    def clean_diet(self):
+        data = self.cleaned_data["diet"]
+        if not data or data == "":
+            raise forms.ValidationError("Please select a diet.")
+        return data
+
     def get_bootstrap_field_info(self):
         fields = super().get_bootstrap_field_info()
         discord = getattr(settings, "DISCORD_HACKATHON", False)
-        other_fields = fields["Otras preguntas"]["fields"]
+        other_fields = fields["❓ Otras Preguntas"]["fields"]
         polices_fields = [
             {"name": "terms_and_conditions", "space": 12},
             {"name": "email_subscribe", "space": 12},
@@ -173,20 +187,20 @@ class VolunteerApplicationForm(_BaseApplicationForm):
             polices_fields.append({"name": "diet_notice", "space": 12})
         # Fields that we only need the first time the hacker fills the application
         # https://stackoverflow.com/questions/9704067/test-if-django-modelform-has-instance
-        if not self.instance.pk:
-            fields["Políticas HackUPC"] = {
-                "fields": polices_fields,
-                "description": '<p style="color: margin-top: 1em;display: block;'
-                'margin-bottom: 1em;line-height: 1.25em;">Nosotros, Hackers at UPC, '
-                "procesamos tu información para organizar la mejor hackathon posible. "
-                "También incluirá imágenes y videos tuyos durante el evento. "
-                "Tus datos se utilizarán principalmente para admisiones. También podríamos contactarte "
-                "(enviándote un correo electrónico) sobre otros eventos que estamos organizando y "
-                "que son de una naturaleza similar a los que previamente solicitaste. Para más "
-                "información sobre el procesamiento de tus datos personales y sobre cómo ejercer tus "
-                "derechos de acceso, rectificación, supresión, limitación, portabilidad y oposición, por "
-                "favor visita nuestra Política de Privacidad y Cookies.</p>",
-            }
+
+        fields["📜 Políticas HackUPC"] = {
+            "fields": polices_fields,
+            "description": '<p style="color: margin-top: 1em;display: block;'
+            'margin-bottom: 1em;line-height: 1.25em;">Nosotros, Hackers at UPC, '
+            "procesamos tu información para organizar la mejor hackathon posible. "
+            "También incluirá imágenes y videos tuyos durante el evento. "
+            "Tus datos se utilizarán principalmente para admisiones. También podríamos contactarte "
+            "(enviándote un correo electrónico) sobre otros eventos que estamos organizando y "
+            "que son de una naturaleza similar a los que previamente solicitaste. Para más "
+            "información sobre el procesamiento de tus datos personales y sobre cómo ejercer tus "
+            "derechos de acceso, rectificación, supresión, limitación, portabilidad y oposición, por "
+            "favor visita nuestra Política de Privacidad y Cookies.</p>",
+        }
         return fields
 
     class Meta(_BaseApplicationForm.Meta):
@@ -196,12 +210,27 @@ class VolunteerApplicationForm(_BaseApplicationForm):
             "other_diet": "Porfavor indica tus restricciones alimentarias. ¡Queremos assegurarnos que tenemos comida para ti!",
             "attendance": "Será una gran experiencia disfrutar de principio a fin con muchas cosas que hacer, pero está bien si no puedes venir todo el fin de semana",
             "languages": "No se necesita nivel de inglés para ser voluntari@, solo queremos comprobar quién se sentiría cómod@ realizando tareas que requieran comunicación en inglés",
-            "fav_movie": "e.g.: Interstellar, Juego de Tronos,  Avatar, La Casa de Papel, etc.",
             "cool_skill": "Las 3 respuestas más originales tendrán un pequeño premio que se entregará en el 2º encuentro de voluntarios 😛",
             "friends": "Recuerda que todos tienen que aplicar por separado",
             "origin": "Ejemplo: Barcelona, Lleida",
             "volunteer_motivation": "¡Puede ser una respuesta corta, solo tenemos curiosidad 😛!",
         }
+
+        class CustomSelect(forms.Select):
+                    def create_option(
+                        self, name, value, label, selected, index, subindex=None, attrs=None
+                    ):
+                        if index == 0:
+                            attrs = {"disabled": "disabled"}
+                        return super().create_option(
+                            name, value, label, selected, index, subindex=subindex, attrs=attrs
+                        )
+
+        def clean_hear_about_us(self):
+            hear_about_us = self.cleaned_data.get("hear_about_us")
+            if hear_about_us == "":
+                raise forms.ValidationError("Please select an option.")
+            return hear_about_us
 
         widgets = {
             "origin": forms.TextInput(attrs={"autocomplete": "off"}),
@@ -209,13 +238,14 @@ class VolunteerApplicationForm(_BaseApplicationForm):
             "friends": forms.Textarea(attrs={"rows": 2, "cols": 40}),
             "weakness": forms.Textarea(attrs={"rows": 2, "cols": 40}),
             "quality": forms.Textarea(attrs={"rows": 2, "cols": 40}),
-            "hobbies": forms.Textarea(attrs={"rows": 2, "cols": 40}),
             "pronouns": forms.TextInput(
                 attrs={"autocomplete": "off", "placeholder": "their/them"}
             ),
             "graduation_year": forms.HiddenInput(),
             "phone_number": forms.HiddenInput(),
-            "hear_about_us": forms.RadioSelect(),
+            "hear_about_us": CustomSelect(choices=models.HEARABOUTUS_ES),
+            "tshirt_size": forms.Select(),
+            "diet": forms.Select(),
         }
 
         labels = {
@@ -233,9 +263,8 @@ class VolunteerApplicationForm(_BaseApplicationForm):
             "quality": "Nombra una cualidad tuya:",
             "weakness": "Ahora un punto débil:",
             "cool_skill": "¿Qué habilidad interesante o dato curioso tienes? ¡Sorpréndenos! 🎉",
-            "fav_movie": " ¿Cuál es tu película o serie favorita?",
             "friends": "¿Estás aplicando con otr@s amig@s? Escribe sus nombres completos",
-            "hobbies": "¿Cuáles son tus hobbies o qué haces en tu tiempo libre?",
+            "hear_about_us": "¿Cómo escuchaste sobre nosotros por primera vez?",
             "volunteer_motivation": "¿Por qué quieres asistir como voluntari@ a HackUPC?",
         }
 

@@ -3,6 +3,7 @@
 {% load static %}
 {% load bootstrap3 %}
 {% block head_title %}Dashboard{% endblock %}
+<link href='https://fonts.googleapis.com/css?family=Silkscreen' rel='stylesheet'>
 
 {% block panel %}
     <div class="row">
@@ -29,6 +30,16 @@
             </div>
         {% elif not application %}
             <div class="col-md-12">
+                <p style="text-align: center; font-size: 1.5em; font-weight: bold;">
+                    You are applying as a 
+                    {% if app_type == 'H' %}
+                    <span style="color: #231F20; font-family: Silkscreen, sans-serif;">Hacker</span>
+                    {% elif app_type == 'V' %}
+                    <span style="color: #231F20; font-family: Silkscreen, sans-serif;">Volunteer</span>
+                    {% elif app_type == 'M' %}
+                    <span style="color: #231F20; font-family: Silkscreen, sans-serif;">Mentor</span>
+                    {% endif %}
+                </p>
                 {% if app_type == 'H' and h_app_timeleft and not is_sponsor %}
                     <div class="alert alert-info">
                         <p> Time until applications close: <strong
@@ -135,7 +146,8 @@
                     confirm
                     your attendance as soon as possible.
                 </div>
-
+                
+                
 
                 {% if application.user.is_hacker %}
                     {% if h_hybrid %}
@@ -150,7 +162,9 @@
                     </p>
                     <p>Please confirm that this information regarding your application is correct. If you see that something's not right, now is the time to change it!</p>
                     <p><b><span style="color:#E23532;">Disclaimer:</span></b> <span style="color:#FC5C5A;">We cannot guarantee that the meat provided at the event will be Halal. We strongly advise to consider opting for a vegetarian diet instead.</span></p>
-                    {% include 'include/bootstrap_form.html' with form=confirm_form %}
+                    
+                    <p id="origin" hidden>{{application.origin}}</p>
+                    {% include 'include/bootstrap_form.html' with form=confirm_form  %}
                     <script src="{% static 'js/form_modifiers.js' %}"></script>
                     <script>
                         $(document).ready(() => {
@@ -178,19 +192,28 @@
                             diet.on('change', function () {
                                 checkDietNotice();
                             });
-                            
-                            let needs_reimb = $('input[name="reimb"][value="True"]');
-                            let no_reimb = $('input[name="reimb"][value="False"]');
-                            let reimb_amout = $('#id_reimb_amount');
-                            let reimb = $('#id_reimb');
-                            conditional_field(reimb_amout, needs_reimb, function () {
-                                return needs_reimb.prop("checked");
-                            }, 1);
-                            conditional_field(reimb_amout, no_reimb, function () {
-                                return needs_reimb.prop("checked");
-                            }, 1);
-                            reimb.parent().addClass('required');
-                            reimb_amout.parent().addClass('required');
+
+                            let origin = $('#origin').text().trim();
+                            origin = origin.toLowerCase().split(',');                            
+                            if (origin[1].includes('barcelona') || origin[1].includes('tarragona') || origin[1].includes('lleida') || origin[1].includes('girona')){
+                                // hide the reimbursement field
+                                $('#id_reimb').parent().parent().hide();
+                                let no_reimb = $('input[name="reimb"][value="False"]');
+                                no_reimb.prop("checked", true);
+                            }
+                            else{
+                                let needs_reimb = $('input[name="reimb"][value="True"]');
+                                let no_reimb = $('input[name="reimb"][value="False"]');
+                                let reimb = $('#id_reimb');
+                                
+                                //conditional_field(reimb_amout, needs_reimb, function () {
+                                //    return needs_reimb.prop("checked");
+                                //}, 1);
+                                //conditional_field(reimb_amout, no_reimb, function () {
+                                //    return needs_reimb.prop("checked");
+                                //}, 1);
+                                reimb.parent().addClass('required');
+                            }
                         })
                     </script>
                 {% else %}
@@ -228,6 +251,15 @@
         {% else %}
             <div class="col-md-12">
                 {% include 'include/status.html' %}
+                {% if application.contacted %}
+                <div style="background-color: #f8d7da; padding: 15px; border-radius: 5px; display: inline-block; border: 1px solid #f5c6cb;">
+                    <p class="team-info" style="margin: 0; color: #721c24;">
+                        <i class="fa-solid fa-triangle-exclamation" style="color: #721c24;"></i> <strong>There was an issue on your application!</strong> Please check your email and your spam folder. A member of HackUPC organization has contacted you in order to resolve it.
+                    </p>
+                </div>
+                <br>
+                <br>
+                {% endif %}
                 <p>Thank you so much for applying at {{ h_name }}!</p>
                 <p> When decisions are released, you'll be able to see your results on this page.</p>
                 <p>If you have any questions or concerns, you can still reach us at {{ h_contact_email|urlize }}</p>

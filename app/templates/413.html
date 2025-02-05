@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+
+
+{% block head_title %}413 Request Entity Too Large {% endblock %}
+
+{% block body %}
+    <style>
+        .text-white {
+            color: white;
+        }
+        .custom-a {
+            color: #0060BF;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+    </style>
+    <div class="text-white">
+        <h1 class="text-center margin-top">413 Request Entity Too Large</h1>
+        <h3 class="text-center">The request you performed is too big to handle, please reduce your attached file sizes / responses</h3>
+        <p class="text-center">Please <a class='custom-a' href="javascript:history.back()">go back</a> and try again.</p>
+        <p class="text-center">Or reach us out
+            at {{ h_contact_email|urlize }} if the problem persists.</p>
+    </div>
+
+{% endblock %}

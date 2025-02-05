@@ -28,8 +28,8 @@ from applications.models import APP_PENDING, APP_DUBIOUS, APP_BLACKLISTED, APP_I
     APP_CONFIRMED, AcceptedResume, APP_ATTENDED, APP_REJECTED
 from organizers import models
 from organizers.tables import ApplicationsListTable, ApplicationFilter, AdminApplicationsListTable, \
-    AdminTeamListTable, InviteFilter, DubiousListTable, DubiousApplicationFilter, VolunteerFilter,\
-    VolunteerListTable, MentorListTable, MentorFilter, SponsorListTable, SponsorFilter, SponsorUserListTable,\
+    AdminTeamListTable, InviteFilter, DubiousListTable, DubiousApplicationFilter, VolunteerFilter, \
+    VolunteerListTable, MentorListTable, MentorFilter, SponsorListTable, SponsorFilter, SponsorUserListTable, \
     SponsorUserFilter, BlacklistListTable, BlacklistApplicationFilter
 from teams.models import Team
 from user.mixins import IsOrganizerMixin, IsDirectorMixin, HaveDubiousPermissionMixin, HaveVolunteerPermissionMixin, \
@@ -183,6 +183,12 @@ class ApplicationDetailView(TabsViewMixin, IsOrganizerMixin, TemplateView):
         context['app'] = application
         context['vote'] = self.can_vote()
         context['max_vote'] = dict(models.VOTES)
+        if (self.can_vote()):
+            context['apps_left_to_vote'] = \
+                models.HackerApplication.objects.exclude(vote__user_id=self.request.user.id)\
+                .filter(status=APP_PENDING, submission_date__lte=timezone.now() - timedelta(hours=2))\
+                .count()
+
         context['comments'] = models.ApplicationComment.objects.filter(hacker=application)
         if application and getattr(application.user, 'team', False) and settings.TEAMS_ENABLED:
             context['teammates'] = Team.objects.filter(team_code=application.user.team.team_code) \
@@ -556,12 +562,19 @@ class ReviewVolunteerApplicationView(TabsViewMixin, HaveVolunteerPermissionMixin
             if m:
                 m.send()
                 messages.success(request, 'Volunteer invited!')
+        elif request.POST.get('reject') and request.user.is_organizer:
+            application.reject()
+            application.save()
         elif request.POST.get('cancel_invite') and request.user.is_organizer:
             application.move_to_pending()
             messages.success(request, 'Volunteer invite canceled')
         elif request.POST.get('add_comment'):
             add_comment(application, request.user, comment_text)
             messages.success(request, 'Comment added')
+        elif request.POST.get('change_valid') and request.user.is_organizer:
+            application.valid = not application.valid
+            application.save()
+            messages.success(request, 'Volunteer valid status changed')
 
         return HttpResponseRedirect(reverse('volunteer_detail', kwargs={'id': application.uuid_str}))
 
@@ -633,13 +646,17 @@ class ReviewMentorApplicationView(TabsViewMixin, HaveMentorPermissionMixin, Temp
             m = emails.create_invite_email(application, self.request)
             if m:
                 m.send()
-                messages.success(request, 'sponsor invited!')
+                messages.success(request, 'Mentor invited!')
         elif request.POST.get('cancel_invite') and request.user.is_organizer:
             application.move_to_pending()
-            messages.success(request, 'Sponsor invite canceled')
+            messages.success(request, 'Mentor invite canceled')
         elif request.POST.get('add_comment'):
             add_comment(application, request.user, comment_text)
             messages.success(request, 'comment added')
+        elif request.POST.get('change_valid') and request.user.is_organizer:
+            application.valid = not application.valid
+            application.save()
+            messages.success(request, 'Mentor valid status changed')
 
         return HttpResponseRedirect(reverse('mentor_detail', kwargs={'id': application.uuid_str}))
 

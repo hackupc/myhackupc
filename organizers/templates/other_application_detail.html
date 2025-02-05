@@ -35,7 +35,26 @@
                     {% include 'include/field.html' with desc='Gender' value=app.get_gender_display %}
                     {% include 'include/field.html' with desc='Other gender' value=app.other_gender %}
                     {% include 'include/field.html' with desc='In BCN Apr-May' value=app.lennyface|yesno %}
-                    <hr>
+                  <hr>
+                    <dt>
+                    <h3>Validation</h3>
+                    </dt>
+                    <dd></dd>
+                    {% include 'include/fieldAccent.html' with desc="Valid?" value=app.valid|yesno %}
+                    <br>
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="app_id" value="{{ app.pk }}"/>
+                        <button name="change_valid" class="btn btn-default btn-block" value="valid">
+                            {% if app.valid %}
+                                Invalidate
+                            {% else %}
+                                Validate
+                            {% endif %}
+                        </button>
+                    </form>
+                    <br>
+                  <hr>
                     <dt>
                     <h3>Volunteering</h3>
                     </dt>
@@ -66,7 +85,6 @@
                     {% include 'include/field.html' with desc='Favorite movie or series' value=app.fav_movie %}
                     {% include 'include/field.html' with desc='Quality' value=app.quality %}
                     {% include 'include/field.html' with desc='Weakness' value=app.weakness %}
-                    {% include 'include/field.html' with desc='Hobbies' value=app.hobbies %}
                     {% include 'include/field.html' with desc='Cool skill/fun fact' value=app.cool_skill %}
 
                 {% endif %}
@@ -82,6 +100,24 @@
                 {% endif %}
                 {% if app.user.is_mentor %}
                     <hr>
+                    <dt>
+                      <h3>Validation</h3>
+                      </dt>
+                      <dd></dd>
+                      {% include 'include/fieldAccent.html' with desc="Valid?" value=app.valid|yesno %}
+                      <br>
+                      <form action="" method="post">
+                          {% csrf_token %}
+                          <input type="hidden" name="app_id" value="{{ app.pk }}"/>
+                          <button name="change_valid" class="btn btn-default btn-block" value="valid">
+                              {% if app.valid %}
+                                  Invalidate
+                              {% else %}
+                                  Validate
+                              {% endif %}
+                          </button>
+                      </form>
+                      <br>
                     <dt>
                     <h3>Mentor</h3>
                     </dt>
@@ -119,13 +155,13 @@
 
                 <p class="text-center">
                     {% if app.github %}
-                        <a target="_blank" href="{{ app.github }}" class="icon fa fa-github"></a>
+                        <a target="_blank" href="{{ app.github }}" class="icon fa-brands fa-github"></a>
                     {% endif %}
                     {% if app.linkedin %}
-                        <a target="_blank" href="{{ app.linkedin }}" class="icon fa fa-linkedin"></a>
+                        <a target="_blank" href="{{ app.linkedin }}" class="icon fa-brands fa-linkedin"></a>
                     {% endif %}
                     {% if app.site %}
-                        <a target="_blank" href="{{ app.site }}" class="icon fa fa-globe"></a>
+                        <a target="_blank" href="{{ app.site }}" class="icon fa-solid fa-globe"></a>
                     {% endif %}
                     {% if app.devpost %}
                         <a target="_blank" href="{{ app.devpost }}" class="icon">
@@ -175,6 +211,12 @@
                 {% elif app.is_rejected %}
                     <button name="cancel_invite" class="btn btn-danger btn-block" value="cancel_invite">Move back to review</button>
                 {% endif %}
+            </form>
+        <br>
+            <form action="" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="app_id" value="{{ app.pk }}"/>
+                <button name="reject" class="btn btn-danger btn-block" value="reject">Reject</button>
             </form>
         </div>
 

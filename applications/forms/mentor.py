@@ -16,6 +16,19 @@ class MentorApplicationForm(_BaseApplicationForm):
 
     online = common_online()
 
+    valid = forms.BooleanField(
+        required=False,
+        widget=forms.HiddenInput(),
+        initial=True,
+    )
+
+    def clean_first_time_mentor(self):
+        data = self.cleaned_data["first_time_mentor"]
+        if data:
+            return data
+        else:
+            return False
+
     def clean_resume(self):
         resume = self.cleaned_data["resume"]
         size = getattr(resume, "_size", 0)
@@ -41,6 +54,17 @@ class MentorApplicationForm(_BaseApplicationForm):
         validate_url(data, "linkedin.com")
         return data
 
+    def clean_shirt_size(self):
+        data = self.cleaned_data["tshirt_size"]
+        if not data or data == "":
+            raise forms.ValidationError("Please select a size.")
+        return data
+
+    def clean_diet(self):
+        data = self.cleaned_data["diet"]
+        if not data or data == "":
+            raise forms.ValidationError("Please select a diet.")
+        return data
 
     def clean_projects(self):
         data = self.cleaned_data["projects"]
@@ -52,7 +76,7 @@ class MentorApplicationForm(_BaseApplicationForm):
         return data
 
     first_time_mentor = forms.TypedChoiceField(
-        required=True,
+        required=False,
         label="Have you participated as mentor in past HackUPC editions?",
         coerce=lambda x: x == "True",
         choices=((False, "No"), (True, "Yes")),
@@ -77,36 +101,30 @@ class MentorApplicationForm(_BaseApplicationForm):
     #    initial="NA", widget=forms.HiddenInput(), required=False
     #)
 
-    degree = forms.CharField(
-        required=False,
-        label="What's your major/degree of study?",
-        help_text="Current or most recent degree you've received",
-        widget=forms.TextInput(
-            attrs={"class": "typeahead-degrees", "autocomplete": "off"}
-        ),
-    )
-
     graduation_year = forms.ChoiceField(
         required=False,
         choices=models.YEARS,
         help_text="What year have you graduated on or when will you graduate",
-        label="What year will you graduate?",
+        label="What year are you expecting to graduate?",
         widget=forms.RadioSelect(),
     )
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["gender"].required = False
+
     bootstrap_field_info = {
-        "Personal Information": {
+        "👤 Personal Info": {
             "fields": [
                 {"name": "origin", "space": 12},
                 {"name": "gender", "space": 12},
                 {"name": "other_gender", "space": 12},
-                {"name": "tshirt_size", "space": 12},
                 {"name": "under_age", "space": 12},
                 {"name": "lennyface", "space": 12},
             ],
             "description": "Hey there, before we begin we would like to know a little more about you.",
         },
-        "Background information": {
+        "🎓 Background Info": {
             "fields": [
                 {"name": "study_work", "space": 12},
                 {"name": "company", "space": 12},
@@ -116,22 +134,36 @@ class MentorApplicationForm(_BaseApplicationForm):
                 {"name": "english_level", "space": 12},
                 {"name": "fluent", "space": 12},
                 {"name": "experience", "space": 12},
+            ],
+            "description": "Mind telling us a little more about your background?",
+        },
+        "🚚 Logistics Info": {
+            "fields": [
+                {"name": "tshirt_size", "space": 12},
+                {"name": "attendance", "space": 12},
+                {"name": "diet", "space": 12},
+            ],
+            "description": "To prepare for the event, we would appreciate you giving us this information.",
+        },
+        "💻 Show us what you've built": {
+            "fields": [
                 {"name": "linkedin", "space": 12},
                 {"name": "site", "space": 12},
                 {"name": "github", "space": 12},
                 {"name": "devpost", "space": 12},
                 {"name": "resume", "space": 12},
             ],
+            "description": "Show us your work! We want to know more about you.",
         },
-        "Hackathons": {
+        "🏆 Hackathons": {
             "fields": [
                 {"name": "why_mentor", "space": 12},
                 {"name": "first_timer", "space": 12},
                 {"name": "first_time_mentor", "space": 12},
                 {"name": "which_hack", "space": 12},
                 {"name": "participated", "space": 12},
-                {"name": "attendance", "space": 12},
             ],
+            "description": "Let us know what your experience is in similar events!",
         },
     }
 
@@ -142,39 +174,38 @@ class MentorApplicationForm(_BaseApplicationForm):
         fields = super().get_bootstrap_field_info()
         discord = getattr(settings, "DISCORD_HACKATHON", False)
         hybrid = getattr(settings, "HYBRID_HACKATHON", False)
-        personal_info_fields = fields["Personal Information"]["fields"]
+        logistics_info_fields = fields["🚚 Logistics Info"]["fields"]
         polices_fields = [
             {"name": "terms_and_conditions", "space": 12},
             {"name": "email_subscribe", "space": 12},
         ]
-        personal_info_fields.append({"name": "online", "space": 12})
+        logistics_info_fields.append({"name": "online", "space": 12})
         if not hybrid:
             self.fields["online"].widget = forms.HiddenInput()
         if not discord:
-            personal_info_fields.extend(
+            logistics_info_fields.extend(
                 [
-                    {"name": "diet", "space": 12},
                     {"name": "other_diet", "space": 12},
                 ]
             )
             polices_fields.append({"name": "diet_notice", "space": 12})
         # Fields that we only need the first time the hacker fills the application
         # https://stackoverflow.com/questions/9704067/test-if-django-modelform-has-instance
-        if not self.instance.pk:
-            fields["HackUPC Policies"] = {
-                "fields": polices_fields,
-                "description": '<p style="color: margin-top: 1em;display: block;'
-                'margin-bottom: 1em;line-height: 1.25em;">We, Hackers at UPC, '
-                "process your information to organize an awesome hackathon. It "
-                "will also include images and videos of yourself during the event. "
-                "Your data will be used for admissions mainly. We may also reach "
-                "out to you (sending you an e-mail) about other events that we are "
-                "organizing and that are of a similar nature to those previously "
-                "requested by you. For more information on the processing of your "
-                "personal data and on how to exercise your rights of access, "
-                "rectification, suppression, limitation, portability and opposition "
-                "please visit our Privacy and Cookies Policy.</p>",
-            }
+
+        fields["HackUPC Policies"] = {
+            "fields": polices_fields,
+            "description": '<p style="color: margin-top: 1em;display: block;'
+            'margin-bottom: 1em;line-height: 1.25em;">We, Hackers at UPC, '
+            "process your information to organize an awesome hackathon. It "
+            "will also include images and videos of yourself during the event. "
+            "Your data will be used for admissions mainly. We may also reach "
+            "out to you (sending you an e-mail) about other events that we are "
+            "organizing and that are of a similar nature to those previously "
+            "requested by you. For more information on the processing of your "
+            "personal data and on how to exercise your rights of access, "
+            "rectification, suppression, limitation, portability and opposition "
+            "please visit our Privacy and Cookies Policy.</p>",
+        }
         return fields
 
     def clean(self):
@@ -207,11 +238,15 @@ class MentorApplicationForm(_BaseApplicationForm):
             "other_diet": "Please fill here in your dietary requirements. We want to make sure we have food for you!",
             "lennyface": 'tip: you can chose from here <a href="http://textsmili.es/" target="_blank">'
             " http://textsmili.es/</a>",
-            "participated": "You can talk about about past hackathons or any other events. ",
+            "participated": "<span id=\'participated_char_count\'></span><br>"
+            "You can talk about about past hackathons or any other events. ",
             "resume": "Accepted file formats: %s"
             % (", ".join(extensions) if extensions else "Any"),
-            "fluent": "Catalan, French, Chinese, Arabic…",
-            "experience": "C++, Java, Docker, Vue, AWS…",
+            "fluent": "<span id=\'fluent_char_count\'></span><br>"
+            "Catalan, French, Chinese, Arabic…",
+            "experience": "<span id=\'experience_char_count\'></span><br>"
+            "C++, Java, Docker, Vue, AWS…",
+            "why_mentor": "<span id=\'why_mentor_char_count\'></span><br>"
         }
 
         widgets = {
@@ -225,12 +260,14 @@ class MentorApplicationForm(_BaseApplicationForm):
             "first_timer": forms.HiddenInput(),
             "lennyface": forms.HiddenInput(),
             "resume": forms.FileInput(),
+            "tshirt_size": forms.Select(),
+            "diet": forms.Select(),
         }
 
         labels = {
             "gender": "What gender do you identify as?",
             "other_gender": "Self-describe",
-            "graduation_year": "What year will you graduate?",
+            "graduation_year": "What year are you expecting to graduate?",
             "tshirt_size": "What is your t-shirt size?",
             "diet": "Dietary requirements",
             "lennyface": 'Describe yourself in one "lenny face"?',

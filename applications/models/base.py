@@ -16,7 +16,7 @@ from multiselectfield import MultiSelectField
 from app import utils, hackathon_variables
 from user.models import User, BlacklistUser
 from user import models as userModels
-from applications.validators import validate_file_extension
+from applications.validators import validate_file_extension, validate_file_extension_size
 from .constants import *
 
 
@@ -61,12 +61,12 @@ class BaseApplication(models.Model):
     phone_number = models.CharField(blank=True, null=True, max_length=16,
                                     validators=[RegexValidator(regex=r'^\+?1?\d{9,15}$',
                                                                message="Phone number must be entered in the format: \
-                                                                  '+#########'. Up to 15 digits allowed.")])
+                                                                  '+#########'. Up to 16 digits allowed.")])
 
     # Info for swag and food
     diet = models.CharField(max_length=300, choices=DIETS, default=D_NONE)
     other_diet = models.CharField(max_length=600, blank=True, null=True)
-    tshirt_size = models.CharField(max_length=5, default=DEFAULT_TSHIRT_SIZE, choices=TSHIRT_SIZES)
+    tshirt_size = models.CharField(max_length=300, default=DEFAULT_TSHIRT_SIZE, choices=TSHIRT_SIZES)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -96,8 +96,10 @@ class BaseApplication(models.Model):
 
     def get_soft_status_display(self):
         text = self.get_status_display()
-        if DUBIOUS_TEXT == text or BLACKLIST_TEXT == text:
+        if BLACKLIST_TEXT == text or (DUBIOUS_TEXT == text and not self.contacted):
             return PENDING_TEXT
+        if DUBIOUS_TEXT == text and self.contacted:
+            return "Action Required - Check your email"
         return text
 
     def save(self, **kwargs):

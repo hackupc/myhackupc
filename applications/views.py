@@ -231,13 +231,15 @@ class HackerDashboard(DashboardMixin, TabsView):
         print("is valid:", form.is_valid())
         print("form errors: ", form.errors)
         if form.is_valid():
-            print("is valid!!")
             email_subscribe = form.cleaned_data.get("email_subscribe", False)
+            cvs_edition = "cvs_edition" in form.data
             application = form.save(commit=False)
             application.user = request.user
-            application.save()
             if email_subscribe:
                 application.user.email_subscribed = email_subscribe
+                application.user.save()
+            if cvs_edition:
+                application.user.cvs_edition = cvs_edition
                 application.user.save()
             if new_application:
                 messages.success(
@@ -246,9 +248,11 @@ class HackerDashboard(DashboardMixin, TabsView):
                     "Processing your application will take some time, so please be patient.",
                 )
             else:
+                print("Application changes saved successfully!")
                 messages.success(request, "Application changes saved successfully!")
             if user_is_in_blacklist(application.user):
                 application.set_blacklist()
+            application.save()
 
             return HttpResponseRedirect(reverse("root"))
         else:
@@ -312,10 +316,18 @@ class HackerApplication(IsHackerMixin, TabsView):
         except Exception:
             form = ApplicationForm(request.POST, request.FILES)
         if form.is_valid():
+            email_subscribe = form.cleaned_data.get("email_subscribe", False)
+            cvs_edition = "cvs_edition" in form.data
             application = form.save(commit=False)
             application.user = request.user
+            if email_subscribe:
+                application.user.email_subscribed = email_subscribe
+                application.user.save()
+            if cvs_edition:
+                application.user.cvs_edition = cvs_edition
+                application.user.save()
+            application.cvs_edition = cvs_edition
             application.save()
-
             messages.success(request, "Application changes saved successfully!")
 
             return HttpResponseRedirect(reverse("application"))
