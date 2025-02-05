@@ -16,10 +16,11 @@ class HackerApplicationForm(_BaseApplicationForm):
         "👤 Personal Info": {
             "fields": [
                 {"name": "origin", "space": 12},
-                {"name": "gender", "space": 12},
                 {"name": "phone_number", "space": 12},
                 {"name": "under_age", "space": 12},
                 {"name": "lennyface", "space": 12},
+                {"name": "gender", "space": 12},
+                {"name": "other_gender", "space": 12},
             ],
             "description": "Mind telling us a little more about you?",
         },

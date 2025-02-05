@@ -222,9 +222,9 @@
 
         var other_gender = $('#id_other_gender');
         var gender = $('#id_gender');
-        conditional_field(other_gender, gender, () => {
+        conditional_field(other_gender, gender, function () {
             return gender.val() === 'X';
-        })
+        }, 1);
             
         var online = $('input[name="online"][value="True"]');
         var face_to_face = $('input[name="online"][value="False"]');
@@ -252,7 +252,7 @@
         }, 1);
         var diet_notice = $('#id_diet_notice');
         conditional_field(diet_notice, diet, function () {
-            return diet.val() !== 'None';
+            return diet.val() !== 'None' && diet.val() !== '';
         }, 2);
 
         var has_team = $('input[name="team"][value="True"]');
