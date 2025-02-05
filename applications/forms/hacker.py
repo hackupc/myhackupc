@@ -11,7 +11,7 @@ class HackerApplicationForm(_BaseApplicationForm):
                 {"name": "degree", "space": 12},
                 {"name": "graduation_year", "space": 12},
             ],
-            "description": "Hey there, before we begin we would like to know about your education background.",
+            "description": "Hey there, before we begin, as a student hackathon, we need some information on your education background.",
         },
         "👤 Personal Info": {
             "fields": [
@@ -29,7 +29,7 @@ class HackerApplicationForm(_BaseApplicationForm):
                 {"name": "tshirt_size", "space": 12},
                 {"name": "diet", "space": 12},
             ],
-            "description": "To prepare for the event, we would appreciate you giving us this information.",
+            "description": "To prepare the best event for you, we need to have a bit more of context about you!",
         },
         "🏆 Hackathons": {
             "fields": [
@@ -37,8 +37,7 @@ class HackerApplicationForm(_BaseApplicationForm):
                 {"name": "first_timer", "space": 12},
                 {"name": "projects", "space": 12},
             ],
-            "description": "Let us know what your experience is in similar events!",
-            "description": "Let us know what your experience is in similar events!",
+            "description": "Let us know your goals at HackUPC, and what your experience is in similar events! Tell us why you stand out from the rest of the hackers!",
         },
         "💻 Show us what you've built": {
             "fields": [
@@ -48,8 +47,7 @@ class HackerApplicationForm(_BaseApplicationForm):
                 {"name": "site", "space": 12},
                 {"name": "resume", "space": 12},
             ],
-            "description": "Some of our sponsors may use this information for recruitment purposes, "
-            "so feel free to include as much as you want.",
+            "description": "Cool projects? Hackathon wins? Responsive websites? Feel free to brag about it and let us see your technical skills!",
         },
         "📜 HackUPC Policies": {
             "fields": [
