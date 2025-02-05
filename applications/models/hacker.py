@@ -1,5 +1,6 @@
 from .base import *
 from .base import BaseApplication
+from datetime import timedelta
 
 
 class HackerApplication(
@@ -122,10 +123,10 @@ class HackerApplication(
 
     def is_blacklisted(self):
         return self.status == APP_BLACKLISTED
-
+        
     def can_be_edit(self, app_type="H"):
         return self.status in [APP_PENDING, APP_DUBIOUS, APP_INVITED] and not self.vote_set.exists() and not \
-            utils.is_app_closed(app_type)
+            utils.is_app_closed(app_type) and self.submission_date + timedelta(hours=2) > timezone.now()
 
 
 class AcceptedResume(models.Model):
