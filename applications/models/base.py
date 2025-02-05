@@ -61,7 +61,7 @@ class BaseApplication(models.Model):
     phone_number = models.CharField(blank=True, null=True, max_length=16,
                                     validators=[RegexValidator(regex=r'^\+?1?\d{9,15}$',
                                                                message="Phone number must be entered in the format: \
-                                                                  '+#########'. Up to 15 digits allowed.")])
+                                                                  '+#########'. Up to 16 digits allowed.")])
 
     # Info for swag and food
     diet = models.CharField(max_length=300, choices=DIETS, default=D_NONE)
