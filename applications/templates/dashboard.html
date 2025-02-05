@@ -251,6 +251,15 @@
         {% else %}
             <div class="col-md-12">
                 {% include 'include/status.html' %}
+                {% if application.contacted %}
+                <div style="background-color: #f8d7da; padding: 15px; border-radius: 5px; display: inline-block; border: 1px solid #f5c6cb;">
+                    <p class="team-info" style="margin: 0; color: #721c24;">
+                        <i class="fa-solid fa-triangle-exclamation" style="color: #721c24;"></i> <strong>There was an issue on your application!</strong> Please check your email and your spam folder. A member of HackUPC organization has contacted you in order to resolve it.
+                    </p>
+                </div>
+                <br>
+                <br>
+                {% endif %}
                 <p>Thank you so much for applying at {{ h_name }}!</p>
                 <p> When decisions are released, you'll be able to see your results on this page.</p>
                 <p>If you have any questions or concerns, you can still reach us at {{ h_contact_email|urlize }}</p>

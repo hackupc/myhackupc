@@ -96,8 +96,10 @@ class BaseApplication(models.Model):
 
     def get_soft_status_display(self):
         text = self.get_status_display()
-        if DUBIOUS_TEXT == text or BLACKLIST_TEXT == text:
+        if BLACKLIST_TEXT == text or (DUBIOUS_TEXT == text and not self.contacted):
             return PENDING_TEXT
+        if DUBIOUS_TEXT == text and self.contacted:
+            return "Action Required - Check your email"
         return text
 
     def save(self, **kwargs):
