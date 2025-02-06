@@ -4,6 +4,7 @@ from organizers import views
 
 urlpatterns = [
     url(r'^hacker/review/$', views.ReviewApplicationView.as_view(), name='review'),
+    url(r'^hacker/review/(?P<id>[\w-]+)$', views.ReviewApplicationDetailView.as_view(), name='review_detail'),
     url(r'^hacker/review_resume/$', views.ReviewResume.as_view(), name='review_resume'),
     url(r'^hacker/(?P<id>[\w-]+)$', views.ApplicationDetailView.as_view(), name="app_detail"),
     url(r'^hacker/resume/(?P<id>[\w-]+)$', views.VisualizeResume.as_view(), name="app_resume"),
