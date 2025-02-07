@@ -251,7 +251,7 @@
         {% else %}
             <div class="col-md-12">
                 {% include 'include/status.html' %}
-                {% if application.contacted %}
+                {% if application.contacted and application.status == "D" %}
                 <div style="background-color: #f8d7da; padding: 15px; border-radius: 5px; display: inline-block; border: 1px solid #f5c6cb;">
                     <p class="team-info" style="margin: 0; color: #721c24;">
                         <i class="fa-solid fa-triangle-exclamation" style="color: #721c24;"></i> <strong>There was an issue on your application!</strong> Please check your email and your spam folder. A member of HackUPC organization has contacted you in order to resolve it.
