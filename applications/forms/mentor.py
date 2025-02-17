@@ -5,7 +5,15 @@ from .base import _BaseApplicationForm
 class MentorApplicationForm(_BaseApplicationForm):
     first_timer = common_first_timer()
     #university = common_university()
-    degree = common_degree()
+    degree = forms.CharField(
+        required=False,
+        max_length= 70,
+        label="What's your major/degree?",
+        help_text="Current or most recent degree you've received",
+        widget=forms.TextInput(
+            attrs={"class": "typeahead-degrees", "autocomplete": "off"}
+        ),
+    )
     #Mandatory social fields
     linkedin = social_required("linkedin", "https://www.linkedin.com/in/john_biene")
 
