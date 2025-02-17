@@ -291,7 +291,6 @@
             <form action="" method="post">
                 {% csrf_token %}
                 <input type="hidden" name="app_id" value="{{ app.pk }}"/>
-
                 {% if app.is_dubious and app.contacted and app.contacted_by == request.user %}
                     <button name="unset_dubious" class="btn btn-success btn-block" value="unset_dubious">Mark as not
                         dubious
@@ -328,6 +327,19 @@
                 <button name="unset_blacklist" class="btn btn-success btn-block" value="unset_blacklist">Mark as not
                     blacklisted
                 </button>
+            </form>
+        </div>
+    {% else%}
+        <div class="panel-footer">
+            <form action="" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="app_id" value="{{ app.pk }}"/>
+                {% if user.can_review_dubious and app.is_pending%}
+                    <button name="set_dubious" class="btn btn-warning btn-block" value="set_dubious"
+                            onclick="return confirm('Are you sure you want set this application as Dubious?')">
+                        Dubious Application
+                    </button>
+                {% endif %}
             </form>
         </div>
     {% endif %}
