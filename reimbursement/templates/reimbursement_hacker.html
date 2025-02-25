@@ -13,6 +13,9 @@
         <script src="{% static 'js/form_modifiers.js' %}"></script>
         <script>
             $(document).ready(function () {
+                let receipt = document.getElementById('id_receipt');
+                receipt.accept = '.pdf';
+
                 fetch('{% static 'cities.json' %}')
                 .then((response) => response.json())
                 .then((json) => {
