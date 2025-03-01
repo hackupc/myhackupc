@@ -47,6 +47,12 @@ class ReceiptSubmissionReceipt(BootstrapFormMixin, ModelForm):
                 "Please keep resume under %s. Current filesize %s"
                 % (filesizeformat(settings.MAX_UPLOAD_SIZE), filesizeformat(size))
             )
+        # # check if is pdf
+        # if receipt and not receipt.name.endswith(".pdf"):
+        #     raise forms.ValidationError("Please upload a PDF file")
+
+        if(not receipt.name.endswith(".pdf")):
+            raise forms.ValidationError("Please upload a PDF file")
         return receipt
 
     def clean_origin(self):

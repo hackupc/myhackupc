@@ -42,7 +42,10 @@ class ReimbursementHacker(IsHackerMixin, TabsView):
         return c
 
     def post(self, request, *args, **kwargs):
-        if "reimbursement_form" in request.POST:
+        # check reimbursment status and act accordingly
+        # if status is pending demo link, then validate the devpost link
+        # if status is pending receipt, then validate the receipt
+        if request.user.reimbursement.status == models.RE_PEND_TICKET:
             try:
                 form = forms.ReceiptSubmissionReceipt(
                     request.POST, request.FILES, instance=request.user.reimbursement
@@ -52,13 +55,15 @@ class ReimbursementHacker(IsHackerMixin, TabsView):
             if form.is_valid():
                 reimb = form.save(commit=False)
                 reimb.hacker = request.user
+                # set status to pending demo link
+                reimb.status = models.RE_PEND_APPROVAL
                 reimb.save()
                 messages.success(
                     request,
                     "We have now received your reimbursement. "
                     "Processing will take some time, so please be patient.",
                 )
-
+                
                 return HttpResponseRedirect(reverse("reimbursement_dashboard"))
             else:
                 c = self.get_context_data()
