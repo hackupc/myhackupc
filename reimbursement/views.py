@@ -211,9 +211,7 @@ class ReceiptReview(ReimbursementDetail):
                 "accept_form": forms.AcceptReceiptForm(instance=reimb),
                 "back_url": reverse("receipt_review"),
                 "edit_form": forms.EditReimbursementForm(instance=reimb),
-                "form": forms.ReceiptSubmissionReceipt(instance=reimb),
-                # "validate_form": forms.ValidateReimbursementForm(instance=reimb),
-                
+                "form": forms.ReceiptSubmissionReceipt(instance=reimb)
             }
         )
         return c
