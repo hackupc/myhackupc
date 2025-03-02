@@ -121,6 +121,7 @@ class ReimbursementDetail(IsOrganizerMixin, TabsView):
                 "accept_form": forms.AcceptReceiptForm(instance=reimb),
             }
         )
+        
         return c
 
     def post(self, request, *args, **kwargs):
@@ -208,6 +209,11 @@ class ReceiptReview(ReimbursementDetail):
                 "reject_form": forms.RejectReceiptForm(instance=reimb),
                 "review": True,
                 "accept_form": forms.AcceptReceiptForm(instance=reimb),
+                "back_url": reverse("receipt_review"),
+                "edit_form": forms.EditReimbursementForm(instance=reimb),
+                "form": forms.ReceiptSubmissionReceipt(instance=reimb),
+                # "validate_form": forms.ValidateReimbursementForm(instance=reimb),
+                
             }
         )
         return c

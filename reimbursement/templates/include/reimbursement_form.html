@@ -1,7 +1,9 @@
 {% load static %}
 <form class="signup " enctype="multipart/form-data" id="signup_form" method="post" action="" name="reimbursement_form">
     {% csrf_token %}
-    {% include 'include/bootstrap_form.html' %}
+    {% if form %}
+        {% include 'include/bootstrap_form.html' %}
+    {% endif %}
     <small><span style="color: red">*</span>Indicates required field</small>
 
     <button class="btn btn-success btn-block" type="submit">Submit receipt</button>
