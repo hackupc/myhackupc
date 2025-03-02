@@ -38,6 +38,9 @@
                 {% if reimb.public_comment %}
                     {% include 'include/field.html' with desc='Reject reason' value=reimb.public_comment %}
                 {% endif %}
+                {% if reimb.devpost %}
+                    {% include 'include/field.html' with desc='Devpost Link' value='<a href="'|add:reimb.devpost|add:'" target="_blank">'|add:reimb.devpost|add:"</a>"|safe %}
+                {% endif %}
                 {% if reimb.is_pending_demo_validation %}
                     <form action="" method="post" name="validate_form">
                         {% csrf_token %}
