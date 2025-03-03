@@ -126,6 +126,10 @@
                         <small>comment by {{ reimbursement.reimbursed_by.email|urlize }}</small>
                     </dd>
                 {% endif %}
+                {% if reimbursement.devpost %}
+                    <dt>Devpost Link</dt>
+                    <dd><a href="{{ reimbursement.devpost }}" target="_blank">{{ reimbursement.devpost }}</a></dd>
+                {% endif %}
             </dl>
 
             
