@@ -300,10 +300,10 @@ def generateGTicketUrl(qrValue: str):
         },
         "dateTime": {"start": "2025-05-02T16:00", "end": "2025-05-04T17:00"},
         "reviewStatus": "UNDER_REVIEW",
-        "hexBackgroundColor": "#0060BF",
+        "hexBackgroundColor": "#231F20",
         "heroImage": {
             "sourceUri": {
-                "uri": "https://i.ibb.co/Y4sbLXDb/wallet2025.png",
+                "uri": "https://i.ibb.co/LL5T8d0/walletv2.png",
             },
             "contentDescription": {
                 "defaultValue": {
