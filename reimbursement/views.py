@@ -63,7 +63,6 @@ class ReimbursementHacker(IsHackerMixin, TabsView):
                     "We have now received your reimbursement. "
                     "Processing will take some time, so please be patient.",
                 )
-                
                 return HttpResponseRedirect(reverse("reimbursement_dashboard"))
             else:
                 c = self.get_context_data()
@@ -121,7 +120,6 @@ class ReimbursementDetail(IsOrganizerMixin, TabsView):
                 "accept_form": forms.AcceptReceiptForm(instance=reimb),
             }
         )
-        
         return c
 
     def post(self, request, *args, **kwargs):
