@@ -1,6 +1,6 @@
 import datetime
 
-from django.conf import settings
+#from django.conf import settings
 from django.db.models import Count, Sum, F, Value, IntegerField
 from django.db.models.functions import TruncDate, TruncHour
 from django.http import JsonResponse
