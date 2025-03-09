@@ -25,8 +25,8 @@ def stats_tabs():
             ('Volunteer', reverse('volunteer_stats'), False), ('Mentor', reverse('mentor_stats'), False),
             ('Sponsor', reverse('sponsor_stats'), False), ('Users', reverse('users_stats'), False),
             ('Check-in', reverse('checkin_stats'), False), ]
-    if getattr(settings, 'REIMBURSEMENT_ENABLED', False):
-        tabs.append(('Reimbursements', reverse('reimb_stats'), False))
+    #if getattr(settings, 'REIMBURSEMENT_ENABLED', False):
+        #tabs.append(('Reimbursements', reverse('reimb_stats'), False))
     return tabs
 
 
