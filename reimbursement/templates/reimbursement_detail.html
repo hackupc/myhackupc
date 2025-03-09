@@ -42,12 +42,23 @@
                     {% include 'include/field.html' with desc='Devpost Link' value='<a href="'|add:reimb.devpost|add:'" target="_blank">'|add:reimb.devpost|add:"</a>"|safe %}
                 {% endif %}
                 {% if reimb.is_pending_demo_validation %}
+                    <br>
                     <form action="" method="post" name="validate_form">
                         {% csrf_token %}
                         <input type="hidden" name="id" value="{{ reimb.pk }}"/>
-                        <button name="validate" class="btn btn-success btn-block"
-                                value="validate">Validate
-                        </button>
+                        
+                        <div class="col-md-6" style="padding: 0; display: flex; gap: 10px; width: 100%;">
+                            <button name="validate" class="btn btn-success btn-block"
+                                    value="validate">Validate
+                            </button>
+                            <br>
+                            <button name="reject" class="btn btn-danger btn-block"
+                                    value="invalidate">Invalidate
+                            </button>
+                        </div>
+                    </form>
+                    <br>
+                    <hr>
                 {% endif %}
                 <hr>
                 <dt>

@@ -151,6 +151,19 @@ class ReimbursementDetail(IsOrganizerMixin, TabsView):
                 return render(
                     request, self.template_name, {"reimb": reimb, "validate_form": form}
                 )
+        elif "reject" in request.POST:
+            id_ = kwargs.get("id", None)
+            reimb = models.Reimbursement.objects.get(pk=id_)
+            form = forms.ValidateReimbursementForm(request.POST, instance=reimb)
+            if form.is_valid():
+                form.save(commit=False)
+                reimb.invalidate(request.user)
+                form.save()
+                messages.success(request, "Reimbursement rejected.")
+            else:
+                return render(
+                    request, self.template_name, {"reimb": reimb, "validate_form": form}
+                )
         else:
             id_ = request.POST.get("id", None)
             reimb = models.Reimbursement.objects.get(pk=id_)

@@ -157,6 +157,13 @@ class Reimbursement(models.Model):
             self.reimbursed_by = user
             self.save()
 
+    def invalidate(self, user):
+        if self.status == RE_PEND_DEMO_VAL:
+            self.status = RE_WAITLISTED
+            self.status_update_date = timezone.now()
+            self.reimbursed_by = user
+            self.save()
+
     def no_reimb(self, user):
         if self.status == RE_PEND_TICKET:
             self.status = RE_WAITLISTED
