@@ -123,7 +123,7 @@ class ReimbursementDetail(IsOrganizerMixin, TabsView):
         return c
 
     def post(self, request, *args, **kwargs):
-        if "edit_form" in request.POST:
+        if "edit" in request.POST:
             id_ = kwargs.get("id", None)
             reimb = models.Reimbursement.objects.get(pk=id_)
             form = forms.EditReimbursementForm(request.POST, instance=reimb)
@@ -137,7 +137,7 @@ class ReimbursementDetail(IsOrganizerMixin, TabsView):
                 return render(
                     request, self.template_name, {"reimb": reimb, "edit_form": form}
                 )
-        if "validate" in request.POST:
+        elif "validate" in request.POST:
             id_ = kwargs.get("id", None)
             reimb = models.Reimbursement.objects.get(pk=id_)
             form = forms.ValidateReimbursementForm(request.POST, instance=reimb)
@@ -154,16 +154,19 @@ class ReimbursementDetail(IsOrganizerMixin, TabsView):
         elif "reject" in request.POST:
             id_ = kwargs.get("id", None)
             reimb = models.Reimbursement.objects.get(pk=id_)
-            form = forms.ValidateReimbursementForm(request.POST, instance=reimb)
+            form = forms.RejectReceiptForm(request.POST, instance=reimb)
             if form.is_valid():
                 form.save(commit=False)
-                reimb.invalidate(request.user)
+                m = form.instance.reject_receipt(request.user, request)
+                m.send()
                 form.save()
-                messages.success(request, "Reimbursement rejected.")
+                messages.success(request, "Receipt rejected")
             else:
-                return render(
-                    request, self.template_name, {"reimb": reimb, "validate_form": form}
-                )
+                a_form = forms.AcceptReceiptForm(instance=reimb)
+                r_form = forms.RejectReceiptForm(instance=reimb)
+                c = self.get_context_data()
+                c.update({"reject_form": r_form, "accept_form": a_form})
+                return render(request, self.template_name, c)
         else:
             id_ = request.POST.get("id", None)
             reimb = models.Reimbursement.objects.get(pk=id_)
@@ -232,6 +235,7 @@ class ReceiptReview(ReimbursementDetail):
         reimb = models.Reimbursement.objects.get(pk=id_)
         a_form = forms.AcceptReceiptForm(instance=reimb)
         r_form = forms.RejectReceiptForm(instance=reimb)
+        e_form = forms.EditReimbursementForm(instance=reimb)
 
         if request.POST.get("accept", None):
             a_form = forms.AcceptReceiptForm(request.POST, instance=reimb)
@@ -256,6 +260,18 @@ class ReceiptReview(ReimbursementDetail):
             else:
                 c = self.get_context_data()
                 c.update({"reject_form": r_form, "accept_form": a_form})
+                return render(request, self.template_name, c)
+            
+        elif request.POST.get("edit", None):
+            e_form = forms.EditReimbursementForm(request.POST, instance=reimb)
+            if e_form.is_valid():
+                e_form.save()
+                messages.success(
+                    self.request, "Changes in reimbursement successfully saved!"
+                )
+            else:
+                c = self.get_context_data()
+                c.update({"reimb": reimb, "edit_form": e_form})
                 return render(request, self.template_name, c)
 
         return HttpResponseRedirect(reverse("receipt_review"))
