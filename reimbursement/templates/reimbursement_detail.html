@@ -88,9 +88,10 @@
             <form action="" method="post" class="form" name="edit_form">
                 {% csrf_token %}
                 <h4>Edit reimbursement</h4>
+                <input type="hidden" name="id" value="{{ reimb.pk }}"/>
                 {% bootstrap_form edit_form %}
-                <button name="invite" class="btn btn-success btn-block"
-                        value="invite">Submit changes
+                <button name="edit" class="btn btn-success btn-block"
+                        value="edit">Submit changes
                 </button>
             </form>
             <br>
