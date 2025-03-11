@@ -97,7 +97,7 @@ class Reimbursement(models.Model):
         related_name="reimbursements_made",
         on_delete=models.SET_NULL,
     )
-    expiration_time = models.DateTimeField(default = settings.REIMBURSEMENT_EXPIRY_DATE)
+    expiration_time = models.DateTimeField(default=settings.REIMBURSEMENT_EXPIRY_DATE)
     update_time = models.DateTimeField(default=timezone.now)
     creation_time = models.DateTimeField(default=timezone.now)
     status = models.CharField(max_length=2, choices=RE_STATUS, default=RE_PEND_TICKET)

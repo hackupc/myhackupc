@@ -261,7 +261,7 @@ class ReceiptReview(ReimbursementDetail):
                 c = self.get_context_data()
                 c.update({"reject_form": r_form, "accept_form": a_form})
                 return render(request, self.template_name, c)
-            
+
         elif request.POST.get("edit", None):
             e_form = forms.EditReimbursementForm(request.POST, instance=reimb)
             if e_form.is_valid():
