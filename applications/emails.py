@@ -26,7 +26,7 @@ def create_confirmation_email(application, request):
     c = {
         'name': application.user.get_full_name,
         'token': application.uuid_str,
-        'qr_url': 'http://chart.googleapis.com/chart?cht=qr&chs=350x350&chl=%s'
+        'qr_url': 'https://quickchart.io/qr?size=350&text=%s'
                   % application.uuid_str,
         'cancel_url': str(reverse('cancel_app', request=request, kwargs={'id': application.uuid_str})),
         'is_hacker': application.user.is_hacker(),
