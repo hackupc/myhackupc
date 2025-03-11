@@ -235,7 +235,7 @@ def generateGTicketUrl(qrValue: str):
         },
         "logo": {
             "sourceUri": {
-                "uri": "https://i.ibb.co/tXt96Xn/Logo-1.png",
+                "uri": "https://i.ibb.co/b5TQV4md/hackupc2025.png",
             },
             "contentDescription": {
                 "defaultValue": {
@@ -298,12 +298,12 @@ def generateGTicketUrl(qrValue: str):
                 },
             },
         },
-        "dateTime": {"start": "2024-05-03T16:00", "end": "2024-05-05T17:00"},
+        "dateTime": {"start": "2025-05-02T16:00", "end": "2025-05-04T17:00"},
         "reviewStatus": "UNDER_REVIEW",
-        "hexBackgroundColor": "#0060BF",
+        "hexBackgroundColor": "#231F20",
         "heroImage": {
             "sourceUri": {
-                "uri": "https://i.ibb.co/2ytdRvf/Gpay-2.png",
+                "uri": "https://i.ibb.co/LL5T8d0/walletv2.png",
             },
             "contentDescription": {
                 "defaultValue": {
