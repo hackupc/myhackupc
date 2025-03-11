@@ -13,6 +13,9 @@
         <script src="{% static 'js/form_modifiers.js' %}"></script>
         <script>
             $(document).ready(function () {
+                let receipt = document.getElementById('id_receipt');
+                receipt.accept = '.pdf';
+
                 fetch('{% static 'cities.json' %}')
                 .then((response) => response.json())
                 .then((json) => {
@@ -95,6 +98,7 @@
                 {% elif reimbursement.is_accepted %}
                     {% include "include/devpost_form.html" %}
                 {% endif %}
+                <br>
                 <dt>Origin</dt>
                 <dd>{{ reimbursement.origin }}</dd>
                 <br>
@@ -108,6 +112,7 @@
                             {{ reimbursement.reimbursement_money }}{{ h_currency }}
                         {% endif %}
                     </dd>
+                    <br>
                     <dt>Uploaded Receipt</dt>
                     <dd>
                         <a href="{{ reimbursement.receipt.url }}" target="_blank">{{ reimbursement.receipt.name }}</a>
@@ -122,6 +127,10 @@
                     <dd>{{ reimbursement.public_comment }} -
                         <small>comment by {{ reimbursement.reimbursed_by.email|urlize }}</small>
                     </dd>
+                {% endif %}
+                {% if reimbursement.devpost %}
+                    <dt>Devpost Link</dt>
+                    <dd><a href="{{ reimbursement.devpost }}" target="_blank">{{ reimbursement.devpost }}</a></dd>
                 {% endif %}
             </dl>
 

@@ -38,13 +38,27 @@
                 {% if reimb.public_comment %}
                     {% include 'include/field.html' with desc='Reject reason' value=reimb.public_comment %}
                 {% endif %}
+                {% if reimb.devpost %}
+                    {% include 'include/field.html' with desc='Devpost Link' value='<a href="'|add:reimb.devpost|add:'" target="_blank">'|add:reimb.devpost|add:"</a>"|safe %}
+                {% endif %}
                 {% if reimb.is_pending_demo_validation %}
+                    <br>
                     <form action="" method="post" name="validate_form">
                         {% csrf_token %}
                         <input type="hidden" name="id" value="{{ reimb.pk }}"/>
-                        <button name="validate" class="btn btn-success btn-block"
-                                value="validate">Validate
-                        </button>
+                        
+                        <div class="col-md-6" style="padding: 0; display: flex; gap: 10px; width: 100%;">
+                            <button name="validate" class="btn btn-success btn-block"
+                                    value="validate">Validate
+                            </button>
+                            <br>
+                            <button name="reject" class="btn btn-danger btn-block"
+                                    value="invalidate">Invalidate
+                            </button>
+                        </div>
+                    </form>
+                    <br>
+                    <hr>
                 {% endif %}
                 <hr>
                 <dt>
@@ -64,7 +78,6 @@
                     <dd></dd>
                     {% include 'include/field.html' with desc='Reimbursement money' value=reimb.reimbursement_money %}
                     {% include 'include/field.html' with desc='PayPal email' value=reimb.paypal_email %}
-                    {% include 'include/field.html' with desc='Devpost URL' value=reimb.devpost %}
                 {% endif %}
             </dl>
         </div>
@@ -75,9 +88,10 @@
             <form action="" method="post" class="form" name="edit_form">
                 {% csrf_token %}
                 <h4>Edit reimbursement</h4>
+                <input type="hidden" name="id" value="{{ reimb.pk }}"/>
                 {% bootstrap_form edit_form %}
-                <button name="invite" class="btn btn-success btn-block"
-                        value="invite">Submit changes
+                <button name="edit" class="btn btn-success btn-block"
+                        value="edit">Submit changes
                 </button>
             </form>
             <br>
