@@ -4,6 +4,7 @@ from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render, get_object_or_404
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
+from django.utils import timezone
 
 from app.mixins import TabsViewMixin
 from app.utils import reverse, hacker_tabs
@@ -32,6 +33,10 @@ class ReimbursementHacker(IsHackerMixin, TabsView):
         reimb = getattr(self.request.user, "reimbursement", None)
         if not reimb:
             raise Http404
+        if reimb.expiration_time < timezone.now():
+                # set status to expired
+                reimb.status = models.RE_EXPIRED
+                reimb.save()
         c.update(
             {
                 "form": forms.ReceiptSubmissionReceipt(
@@ -52,7 +57,7 @@ class ReimbursementHacker(IsHackerMixin, TabsView):
                 )
             except Exception:
                 form = forms.ReceiptSubmissionReceipt(request.POST, request.FILES)
-            if form.is_valid():
+            if form.is_valid() and request.user.reimbursement.expiration_time > timezone.now():
                 reimb = form.save(commit=False)
                 reimb.hacker = request.user
                 # set status to pending demo link
@@ -64,10 +69,23 @@ class ReimbursementHacker(IsHackerMixin, TabsView):
                     "Processing will take some time, so please be patient.",
                 )
                 return HttpResponseRedirect(reverse("reimbursement_dashboard"))
+
+            elif request.user.reimbursement.expiration_time < timezone.now():
+                reimb = request.user.reimbursement
+                # set status to expired
+                reimb.status = models.RE_EXPIRED
+                reimb.save()
+                messages.error(
+                    request,
+                    "Your reimbursement has expired.",
+                )
+                return HttpResponseRedirect(reverse("reimbursement_dashboard"))
+
             else:
                 c = self.get_context_data()
                 c.update({"form": form})
                 return render(request, self.template_name, c)
+
         else:
             try:
                 form = forms.DevpostValidationForm(
