@@ -167,6 +167,11 @@ class ReimbursementDetail(IsOrganizerMixin, TabsView):
                 c = self.get_context_data()
                 c.update({"reject_form": r_form, "accept_form": a_form})
                 return render(request, self.template_name, c)
+        elif "invalidate" in request.POST:
+            id_ = kwargs.get("id", None)
+            reimb = models.Reimbursement.objects.get(pk=id_)
+            reimb.invalidate(request.user)
+            messages.success(request, "Reimbursement invalidated")
         else:
             id_ = request.POST.get("id", None)
             reimb = models.Reimbursement.objects.get(pk=id_)
