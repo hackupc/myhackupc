@@ -10,13 +10,12 @@
             <div class="col-md-12">
                 <div class="form-group {% if form.errors.devpost_link %} has-error{% endif %}">
                     <label for="id_devpost_link">Devpost Link <span style="color: red">*</span></label>
-                    <input class="form-control" id="devpost" name="devpost" placeholder="https://devpost.com/your-project-name" type="url" value="{{ form.devpost_link.value }}">
-                    {% if form.errors.devpost_link %}
-                        <span class="help-block
-                        {% if form.errors.devpost_link %} has-error{% endif %}">{{ form.errors.devpost_link }}</span>
-                    {% endif %}
-                    <small id="devpost-error" class="form-text text-muted" style="color:red" hidden>Please provide the link to your project on Devpost.</small>
-                </div>
+                    <input class="form-control" id="devpost" name="devpost" placeholder="https://devpost.com/software/your-project-name" type="url" value="{{ form.devpost_link.value }}">
+                    
+                    {% for error in form.errors.devpost %}
+                        <small id="devpost-error" class="form-text text-muted" style="color:red">{{ error }}</small>
+                    {% endfor %}
+              </div>
             </div>
         </div>
     </fieldset>

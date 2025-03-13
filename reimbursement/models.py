@@ -97,7 +97,7 @@ class Reimbursement(models.Model):
         related_name="reimbursements_made",
         on_delete=models.SET_NULL,
     )
-    expiration_time = models.DateTimeField(blank=True, null=True)
+    expiration_time = models.DateTimeField(default=settings.REIMBURSEMENT_EXPIRY_DATE)
     update_time = models.DateTimeField(default=timezone.now)
     creation_time = models.DateTimeField(default=timezone.now)
     status = models.CharField(max_length=2, choices=RE_STATUS, default=RE_PEND_TICKET)
@@ -153,6 +153,13 @@ class Reimbursement(models.Model):
     def validate(self, user):
         if self.status == RE_PEND_DEMO_VAL:
             self.status = RE_FINALIZED
+            self.status_update_date = timezone.now()
+            self.reimbursed_by = user
+            self.save()
+
+    def invalidate(self, user):
+        if self.status == RE_PEND_DEMO_VAL:
+            self.status = RE_WAITLISTED
             self.status_update_date = timezone.now()
             self.reimbursed_by = user
             self.save()

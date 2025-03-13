@@ -193,6 +193,24 @@
                                 checkDietNotice();
                             });
 
+                            let reimb = $('input[name="reimb"]');
+                            let reimbursement_reminder = '\
+                                <p id="reimbursement_reminder"><b style="color: #E23532">Remember!</b> You will need to submit your travel tickets after confirming your spot.</p>\
+                            ';
+
+                            reimb.on('change', function () {
+                                if ($('input[name="reimb"]:checked').val() === 'True') {
+                                    console.log('reimb Yes');
+                                    if ($('#reimbursement_reminder').length === 0) {
+                                        // add the reminder to the parent's child that has the help-block classname
+                                        $('#id_reimb').parent().parent().find('.help-block').append(reimbursement_reminder);    
+                                    }
+                                } else {
+                                    console.log('reimb No');
+                                    $('#reimbursement_reminder').remove();
+                                }
+                            });
+
                             let origin = $('#origin').text().trim();
                             origin = origin.toLowerCase().split(',');                            
                             if (origin[1].includes('barcelona') || origin[1].includes('tarragona') || origin[1].includes('lleida') || origin[1].includes('girona')){

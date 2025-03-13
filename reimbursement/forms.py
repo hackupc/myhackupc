@@ -47,6 +47,12 @@ class ReceiptSubmissionReceipt(BootstrapFormMixin, ModelForm):
                 "Please keep resume under %s. Current filesize %s"
                 % (filesizeformat(settings.MAX_UPLOAD_SIZE), filesizeformat(size))
             )
+        # # check if is pdf
+        # if receipt and not receipt.name.endswith(".pdf"):
+        #     raise forms.ValidationError("Please upload a PDF file")
+
+        if(not receipt.name.endswith(".pdf")):
+            raise forms.ValidationError("Please upload a PDF file")
         return receipt
 
     def clean_origin(self):
@@ -176,11 +182,15 @@ class DevpostValidationForm(BootstrapFormMixin, ModelForm):
         labels = {"devpost": "Devpost URL"}
         help_texts = {"devpost": "Please provide the URL of your Devpost project"}
         widgets = {
-            "devpost": forms.TextInput(attrs={"autocomplete": "off"}),
+            "devpost": forms.TextInput(attrs={"autocomplete": "off",
+                                              "placeholder": "https://devpost.com/software/..."}),
         }
 
     def clean_devpost(self):
         devpost = self.cleaned_data["devpost"]
         if not devpost:
             raise forms.ValidationError("Please provide a Devpost URL")
+        if not devpost.startswith("https://devpost.com/software/"):
+            raise forms.ValidationError("Please provide a valid Software Devpost URL \
+                                        that follows the structure: https://devpost.com/software/your-project-name")
         return devpost
