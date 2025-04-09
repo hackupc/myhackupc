@@ -348,6 +348,7 @@ class SponsorApplicationView(TemplateView):
             uid = force_text(urlsafe_base64_decode(self.kwargs.get("uid", None)))
             user = userModels.User.objects.get(pk=uid)
             context.update({"user": user})
+            context.update({"company_name": user.name})
         except (TypeError, ValueError, OverflowError, userModels.User.DoesNotExist):
             pass
 
