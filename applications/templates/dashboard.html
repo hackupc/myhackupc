@@ -31,7 +31,11 @@
         {% elif not application %}
             <div class="col-md-12">
                 <p style="text-align: center; font-size: 1.5em; font-weight: bold;">
-                    You are applying as a 
+                    {% if app_type == 'H' or app_type == 'V' or app_type == 'M' %}
+                        You are applying as a 
+                    {% elif is_sponsor %}
+                        You are applying for {{ company_name }} as a sponsor
+                    {% endif %}
                     {% if app_type == 'H' %}
                     <span style="color: #231F20; font-family: Silkscreen, sans-serif;">Hacker</span>
                     {% elif app_type == 'V' %}
