@@ -226,7 +226,7 @@ class ApplicationDetailView(TabsViewMixin, IsOrganizerMixin, TemplateView):
         motive_of_ban = request.POST.get('motive_of_ban', None)
         dubious_type = request.POST.get('dubious_type', None)
         dubious_comment_text = request.POST.get('dubious_comment_text', None)
-        
+
         if request.POST.get('add_comment'):
             add_comment(application, request.user, comment_text)
         elif request.POST.get('invite') and request.user.is_director:
