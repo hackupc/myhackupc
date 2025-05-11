@@ -101,7 +101,7 @@
                     {% elif app.dubious_type == 'INVALID_CV' %}
                         {% include 'include/field.html' with desc='Dubious reason' value='Invalid CV' %}
                     {% elif app.dubious_type == 'LATE_GRAD' %}
-                        {% include 'include/field.html' with desc='Dubious reason' value='Late Graduation Date' %}
+                        {% include 'include/field.html' with desc='Dubious reason' value='Wrong Graduation Date' %}
                     {% elif app.dubious_type == 'NOT_STUDENT' %}
                         {% include 'include/field.html' with desc='Dubious reason' value='Not a Student' %}
                     {% elif app.dubious_type == 'INVALID_SCHOOL' %}
@@ -286,7 +286,7 @@
                                                 <div class="col-3 mb-3">
                                                     <div class="icon-option" data-value="LATE_GRAD">
                                                         <i class="fas fa-graduation-cap fa-2x mb-2"></i>
-                                                        <div>Late Graduation</div>
+                                                        <div>Wrong Graduation</div>
                                                     </div>
                                                 </div>
                                                 <div class="col-3">
@@ -392,7 +392,7 @@
                                                         <div class="col-6 mb-3">
                                                             <div class="icon-option" data-value="LATE_GRAD">
                                                                 <i class="fas fa-graduation-cap fa-3x mb-2"></i>
-                                                                <div>Late Graduation</div>
+                                                                <div>Wrong Graduation</div>
                                                             </div>
                                                         </div>
                                                         <div class="col-6">
