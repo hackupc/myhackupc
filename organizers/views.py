@@ -224,6 +224,9 @@ class ApplicationDetailView(TabsViewMixin, IsOrganizerMixin, TemplateView):
 
         comment_text = request.POST.get('comment_text', None)
         motive_of_ban = request.POST.get('motive_of_ban', None)
+        dubious_type = request.POST.get('dubious_type', None)
+        dubious_comment_text = request.POST.get('dubious_comment_text', None)
+
         if request.POST.get('add_comment'):
             add_comment(application, request.user, comment_text)
         elif request.POST.get('invite') and request.user.is_director:
@@ -237,7 +240,7 @@ class ApplicationDetailView(TabsViewMixin, IsOrganizerMixin, TemplateView):
         elif request.POST.get('slack') and request.user.is_organizer:
             self.slack_invite(application)
         elif request.POST.get('set_dubious') and request.user.is_organizer:
-            application.set_dubious()
+            application.set_dubious(request.user, dubious_type, dubious_comment_text)
         elif request.POST.get('contact_user') and request.user.has_dubious_access:
             application.set_contacted(request.user)
         elif request.POST.get('unset_dubious') and request.user.has_dubious_access:
@@ -336,6 +339,8 @@ class ReviewApplicationView(ApplicationDetailView):
         tech_vote = request.POST.get('tech_rat', None)
         pers_vote = request.POST.get('pers_rat', None)
         comment_text = request.POST.get('comment_text', None)
+        dubious_type = request.POST.get('dubious_type', None)
+        dubious_comment_text = request.POST.get('dubious_comment_text', None)
 
         application = models.HackerApplication.objects.get(pk=request.POST.get('app_id'))
         try:
@@ -344,7 +349,7 @@ class ReviewApplicationView(ApplicationDetailView):
             elif request.POST.get('add_comment'):
                 add_comment(application, request.user, comment_text)
             elif request.POST.get('set_dubious'):
-                application.set_dubious()
+                application.set_dubious(request.user, dubious_type, dubious_comment_text)
             elif request.POST.get('unset_dubious'):
                 application.unset_dubious()
             elif request.POST.get('set_blacklist') and request.user.is_organizer:
