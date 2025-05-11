@@ -105,11 +105,13 @@ DUBIOUS_CV = 'INVALID_CV'
 DUBIOUS_GRADUATION_YEAR = 'LATE_GRAD'
 DUBIOUS_NOT_STUDENT = 'NOT_STUDENT'
 DUBIOUS_SCHOOL = 'INVALID_SCHOOL'
+DUBIOUS_OTHER = 'OTHER'
 
 DUBIOUS_TYPES = [
     (DUBIOUS_NONE, 'Not dubious'),
     (DUBIOUS_CV, 'Invalid CV'),
     (DUBIOUS_GRADUATION_YEAR, 'Invalid graduation year'),
     (DUBIOUS_NOT_STUDENT, 'Not a student'),
-    (DUBIOUS_SCHOOL, 'Invalid school')
+    (DUBIOUS_SCHOOL, 'Invalid school'),
+    (DUBIOUS_OTHER, 'Other')
 ]
