@@ -8,6 +8,30 @@
     <link rel="stylesheet" href="{% static 'lib/bars-square.css' %}">
     <link rel="stylesheet" href="{% static 'css/vote.css' %}">
     <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        .icon-option {
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .icon-option:hover {
+            background-color: #f8f9fa;
+            border-color: #adb5bd;
+        }
+        .icon-option.active {
+            background-color: #fff3cd;
+            border-color: #ffc107;
+        }
+        .icon-option i {
+            color: #6c757d;
+        }
+        .icon-option.active i {
+            color: #ffc107;
+        }
+    </style>
 {% endblock %}
 {% block panel %}
     {% if app %}
@@ -183,6 +207,16 @@
                             $('#dubiousModal').modal('hide');
                         });
                     }
+                    const iconOptions = document.querySelectorAll('.icon-option');
+                    iconOptions.forEach(option => {
+                        option.addEventListener('click', function() {
+                            iconOptions.forEach(opt => opt.classList.remove('active'));
+                            this.classList.add('active');
+                            const value = this.getAttribute('data-value');
+                            document.getElementById('dubiousType').value = value;
+                        });
+                    });
+
                 });
             </script>
             </div>
@@ -230,40 +264,71 @@
                 </button>
                 {% if h_dubious_enabled %}
                     <div class="modal fade" id="dubiousModal" tabindex="-1" role="dialog" aria-labelledby="dubiousModalLabel" aria-hidden="true">
-                                <div class="modal-dialog" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="dubiousModalLabel">Select Dubious Type</h5>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <div class="form-group">
-                                                <label for="dubiousType">Why is this application dubious?</label>
-                                                <select class="form-control" id="dubiousType">
-                                                    <option value="INVALID_CV">Invalid CV</option>
-                                                    <option value="LATE_GRAD">Late Graduation Year</option>
-                                                    <option value="NOT_STUDENT">Not a Student</option>
-                                                    <option value="INVALID_SCHOOL">Invalid School</option>
-                                                </select>
-                                                <label for="commentBox">Add a comment on why it's dubious</label>
-                                                <textarea id="commentBox" name="dubious_comment" class="form-control" placeholder="Write a comment..." rows="3" maxlength="500"></textarea>
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="dubiousModalLabel">Select Dubious Type</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label>Why is this application dubious?</label>
+                                        <div class="icon-options-container text-center mb-3">
+                                            <div class="row">
+                                                <div class="col-3 mb-3">
+                                                    <div class="icon-option" data-value="INVALID_CV">
+                                                        <i class="fas fa-file-alt fa-2x mb-2"></i>
+                                                        <div>Invalid CV</div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-3 mb-3">
+                                                    <div class="icon-option" data-value="LATE_GRAD">
+                                                        <i class="fas fa-graduation-cap fa-2x mb-2"></i>
+                                                        <div>Late Graduation</div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-3">
+                                                    <div class="icon-option" data-value="NOT_STUDENT">
+                                                        <i class="fas fa-briefcase fa-2x mb-2"></i>
+                                                        <div>Not a Student</div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-3">
+                                                    <div class="icon-option" data-value="INVALID_SCHOOL">
+                                                        <i class="fas fa-school fa-2x mb-2"></i>
+                                                        <div>Invalid School</div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                                            <button type="submit" class="btn btn-warning" id="confirmDubious">Confirm</button>
-                                        </div>
+                                        <input type="hidden" id="dubiousType" name="dubious_type" required>
+                                        
+                                        <label for="commentBox">Add a comment on why it's dubious</label>
+                                        <textarea id="commentBox" name="dubious_comment" class="form-control" placeholder="Write a comment..." rows="3" maxlength="500"></textarea>
                                     </div>
                                 </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-warning" id="confirmDubious">Confirm</button>
+                                </div>
                             </div>
-                            <button type="button" class="btn btn-warning btn-block" data-toggle="modal" data-target="#dubiousModal">
-                                Dubious Application
-                            </button>
-                            <input type="hidden" name="set_dubious" value="true">
-                            <input type="hidden" name="dubious_type" id="dubiousTypeInput">
-                            <input type="hidden" name="dubious_comment_text" id="commentTextInput">
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn btn-warning btn-block" data-toggle="modal" data-target="#dubiousModal">
+                        Dubious Application
+                    </button>
+                    <input type="hidden" name="set_dubious" value="true">
+                    <input type="hidden" name="dubious_type" id="dubiousTypeInput">
+                    <input type="hidden" name="dubious_comment_text" id="commentTextInput">
+                {% endif %}
+                {% if h_blacklist_enabled %}
+                    <button name="set_blacklist" class="btn btn-danger btn-block" value="set_blacklist"
+                            onclick="return confirm('Are you sure you want set this application as Blacklist?')">
+                        Blacklist Application
+                    </button>
                 {% endif %}
                 {% if h_blacklist_enabled %}
                     <button name="set_blacklist" class="btn btn-danger btn-block" value="set_blacklist"
@@ -315,13 +380,37 @@
                                         </div>
                                         <div class="modal-body">
                                             <div class="form-group">
-                                                <label for="dubiousType">Why is this application dubious?</label>
-                                                <select class="form-control" id="dubiousType">
-                                                    <option value="INVALID_CV">Invalid CV</option>
-                                                    <option value="LATE_GRAD">Late Graduation Year</option>
-                                                    <option value="NOT_STUDENT">Not a Student</option>
-                                                    <option value="INVALID_SCHOOL">Invalid School</option>
-                                                </select>
+                                                <label>Why is this application dubious?</label>
+                                                <div class="icon-options-container text-center mb-3">
+                                                    <div class="row">
+                                                        <div class="col-6 mb-3">
+                                                            <div class="icon-option" data-value="INVALID_CV">
+                                                                <i class="fas fa-file-alt fa-3x mb-2"></i>
+                                                                <div>Invalid CV</div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-6 mb-3">
+                                                            <div class="icon-option" data-value="LATE_GRAD">
+                                                                <i class="fas fa-graduation-cap fa-3x mb-2"></i>
+                                                                <div>Late Graduation</div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <div class="icon-option" data-value="NOT_STUDENT">
+                                                                <i class="fas fa-briefcase fa-3x mb-2"></i>
+                                                                <div>Not a Student</div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <div class="icon-option" data-value="INVALID_SCHOOL">
+                                                                <i class="fas fa-school fa-3x mb-2"></i>
+                                                                <div>Invalid School</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <input type="hidden" id="dubiousType" name="dubious_type" required>
+                                                
                                                 <label for="commentBox">Add a comment on why it's dubious</label>
                                                 <textarea id="commentBox" name="dubious_comment" class="form-control" placeholder="Write a comment..." rows="3" maxlength="500"></textarea>
                                             </div>
@@ -333,6 +422,7 @@
                                     </div>
                                 </div>
                             </div>
+
                             <button type="button" class="btn btn-warning btn-block" data-toggle="modal" data-target="#dubiousModal">
                                 Dubious Application
                             </button>
