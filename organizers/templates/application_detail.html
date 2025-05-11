@@ -106,6 +106,8 @@
                         {% include 'include/field.html' with desc='Dubious reason' value='Not a Student' %}
                     {% elif app.dubious_type == 'INVALID_SCHOOL' %}
                         {% include 'include/field.html' with desc='Dubious reason' value='Invalid School' %}
+                    {% elif app.dubious_type == 'OTHER' %}
+                        {% include 'include/field.html' with desc='Dubious reason' value='Other' %}
                     {% endif %}
 
                     {% if app.dubious_comment %}
@@ -301,6 +303,12 @@
                                                         <div>Invalid School</div>
                                                     </div>
                                                 </div>
+                                                <div class="col-3">
+                                                    <div class="icon-option" data-value="OTHER">
+                                                        <i class="fas fa-question fa-2x mb-2"></i>
+                                                        <div>Other</div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                         <input type="hidden" id="dubiousType" name="dubious_type" required>
@@ -383,28 +391,34 @@
                                                 <label>Why is this application dubious?</label>
                                                 <div class="icon-options-container text-center mb-3">
                                                     <div class="row">
-                                                        <div class="col-6 mb-3">
+                                                        <div class="col-3 mb-3">
                                                             <div class="icon-option" data-value="INVALID_CV">
-                                                                <i class="fas fa-file-alt fa-3x mb-2"></i>
+                                                                <i class="fas fa-file-alt fa-2x mb-2"></i>
                                                                 <div>Invalid CV</div>
                                                             </div>
                                                         </div>
-                                                        <div class="col-6 mb-3">
+                                                        <div class="col-3 mb-3">
                                                             <div class="icon-option" data-value="LATE_GRAD">
-                                                                <i class="fas fa-graduation-cap fa-3x mb-2"></i>
+                                                                <i class="fas fa-graduation-cap fa-2x mb-2"></i>
                                                                 <div>Wrong Graduation</div>
                                                             </div>
                                                         </div>
-                                                        <div class="col-6">
+                                                        <div class="col-3">
                                                             <div class="icon-option" data-value="NOT_STUDENT">
-                                                                <i class="fas fa-briefcase fa-3x mb-2"></i>
+                                                                <i class="fas fa-briefcase fa-2x mb-2"></i>
                                                                 <div>Not a Student</div>
                                                             </div>
                                                         </div>
-                                                        <div class="col-6">
+                                                        <div class="col-3">
                                                             <div class="icon-option" data-value="INVALID_SCHOOL">
-                                                                <i class="fas fa-school fa-3x mb-2"></i>
+                                                                <i class="fas fa-school fa-2x mb-2"></i>
                                                                 <div>Invalid School</div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-3">
+                                                            <div class="icon-option" data-value="OTHER">
+                                                                <i class="fas fa-question fa-2x mb-2"></i>
+                                                                <div>Other</div>
                                                             </div>
                                                         </div>
                                                     </div>
