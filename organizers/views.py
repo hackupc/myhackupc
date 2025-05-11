@@ -237,7 +237,7 @@ class ApplicationDetailView(TabsViewMixin, IsOrganizerMixin, TemplateView):
         elif request.POST.get('slack') and request.user.is_organizer:
             self.slack_invite(application)
         elif request.POST.get('set_dubious') and request.user.is_organizer:
-            application.set_dubious()
+            application.set_dubious(request.user)
         elif request.POST.get('contact_user') and request.user.has_dubious_access:
             application.set_contacted(request.user)
         elif request.POST.get('unset_dubious') and request.user.has_dubious_access:
@@ -344,7 +344,7 @@ class ReviewApplicationView(ApplicationDetailView):
             elif request.POST.get('add_comment'):
                 add_comment(application, request.user, comment_text)
             elif request.POST.get('set_dubious'):
-                application.set_dubious()
+                application.set_dubious(request.user)
             elif request.POST.get('unset_dubious'):
                 application.unset_dubious()
             elif request.POST.get('set_blacklist') and request.user.is_organizer:

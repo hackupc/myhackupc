@@ -36,6 +36,9 @@ class HackerApplication(
     projects = models.TextField(max_length=500, blank=True, null=True)
 
     # META
+    dubious_type = models.CharField(max_length=300, choices=DUBIOUS_TYPES, default=DUBIOUS_NONE) # Type of dubious application
+    dubioused_by = models.ForeignKey(User, related_name='dubioused_by', blank=True, null=True,
+                                        on_delete=models.SET_NULL)  # User who marked this application as dubious   
     contacted = models.BooleanField(default=False)  # If a dubious application has been contacted yet
     contacted_by = models.ForeignKey(User, related_name='contacted_by', blank=True, null=True,
                                      on_delete=models.SET_NULL)
@@ -75,10 +78,11 @@ class HackerApplication(
         self.status = APP_INVALID
         self.save()
 
-    def set_dubious(self):
+    def set_dubious(self, user):
         self.status = APP_DUBIOUS
         self.contacted = False
         self.status_update_date = timezone.now()
+        self.dubioused_by = user
         self.vote_set.all().delete()
         if hasattr(self, 'acceptedresume'):
             self.acceptedresume.delete()

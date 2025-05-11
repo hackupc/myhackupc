@@ -70,6 +70,21 @@
                     <h3>Dubious info</h3>
                     </dt>
                     <dd></dd>
+                    {% include 'include/field.html' with desc='Sent to dubious by' value=app.dubioused_by %}
+
+                    {% if app.dubious_type == 'OK' %}
+                        {% include 'include/field.html' with desc='Dubious reason' value='No reason selected' %}
+                    {% elif app.dubious_type == 'INVALID_CV' %}
+                        {% include 'include/field.html' with desc='Dubious reason' value='Invalid CV' %}
+                    {% elif app.dubious_type == 'LATE_GRAD' %}
+                        {% include 'include/field.html' with desc='Dubious reason' value='Late Graduation Date' %}
+                    {% elif app.dubious_type == 'NOT_STUDENT' %}
+                        {% include 'include/field.html' with desc='Dubious reason' value='Not a Student' %}
+                    {% elif app.dubious_type == 'INVALID_SCHOOL' %}
+                        {% include 'include/field.html' with desc='Dubious reason' value='Invalid School' %}
+                    {% endif %}
+
+                    <br>
                     {% include 'include/field.html' with desc='Contacted' value=app.contacted|yesno:'Yes,No,Maybe' %}
                     {% include 'include/field.html' with desc='Contacted by' value=app.contacted_by %}
                 {% endif %}
