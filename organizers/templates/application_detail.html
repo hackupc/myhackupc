@@ -84,6 +84,10 @@
                         {% include 'include/field.html' with desc='Dubious reason' value='Invalid School' %}
                     {% endif %}
 
+                    {% if app.dubious_comment %}
+                        {% include 'include/field.html' with desc='Dubious Comment' value=app.dubious_comment %}
+                    {% endif %}
+
                     <br>
                     {% include 'include/field.html' with desc='Contacted' value=app.contacted|yesno:'Yes,No,Maybe' %}
                     {% include 'include/field.html' with desc='Contacted by' value=app.contacted_by %}
@@ -166,6 +170,21 @@
                     }
                 });
             </script>
+            <script>
+                // JS script to handle the dubious modal 
+                document.addEventListener('DOMContentLoaded', function() {
+                    const confirmBtn = document.getElementById('confirmDubious');
+                    if (confirmBtn) {
+                        confirmBtn.addEventListener('click', function() {
+                            const dubiousType = document.getElementById('dubiousType').value;
+                            document.getElementById('dubiousTypeInput').value = dubiousType;
+                            const commentText = document.getElementById('commentBox').value;
+                            document.getElementById('commentTextInput').value = commentText;
+                            $('#dubiousModal').modal('hide');
+                        });
+                    }
+                });
+            </script>
             </div>
 
 
@@ -210,10 +229,41 @@
                     application
                 </button>
                 {% if h_dubious_enabled %}
-                    <button name="set_dubious" class="btn btn-warning btn-block" value="set_dubious"
-                            onclick="return confirm('Are you sure you want set this application as Dubious?')">
-                        Dubious Application
-                    </button>
+                    <div class="modal fade" id="dubiousModal" tabindex="-1" role="dialog" aria-labelledby="dubiousModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="dubiousModalLabel">Select Dubious Type</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="form-group">
+                                                <label for="dubiousType">Why is this application dubious?</label>
+                                                <select class="form-control" id="dubiousType">
+                                                    <option value="INVALID_CV">Invalid CV</option>
+                                                    <option value="LATE_GRAD">Late Graduation Year</option>
+                                                    <option value="NOT_STUDENT">Not a Student</option>
+                                                    <option value="INVALID_SCHOOL">Invalid School</option>
+                                                </select>
+                                                <label for="commentBox">Add a comment on why it's dubious</label>
+                                                <textarea id="commentBox" name="dubious_comment" class="form-control" placeholder="Write a comment..." rows="3" maxlength="500"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                            <button type="submit" class="btn btn-warning" id="confirmDubious">Confirm</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-warning btn-block" data-toggle="modal" data-target="#dubiousModal">
+                                Dubious Application
+                            </button>
+                            <input type="hidden" name="set_dubious" value="true">
+                            <input type="hidden" name="dubious_type" id="dubiousTypeInput">
+                            <input type="hidden" name="dubious_comment_text" id="commentTextInput">
                 {% endif %}
                 {% if h_blacklist_enabled %}
                     <button name="set_blacklist" class="btn btn-danger btn-block" value="set_blacklist"
@@ -254,10 +304,41 @@
                             Wait list
                         </button>
                         {% if h_dubious_enabled %}
-                            <button name="set_dubious" class="btn btn-warning btn-block" value="set_dubious"
-                                    onclick="return confirm('Are you sure you want set this application as Dubious?')">
+                            <div class="modal fade" id="dubiousModal" tabindex="-1" role="dialog" aria-labelledby="dubiousModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="dubiousModalLabel">Select Dubious Type</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="form-group">
+                                                <label for="dubiousType">Why is this application dubious?</label>
+                                                <select class="form-control" id="dubiousType">
+                                                    <option value="INVALID_CV">Invalid CV</option>
+                                                    <option value="LATE_GRAD">Late Graduation Year</option>
+                                                    <option value="NOT_STUDENT">Not a Student</option>
+                                                    <option value="INVALID_SCHOOL">Invalid School</option>
+                                                </select>
+                                                <label for="commentBox">Add a comment on why it's dubious</label>
+                                                <textarea id="commentBox" name="dubious_comment" class="form-control" placeholder="Write a comment..." rows="3" maxlength="500"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                            <button type="submit" class="btn btn-warning" id="confirmDubious">Confirm</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-warning btn-block" data-toggle="modal" data-target="#dubiousModal">
                                 Dubious Application
                             </button>
+                            <input type="hidden" name="set_dubious" value="true">
+                            <input type="hidden" name="dubious_type" id="dubiousTypeInput">
+                            <input type="hidden" name="dubious_comment_text" id="commentTextInput">
                         {% endif %}
                         {% if h_blacklist_enabled %}
                             <button name="set_blacklist" class="btn btn-warning btn-block" value="set_blacklist"
