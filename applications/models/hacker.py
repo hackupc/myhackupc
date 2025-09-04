@@ -70,9 +70,16 @@ class HackerApplication(
         return qs.annotate(vote_avg=Avg('vote__calculated_vote'))
 
     def invalidate(self):
+        """
+        Marks the application as invalid, but only if its current status is "dubious".
+        Also, if the user has a team, it deletes it.
+        """
         if self.status != APP_DUBIOUS:
             raise ValidationError('Applications can only be marked as invalid if they are dubious first')
-        self.status = APP_INVALID
+        self.status = APP_INVALID    
+        team = getattr(self.user, 'team', None) 
+        if team:
+            team.delete()         
         self.save()
 
     def set_dubious(self):
