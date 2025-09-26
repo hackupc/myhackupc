@@ -10,41 +10,54 @@ from user.mixins import IsHackerMixin
 
 
 class HackerTeam(IsHackerMixin, TabsView):
-    template_name = 'team.html'
+    """
+    View for hackers to manage their team.
+    Hackers can create a new team, join an existing team or leave their current team,
+    by making a POST request with theappropriate action.
+    """
+
+    template_name = "team.html"
 
     def get_current_tabs(self):
         return hacker_tabs(self.request.user)
 
     def get_context_data(self, **kwargs):
         c = super(HackerTeam, self).get_context_data(**kwargs)
-        team = getattr(self.request.user, 'team', None)
-        app = getattr(self.request.user, 'hackerapplication_application', None)
+        team = getattr(self.request.user, "team", None)
+        app = getattr(self.request.user, "hackerapplication_application", None)
         teammates = []
         if team:
-            teammates = models.Team.objects.filter(team_code=team.team_code) \
-                .values('user__name', 'user__email', 'user__hackerapplication_application')
-            teammates = list(map(lambda x:
-                                 {'name': x['user__name'], 'email': x['user__email'],
-                                  'app': x['user__hackerapplication_application']},
-                                 teammates))
+            teammates = models.Team.objects.filter(team_code=team.team_code).values(
+                "user__name", "user__email", "user__hackerapplication_application"
+            )
+            teammates = list(
+                map(
+                    lambda x: {
+                        "name": x["user__name"],
+                        "email": x["user__email"],
+                        "app": x["user__hackerapplication_application"],
+                    },
+                    teammates,
+                )
+            )
         instance = models.Team()
-        instance.team_code = ''
+        instance.team_code = ""
         form = forms.JoinTeamForm(instance=instance)
-        c.update({'team': team, 'teammates': teammates, 'app': app, 'form': form})
+        c.update({"team": team, "teammates": teammates, "app": app, "form": form})
         return c
 
     def post(self, request, *args, **kwargs):
 
-        if request.POST.get('create', None):
+        if request.POST.get("create", None):
             team = models.Team()
             team.user = request.user
             team.save()
-            return HttpResponseRedirect(reverse('teams'))
-        if request.POST.get('leave', None):
-            team = getattr(request.user, 'team', None)
+            return HttpResponseRedirect(reverse("teams"))
+        if request.POST.get("leave", None):
+            team = getattr(request.user, "team", None)
             if team:
                 team.delete()
-            return HttpResponseRedirect(reverse('teams'))
+            return HttpResponseRedirect(reverse("teams"))
         else:
             form = forms.JoinTeamForm(request.POST, request.FILES)
             if form.is_valid():
@@ -52,10 +65,10 @@ class HackerTeam(IsHackerMixin, TabsView):
                 team.user = request.user
                 team.save()
 
-                messages.success(request, 'Team joined successfully!')
+                messages.success(request, "Team joined successfully!")
 
-                return HttpResponseRedirect(reverse('teams'))
+                return HttpResponseRedirect(reverse("teams"))
             else:
                 c = self.get_context_data()
-                c.update({'form': form})
+                c.update({"form": form})
                 return render(request, self.template_name, c)
