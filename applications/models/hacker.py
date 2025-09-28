@@ -3,9 +3,7 @@ from .base import BaseApplication
 from datetime import timedelta
 
 
-class HackerApplication(
-    BaseApplication
-):
+class HackerApplication(BaseApplication):
     # Where is this person coming from?
     origin = models.CharField(max_length=300)
 
@@ -13,7 +11,7 @@ class HackerApplication(
     first_timer = models.BooleanField(default=False)
 
     # Random lenny face
-    lennyface = models.CharField(max_length=20, default='-.-')
+    lennyface = models.CharField(max_length=20, default="-.-")
 
     # University
     graduation_year = models.IntegerField(choices=YEARS, default=DEFAULT_YEAR)
@@ -44,18 +42,30 @@ class HackerApplication(
     contacted_by = models.ForeignKey(User, related_name='contacted_by', blank=True, null=True,
                                      on_delete=models.SET_NULL)
 
-    reviewed = models.BooleanField(default=False)  # If a blacklisted application has been reviewed yet
-    blacklisted_by = models.ForeignKey(User, related_name='blacklisted_by', blank=True, null=True,
-                                       on_delete=models.SET_NULL)
+    reviewed = models.BooleanField(
+        default=False
+    )  # If a blacklisted application has been reviewed yet
+    blacklisted_by = models.ForeignKey(
+        User,
+        related_name="blacklisted_by",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+    )
 
     # Why do you want to come to X?
     description = models.TextField(max_length=500)
 
     # Reimbursement
     reimb = models.BooleanField(default=False)
-    reimb_amount = models.FloatField(blank=True, null=True, validators=[
-        MinValueValidator(0, "Negative? Really? Please put a positive value"),
-        MaxValueValidator(200.0, "Do not exceed the maximum amount of 200")])
+    reimb_amount = models.FloatField(
+        blank=True,
+        null=True,
+        validators=[
+            MinValueValidator(0, "Negative? Really? Please put a positive value"),
+            MaxValueValidator(200.0, "Do not exceed the maximum amount of 200"),
+        ],
+    )
 
     # Info for hardware
     hardware = models.CharField(max_length=300, null=True, blank=True)
@@ -71,11 +81,13 @@ class HackerApplication(
 
     @classmethod
     def annotate_vote(cls, qs):
-        return qs.annotate(vote_avg=Avg('vote__calculated_vote'))
+        return qs.annotate(vote_avg=Avg("vote__calculated_vote"))
 
     def invalidate(self):
         if self.status != APP_DUBIOUS:
-            raise ValidationError('Applications can only be marked as invalid if they are dubious first')
+            raise ValidationError(
+                "Applications can only be marked as invalid if they are dubious first"
+            )
         self.status = APP_INVALID
         self.save()
 
@@ -87,7 +99,7 @@ class HackerApplication(
         self.dubious_type = dubious_type
         self.dubious_comment = dubious_comment_text
         self.vote_set.all().delete()
-        if hasattr(self, 'acceptedresume'):
+        if hasattr(self, "acceptedresume"):
             self.acceptedresume.delete()
         self.save()
 
@@ -107,13 +119,16 @@ class HackerApplication(
 
     def confirm_blacklist(self, user, motive_of_ban):
         if self.status != APP_BLACKLISTED:
-            raise ValidationError('Applications can only be confirmed as blacklisted if they are blacklisted first')
+            raise ValidationError(
+                "Applications can only be confirmed as blacklisted if they are blacklisted first"
+            )
         self.status = APP_INVALID
         self.set_blacklisted_by(user)
         blacklist_user = BlacklistUser.objects.filter(email=self.user.email).first()
         if not blacklist_user:
             blacklist_user = BlacklistUser.objects.create_blacklist_user(
-                self.user, motive_of_ban)
+                self.user, motive_of_ban
+            )
         blacklist_user.save()
         self.save()
 
@@ -133,12 +148,18 @@ class HackerApplication(
 
     def is_blacklisted(self):
         return self.status == APP_BLACKLISTED
-        
+
     def can_be_edit(self, app_type="H"):
-        return self.status in [APP_PENDING, APP_DUBIOUS, APP_INVITED] and not self.vote_set.exists() and not \
-            utils.is_app_closed(app_type) and self.submission_date + timedelta(hours=2) > timezone.now()
+        return (
+            self.status in [APP_PENDING, APP_DUBIOUS, APP_INVITED]
+            and not self.vote_set.exists()
+            and not utils.is_app_closed(app_type)
+            and self.submission_date + timedelta(hours=2) > timezone.now()
+        )
 
 
 class AcceptedResume(models.Model):
-    application = models.OneToOneField(HackerApplication, primary_key=True, on_delete=models.CASCADE)
+    application = models.OneToOneField(
+        HackerApplication, primary_key=True, on_delete=models.CASCADE
+    )
     accepted = models.BooleanField()
