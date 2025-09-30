@@ -514,7 +514,7 @@ class ReviewApplicationView(ApplicationDetailView):
                     "/applications/hacker/review/" + application.uuid_str
                 )
             elif request.POST.get("set_dubious"):
-                application.set_dubious()
+                application.set_dubious(request.user, dubious_type, dubious_comment_text)
             elif request.POST.get("unset_dubious"):
                 application.unset_dubious()
             elif request.POST.get("set_blacklist") and request.user.is_organizer:
@@ -600,6 +600,8 @@ class ReviewApplicationDetailView(ApplicationDetailView):
         tech_vote = request.POST.get("tech_rat", None)
         pers_vote = request.POST.get("pers_rat", None)
         comment_text = request.POST.get("comment_text", None)
+        dubious_type = request.POST.get('dubious_type', None)
+        dubious_comment_text = request.POST.get('dubious_comment_text', None)
 
         application = models.HackerApplication.objects.get(
             pk=request.POST.get("app_id")
