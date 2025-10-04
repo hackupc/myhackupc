@@ -22,11 +22,22 @@
         {% endfor %}
         <button class="btn-block btn btn-success margin-bottom">Update Profile</button>
     </form>
-    <h2>Delete account</h2>
-    <hr>
-    <p>You can delete your account with all the personal data from your user and applications. <strong>This action cannot be reverted.</strong></p>
-    <a href="{% url 'user_profile_delete' %}" class="btn btn-block btn-danger">Delete account</a>
-  </div>
+
+    <details class="delete-section">
+      <summary style="display: inline-block; padding: 8px 16px; cursor: pointer; font-size: 16px;">
+        Advanced options <span class="caret"></span>
+      </summary>
+      <hr>
+      <h3>Delete account</h3>
+      <div style="display: flex; align-items: center; gap: 1em;">
+        <span style="margin: 0;">
+          You can delete your account with all the personal data from your user and applications. 
+          <strong>This action cannot be reverted.</strong>
+        </span>
+        <a href="{% url 'user_profile_delete' %}" class="btn delete-button" style="white-space: nowrap;">Delete account</a>
+      </div>
+    </details>
+
 {% endblock %}
 
 {% block out_panel %}
