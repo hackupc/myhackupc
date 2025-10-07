@@ -103,6 +103,10 @@ class HackerApplication(
             self.save()
 
     def confirm_blacklist(self, user, motive_of_ban):
+        """
+        Confirms the application as blacklisted, but only if its current status is "APP_BLACKLISTED".
+        Also, if the user has a team, it deletes it.
+        """
         if self.status != APP_BLACKLISTED:
             raise ValidationError('Applications can only be confirmed as blacklisted if they are blacklisted first')
         self.status = APP_INVALID
@@ -112,6 +116,9 @@ class HackerApplication(
             blacklist_user = BlacklistUser.objects.create_blacklist_user(
                 self.user, motive_of_ban)
         blacklist_user.save()
+        team = getattr(self.user, 'team', None) 
+        if team:
+            team.delete()
         self.save()
 
     def set_blacklist(self):
