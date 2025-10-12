@@ -43,7 +43,21 @@
                 {% include 'include/field.html' with desc='Under age (-18)' value=app.under_age|yesno:'Yes,No,Maybe' %}
                 {% if app.resume %}
                     <dt>Resume</dt>
-                    <dd><a href="{% url 'app_resume' app.uuid %}" target="_blank">{{ app.resume.name }}</a></dd>
+                    <dd>
+                        <a href="{% url 'app_resume' app.uuid %}" target="_blank">{{ app.resume.name }}</a>
+                        {% if app.cv_flagged %}
+                            CV already flagged
+                        {% else %}
+                            <form action="" method="post" style="margin-top:8px;">
+                                {% csrf_token %}
+                                <input type="hidden" name="app_id" value="{{ app.pk }}"/>
+                                <button name="set_flagged_cv" class="btn btn-warning btn-block" value="set_flagged_cv"
+                                        onclick="return confirm('Are you sure you want set this application as Flagged?')">
+                                    Flag CV
+                                </button>
+                            </form>
+                        {% endif %}
+                    </dd>
 
                 {% endif %}
                 <hr>
