@@ -74,6 +74,7 @@ class HackerApplication(BaseApplication):
     hardware = models.CharField(max_length=300, null=True, blank=True)
 
     cvs_edition = models.BooleanField(default=False)
+    cv_flagged = models.BooleanField(default=False)
 
     resume = models.FileField(
         upload_to=resume_path_hackers,
@@ -107,6 +108,15 @@ class HackerApplication(BaseApplication):
         self.status = APP_PENDING
         self.status_update_date = timezone.now()
         self.save()
+        
+    def set_flagged_cv(self):
+        self.cv_flagged = True
+        self.save()
+        
+    def unset_flagged_cv(self):
+        if self.cv_flagged:
+            self.cv_flagged = False
+            self.save()
 
     def set_contacted(self, user):
         if not self.contacted:
