@@ -1,5 +1,4 @@
-import random
-import string, uuid
+import uuid
 from django.db import models
 from user.models import User
 
