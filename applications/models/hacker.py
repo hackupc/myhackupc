@@ -88,11 +88,16 @@ class HackerApplication(BaseApplication):
         return qs.annotate(vote_avg=Avg("vote__calculated_vote"))
 
     def invalidate(self):
+        """
+        Marks the application as invalid, but only if its current status is "dubious".
+        Also, if the user has a team, it deletes it.
+        """
         if self.status != APP_DUBIOUS:
-            raise ValidationError(
-                "Applications can only be marked as invalid if they are dubious first"
-            )
-        self.status = APP_INVALID
+            raise ValidationError('Applications can only be marked as invalid if they are dubious first')
+        self.status = APP_INVALID    
+        team = getattr(self.user, 'team', None) 
+        if team:
+            team.delete()         
         self.save()
 
     def set_dubious(self):
@@ -124,6 +129,10 @@ class HackerApplication(BaseApplication):
             self.save()
 
     def confirm_blacklist(self, user, motive_of_ban):
+        """
+        Confirms the application as blacklisted, but only if its current status is "APP_BLACKLISTED".
+        Also, if the user has a team, it deletes it.
+        """
         if self.status != APP_BLACKLISTED:
             raise ValidationError(
                 "Applications can only be confirmed as blacklisted if they are blacklisted first"
@@ -136,6 +145,9 @@ class HackerApplication(BaseApplication):
                 self.user, motive_of_ban
             )
         blacklist_user.save()
+        team = getattr(self.user, 'team', None) 
+        if team:
+            team.delete()
         self.save()
 
     def set_blacklist(self):
