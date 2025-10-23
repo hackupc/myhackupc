@@ -84,7 +84,7 @@ def add_vote(application, user, tech_rat, pers_rat):
     v.personal = pers_rat
     v.save()
     votes_count = application.vote_set.count()
-    if votes_count >= 1 and not application.cv_flagged:
+    if votes_count >= 5 and not application.cv_flagged:
         AcceptedResume.objects.update_or_create(application=application, defaults={'accepted': True})
     return v
 

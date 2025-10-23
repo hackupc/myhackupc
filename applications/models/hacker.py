@@ -110,14 +110,13 @@ class HackerApplication(BaseApplication):
         self.save()
         
     def set_flagged_cv(self):
+        """Sets the CV as flagged for review. If there was an accepted
+        resume, deletes it so it can be reviewed."""
         self.cv_flagged = True
+        if hasattr(self, 'acceptedresume'):
+            self.acceptedresume.delete()
         self.save()
         
-    def unset_flagged_cv(self):
-        if self.cv_flagged:
-            self.cv_flagged = False
-            self.save()
-
     def set_contacted(self, user):
         if not self.contacted:
             self.contacted = True
