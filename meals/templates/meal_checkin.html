@@ -45,33 +45,36 @@
 
         <video id="qr-video" style="width: 100%; height: 100%; "></video>
         <script nonce="{{ request.csp_nonce }}">
-          // set timer bool
-          isReady = true;
+          let isReady = true;
+          let lastScannedQR = null;
+          let lastScanTime = 0;
 
-          // Load qr video and add function to execute when scans a qr
           document.addEventListener('DOMContentLoaded', () => {
             let scanner = new Scanner('qr-video', (content) => {
-              if (content.data && isReady) {
-                SuperScan('{% url 'cool_meals_api' %}', content.data, scanner)
-                isReady = false;
-                setTimeout(()=>{
-                  isReady = true;
-                }, 1000)
+              const now = Date.now();
+
+              if (now - lastScanTime > 10000) {
+                lastScannedQR = null;
               }
-              console.log("SCANED: "+ content.data);
+
+              if (content.data && isReady && content.data !== lastScannedQR) {
+                lastScannedQR = content.data;
+                lastScanTime = now;
+                SuperScan('{% url 'cool_meals_api' %}', content.data, scanner);
+                isReady = false;
+                setTimeout(() => {
+                  isReady = true;
+                }, 1000);
+              } else if (content.data === lastScannedQR) {
+                console.log("Duplicate QR detected (ignored): " + content.data);
+              }
+              console.log("SCANNED: " + content.data);
             }, {
               popup: false,
-            })
+            });
             scanner.show();
-            // $('.scan-again').click(() => {
-              // scanner.show()
-              // document.getElementById('no').style.display = "none";
-              //document.getElementById('success').style.display = "none";
-            // })
-          })
+          });
 
-
-          // Core function to send data to meals API
           function SuperScan(theUrl, content, scanner) {
             $.ajax({
               type: "POST",
@@ -89,37 +92,22 @@
                   document.getElementById('deny').innerHTML = "Something went wrong.";
                 }
 
-                if (data.success == true) { // 200 ok means can eat
-                  // show success alert
-
+                if (data.success == true) {
                   $('#success').fadeOut("fast");
                   $('#success').fadeIn("fast");
-                  // Display user's diet
-
-                  // console.log(data.responseText.diet);
                   document.getElementById('succ').innerHTML = "User allowed to entry <br> Diet: <b>" + data.diet + "</b>";
-                  // hide no pass alert
                   document.getElementById('no').style.display = "none";
-
-                } else { // else, (may be 400). Has already eatern.
-                  // hide success alert
+                } else {
                   document.getElementById('success').style.display = "none";
-
                   document.getElementById('deny').innerHTML = data.error;
-                  // show no pass alert
                   $('#no').fadeOut("fast");
                   $('#no').fadeIn("fast");
-                  // hide alert after time desired.
-
                 }
               }
-
-
             });
           }
-
-
         </script>
+
       </div>
 
     </div>
