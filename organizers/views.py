@@ -73,12 +73,19 @@ if getattr(settings, "REIMBURSEMENT_ENABLED", False):
 
 
 def add_vote(application, user, tech_rat, pers_rat):
+    """
+    Save the vote of the application and
+    if the number of votes is >= 5 and the CV is not flagged, create an AcceptedResume
+    """
     v = models.Vote()
     v.user = user
     v.application = application
     v.tech = tech_rat
     v.personal = pers_rat
     v.save()
+    votes_count = application.vote_set.count()
+    if votes_count >= 5 and not application.cv_flagged:
+        AcceptedResume.objects.update_or_create(application=application, defaults={'accepted': True})
     return v
 
 
@@ -368,6 +375,10 @@ class ApplicationDetailView(TabsViewMixin, IsOrganizerMixin, TemplateView):
             self.slack_invite(application)
         elif request.POST.get("set_dubious") and request.user.is_organizer:
             application.set_dubious()
+        elif request.POST.get("set_flagged_cv") and request.user.is_organizer:
+            application.set_flagged_cv()
+        elif request.POST.get("unset_flagged_cv") and request.user.is_organizer:
+            application.unset_flagged_cv()
         elif request.POST.get("contact_user") and request.user.has_dubious_access:
             application.set_contacted(request.user)
         elif request.POST.get("unset_dubious") and request.user.has_dubious_access:
@@ -512,6 +523,10 @@ class ReviewApplicationView(ApplicationDetailView):
                 application.set_dubious()
             elif request.POST.get("unset_dubious"):
                 application.unset_dubious()
+            elif request.POST.get("set_flagged_cv") and request.user.is_organizer:
+                application.set_flagged_cv()
+            elif request.POST.get("unset_flagged_cv") and request.user.is_organizer:
+                application.unset_flagged_cv()
             elif request.POST.get("set_blacklist") and request.user.is_organizer:
                 application.set_blacklist()
             elif (
@@ -611,6 +626,10 @@ class ReviewApplicationDetailView(ApplicationDetailView):
                 application.set_dubious()
             elif request.POST.get("unset_dubious"):
                 application.unset_dubious()
+            elif request.POST.get("set_flagged_cv") and request.user.is_organizer:
+                application.set_flagged_cv()
+            elif request.POST.get("unset_flagged_cv") and request.user.is_organizer:
+                application.unset_flagged_cv()
             elif request.POST.get("set_blacklist") and request.user.is_organizer:
                 application.set_blacklist()
             elif (
@@ -1053,7 +1072,7 @@ class ReviewResume(TabsViewMixin, HaveSponsorPermissionMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         app = (
             models.HackerApplication.objects.filter(
-                acceptedresume__isnull=True, cvs_edition=True
+                acceptedresume__isnull=True, cv_flagged=True, resume__isnull=False
             )
             .exclude(status__in=[APP_DUBIOUS, APP_BLACKLISTED])
             .first()

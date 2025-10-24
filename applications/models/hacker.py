@@ -74,6 +74,7 @@ class HackerApplication(BaseApplication):
     hardware = models.CharField(max_length=300, null=True, blank=True)
 
     cvs_edition = models.BooleanField(default=False)
+    cv_flagged = models.BooleanField(default=False)
 
     resume = models.FileField(
         upload_to=resume_path_hackers,
@@ -112,7 +113,15 @@ class HackerApplication(BaseApplication):
         self.status = APP_PENDING
         self.status_update_date = timezone.now()
         self.save()
-
+        
+    def set_flagged_cv(self):
+        """Sets the CV as flagged for review. If there was an accepted
+        resume, deletes it so it can be reviewed."""
+        self.cv_flagged = True
+        if hasattr(self, 'acceptedresume'):
+            self.acceptedresume.delete()
+        self.save()
+        
     def set_contacted(self, user):
         if not self.contacted:
             self.contacted = True
