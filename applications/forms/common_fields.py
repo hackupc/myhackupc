@@ -16,7 +16,7 @@ def common_university():
     return forms.CharField(
         required=True,
         max_length= 70,
-        label="What university do you study at?",
+        label="What center do you study at?",
         help_text="Current or most recent school you attended.",
         widget=forms.TextInput(
             attrs={"class": "typeahead-schools", "autocomplete": "off"}
