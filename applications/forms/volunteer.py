@@ -30,10 +30,10 @@ class VolunteerApplicationForm(_BaseApplicationForm):
     )
     under_age = forms.TypedChoiceField(
         required=True,
-        label="¿Tienes o tendrás la mayoría de edad antes de la fecha del evento?",
-        initial=True,
+        label="¿Serás mayor de edad en la fecha del evento?",
+        initial=False,
         coerce=lambda x: x == "True",
-        choices=((True, "Sí"),(False, "No")),
+        choices=((False, "Sí"),(True, "No")),
         widget=forms.RadioSelect,
     )
     night_shifts = forms.TypedChoiceField(
@@ -98,7 +98,7 @@ class VolunteerApplicationForm(_BaseApplicationForm):
                 {"name": "attendance", "space": 12},
                 {"name": "volunteer_motivation", "space": 12},
             ],
-            "description": "Has participado en eventos similares? Cuéntanos más!"
+            "description": "¿Has participado en eventos similares? ¡Cuéntanos más!"
         },
         "❓ Otras Preguntas": {
             "fields": [
