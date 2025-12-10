@@ -2,7 +2,6 @@ from .base import *
 from .base import _BaseApplicationForm
 
 
-
 class HackerApplicationForm(_BaseApplicationForm):
     bootstrap_field_info = {
         "🎓 Education Info": {
@@ -59,11 +58,14 @@ class HackerApplicationForm(_BaseApplicationForm):
         },
     }
 
-
     # make phone mandatory, override the base form
-    phone_number = forms.CharField(required=True, widget=forms.TextInput(
-        attrs={'class': 'form-control', 'placeholder': '+#########'}),
-        label='Phone number',
+    phone_number = forms.CharField(
+        required=True,
+        widget=forms.TextInput(
+            attrs={"class": "form-control", "placeholder": "+#########"}
+        ),
+        label="Phone number",
+        help_text="Don't worry, we won't call you or use it to contact you.",
     )
 
     github = social_media_field("github", "https://github.com/biene")
@@ -129,7 +131,6 @@ class HackerApplicationForm(_BaseApplicationForm):
             )
         return data
 
-
     first_timer = common_first_timer()
 
     university = common_university()
@@ -191,7 +192,9 @@ class HackerApplicationForm(_BaseApplicationForm):
         personal_info_fields = fields["👤 Personal Info"]["fields"]
         logistics_info_fields = fields["🚚 Logistics Info"]["fields"]
         hackathons_fields = fields["🏆 Hackathons"]["fields"]
-        show_us_what_youve_built_fields = fields["💻 Show us what you've built"]["fields"]
+        show_us_what_youve_built_fields = fields["💻 Show us what you've built"][
+            "fields"
+        ]
         polices_fields = fields["📜 HackUPC Policies"]["fields"]
         personal_info_fields.append({"name": "online", "space": 12})
         if not hybrid:
@@ -237,16 +240,14 @@ class HackerApplicationForm(_BaseApplicationForm):
             "other_diet": "Please fill here in your dietary requirements. We want to make sure we have food for you!",
             "lennyface": 'tip: you can chose from here <a href="http://textsmili.es/" target="_blank">'
             " http://textsmili.es/</a>",
-            "description": "<span id=\'description_char_count\'></span><br>"
+            "description": "<span id='description_char_count'></span><br>"
             "Be original! Using AI to answer this question might penalize your application.",
-            "projects":
-            "Tell us about your personal projects, awards, or any work that you are proud of.   <br>"
-            "<span id=\'projects_char_count\'></span>",
+            "projects": "Tell us about your personal projects, awards, or any work that you are proud of.   <br>"
+            "<span id='projects_char_count'></span>",
             "resume": "Accepted file formats: %s"
             % (", ".join(extensions) if extensions else "Any"),
             "origin": "If you don’t see your city, choose the closest one! <br> Please type following this schema: <strong>city, province, country</strong>",
         }
-
 
         class CustomSelect(forms.Select):
             def create_option(
@@ -278,8 +279,10 @@ class HackerApplicationForm(_BaseApplicationForm):
 
         widgets = {
             "origin": forms.TextInput(attrs={"autocomplete": "off"}),
-            "description": forms.Textarea(attrs={"rows": 3, "cols": 40, 'id': 'description'}),
-            "projects": forms.Textarea(attrs={"rows": 3, "cols": 40, 'id': 'projects'}),
+            "description": forms.Textarea(
+                attrs={"rows": 3, "cols": 40, "id": "description"}
+            ),
+            "projects": forms.Textarea(attrs={"rows": 3, "cols": 40, "id": "projects"}),
             "discover": CustomSelect(choices=discover_choices),
             "tshirt_size": forms.Select(),
             "diet": forms.Select(),
