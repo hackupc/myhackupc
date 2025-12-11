@@ -122,15 +122,6 @@ class VolunteerApplicationForm(_BaseApplicationForm):
         },
     }
 
-    def clean_other_hear_about_us(self):
-        hear_about_us = self.cleaned_data.get("hear_about_us")
-        other_hear_about_us = self.cleaned_data.get("other_hear_about_us", None)
-        if hear_about_us == "Otros" and not other_hear_about_us:
-            raise forms.ValidationError(
-                "Por favor especifica cómo nos conociste"
-            )
-        return other_hear_about_us
-
     def clean(self):
         volunteer = self.cleaned_data["first_time_volunteer"]
         data = self.cleaned_data["which_hack"]
