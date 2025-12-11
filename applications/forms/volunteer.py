@@ -85,6 +85,7 @@ class VolunteerApplicationForm(_BaseApplicationForm):
                 {"name": "other_gender", "space": 12},
                 {"name": "under_age", "space": 12},
                 {"name": "hear_about_us", "space": 12},
+                {"name": "other_hear_about_us", "space": 12},
                 {"name": "origin", "space": 12},
             ],
             "description": "Hola voluntari@, necesitamos un poco de información antes de empezar :)",
@@ -120,6 +121,15 @@ class VolunteerApplicationForm(_BaseApplicationForm):
             "description": "¡Queremos conocerte!🫰",
         },
     }
+
+    def clean_other_hear_about_us(self):
+        hear_about_us = self.cleaned_data.get("hear_about_us")
+        other_hear_about_us = self.cleaned_data.get("other_hear_about_us", None)
+        if hear_about_us == "Otros" and not other_hear_about_us:
+            raise forms.ValidationError(
+                "Por favor especifica cómo nos conociste"
+            )
+        return other_hear_about_us
 
     def clean(self):
         volunteer = self.cleaned_data["first_time_volunteer"]
@@ -240,6 +250,7 @@ class VolunteerApplicationForm(_BaseApplicationForm):
             "graduation_year": forms.HiddenInput(),
             "phone_number": forms.HiddenInput(),
             "hear_about_us": CustomSelect(choices=models.HEARABOUTUS_ES),
+            "other_hear_about_us": forms.TextInput(attrs={"autocomplete": "off"}),
             "tshirt_size": forms.Select(),
             "diet": forms.Select(),
         }
@@ -260,6 +271,7 @@ class VolunteerApplicationForm(_BaseApplicationForm):
             "cool_skill": "¿Qué habilidad interesante o dato curioso tienes? ¡Sorpréndenos! 🎉",
             "friends": "¿Estás aplicando con otr@s amig@s? Escribe sus nombres completos",
             "hear_about_us": "¿Cómo escuchaste sobre nosotros por primera vez?",
+            "other_hear_about_us": "Especifica cómo nos conociste:",
             "volunteer_motivation": "¿Por qué quieres asistir como voluntari@ a HackUPC?",
         }
 
