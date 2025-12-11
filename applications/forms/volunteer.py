@@ -81,7 +81,6 @@ class VolunteerApplicationForm(_BaseApplicationForm):
     bootstrap_field_info = {
         "👤 Información Personal": {
             "fields": [
-                {"name": "pronouns", "space": 12},
                 {"name": "gender", "space": 12},
                 {"name": "other_gender", "space": 12},
                 {"name": "under_age", "space": 12},
@@ -238,9 +237,6 @@ class VolunteerApplicationForm(_BaseApplicationForm):
             "friends": forms.Textarea(attrs={"rows": 2, "cols": 40}),
             "weakness": forms.Textarea(attrs={"rows": 2, "cols": 40}),
             "quality": forms.Textarea(attrs={"rows": 2, "cols": 40}),
-            "pronouns": forms.TextInput(
-                attrs={"autocomplete": "off", "placeholder": "their/them"}
-            ),
             "graduation_year": forms.HiddenInput(),
             "phone_number": forms.HiddenInput(),
             "hear_about_us": CustomSelect(choices=models.HEARABOUTUS_ES),
@@ -249,7 +245,6 @@ class VolunteerApplicationForm(_BaseApplicationForm):
         }
 
         labels = {
-            "pronouns": "¿Cuáles son tus pronombres?",
             "gender": " ¿Con qué género te identificas?",
             "other_gender": "Me quiero describir",
             "graduation_year": "What year will you graduate?",
