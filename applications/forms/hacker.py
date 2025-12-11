@@ -7,6 +7,7 @@ class HackerApplicationForm(_BaseApplicationForm):
     bootstrap_field_info = {
         "🎓 Education Info": {
             "fields": [
+                {"name": "kind_studies", "space": 12},
                 {"name": "university", "space": 12},
                 {"name": "degree", "space": 12},
                 {"name": "graduation_year", "space": 12},
@@ -129,8 +130,24 @@ class HackerApplicationForm(_BaseApplicationForm):
             )
         return data
 
+    def clean_kind_studies(self):
+        data = self.cleaned_data["kind_studies"]
+        if not data or data == "":
+            raise forms.ValidationError("Please select your current studies.")
+        return data
+
 
     first_timer = common_first_timer()
+    
+    kind_studies = forms.ChoiceField(
+        required=True,
+        label='What kind of studies are you currently pursuing?',
+        choices=([('', '- Select an option -')] + models.constants.KIND_STUDIES),
+        widget=forms.Select(
+            attrs={'class': 'form-control'}
+        )
+    )
+
 
     university = common_university()
 
