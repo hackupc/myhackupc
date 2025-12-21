@@ -102,7 +102,7 @@ class MentorApplicationForm(_BaseApplicationForm):
     company = forms.CharField(
         required=False,
         help_text="Backend developer, DevOps…",
-        label="What is your current role?",
+        label="What is your current role or most recent role?",
     )
 
     #university = forms.CharField(
