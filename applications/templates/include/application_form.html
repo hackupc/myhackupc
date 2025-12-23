@@ -301,15 +301,16 @@
         var experienced = $('input[name="first_timer"][value="False"]');
         
         var projects = $('#projects');
-        conditional_field(projects, is_firsttime, function () {
-            return experienced.prop("checked");
-        }, 1);
-        conditional_field(projects, experienced, function () {
-            return experienced.prop("checked");
-        }, 1);
-        
-        // Making projects look like required
-        projects.parent().addClass('required');
+
+
+        // Refresh projects field when first_timer changes
+        $('input[name="first_timer"]').change(function() {
+            if ($(this).val() === "False") {
+            projects.parent().addClass('required');
+            } else {
+            projects.parent().removeClass('required');
+            }
+        });
 
         
         function setUpCharCounterOn(elementStrId, elementCharCounterStrId){

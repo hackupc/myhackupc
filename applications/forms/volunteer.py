@@ -36,6 +36,11 @@ class VolunteerApplicationForm(_BaseApplicationForm):
         choices=((True, "Sí"),(False, "No")),
         widget=forms.RadioSelect,
     )
+    studies_and_course = forms.CharField(
+        required=True,
+        label="¿Qué estudias y en qué curso estás / en qué año te graduaste?",
+        widget=forms.Textarea(attrs={"rows": 1, "cols": 40}),
+    )
     night_shifts = forms.TypedChoiceField(
         required=True,
         label="¿Estarias de acuerdo en seguir ayudando pasado medianoche?",
@@ -84,6 +89,7 @@ class VolunteerApplicationForm(_BaseApplicationForm):
                 {"name": "gender", "space": 12},
                 {"name": "other_gender", "space": 12},
                 {"name": "under_age", "space": 12},
+                {"name": "studies_and_course", "space": 12},
                 {"name": "hear_about_us", "space": 12},
                 {"name": "origin", "space": 12},
             ],
@@ -235,6 +241,7 @@ class VolunteerApplicationForm(_BaseApplicationForm):
             "origin": forms.TextInput(attrs={"autocomplete": "off"}),
             "languages": forms.CheckboxSelectMultiple(),
             "friends": forms.Textarea(attrs={"rows": 2, "cols": 40}),
+            "studies_and_course": forms.Textarea(attrs={"rows": 2, "cols": 40}),
             "weakness": forms.Textarea(attrs={"rows": 2, "cols": 40}),
             "quality": forms.Textarea(attrs={"rows": 2, "cols": 40}),
             "graduation_year": forms.HiddenInput(),
@@ -247,6 +254,7 @@ class VolunteerApplicationForm(_BaseApplicationForm):
         labels = {
             "gender": " ¿Con qué género te identificas?",
             "other_gender": "Me quiero describir",
+            "studies_and_course": "¿Qué estudias y en qué curso estás / en qué año te graduaste?",
             "graduation_year": "What year will you graduate?",
             "tshirt_size": "¿Cuál es tu talla de camiseta?",
             "diet": "Restricciones alimentarias",
