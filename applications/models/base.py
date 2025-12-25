@@ -75,9 +75,9 @@ class BaseApplication(models.Model):
         max_length=16,
         validators=[
             RegexValidator(
-                regex=r"^\+?1?\d{9,15}$",
+                regex=r"^\+?1?\d{1,4}(\s?\d{1,4}){2,8}$",
                 message="Phone number must be entered in the format: \
-        '+#########'. Up to 16 digits allowed.",
+        '+#########'. Up to 16 digits allowed, with optional spaces.",
             )
         ],
     )
