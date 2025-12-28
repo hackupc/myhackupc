@@ -72,7 +72,7 @@
                 } else {
                     description.parent().removeClass('has-error');
                 }
-            } 
+            }
         }
         description_remaining.innerText = (current + '/' + max_length + ' characters');
     }
@@ -165,14 +165,14 @@
             title[0].addEventListener('click', function () {
                 this.classList.toggle('active');
                 var fieldset = this.closest('fieldset');
-                var content = $(fieldset).children().not(':first'); 
+                var content = $(fieldset).children().not(':first');
                 
                 content.each(function () {
                     var isVisible = $(this).css('display') === 'block';
                     $(this).css('display', isVisible ? 'none' : 'block');
                 });
-            });           
-            */ 
+            });
+            */
         });
         
         // Handles the sending of the form --> Expands sections with errors - Commented out for further testing
@@ -293,20 +293,21 @@
         var experienced = $('input[name="first_timer"][value="False"]');
         
         var projects = $('#projects');
-        conditional_field(projects, is_firsttime, function () {
-            return experienced.prop("checked");
-        }, 1);
-        conditional_field(projects, experienced, function () {
-            return experienced.prop("checked");
-        }, 1);
-        
-        // Making projects look like required
-        projects.parent().addClass('required');
+
+
+        // Refresh projects field when first_timer changes
+        $('input[name="first_timer"]').change(function() {
+            if ($(this).val() === "False") {
+            projects.parent().addClass('required');
+            } else {
+            projects.parent().removeClass('required');
+            }
+        });
 
         
         function setUpCharCounterOn(elementStrId, elementCharCounterStrId){
             var element = $(elementStrId);
-            var max_length = parseInt(element.attr('maxLength')); // to int 
+            var max_length = parseInt(element.attr('maxLength')); // to int
         
 
             element.removeAttr('maxLength');
@@ -322,7 +323,7 @@
                 });
             }
             
-            {% if app_type == 'H' %}            
+            {% if app_type == 'H' %}
             
                 // check and display remaining characters from the textarea with id description and projects
                 setUpCharCounterOn('#description', '#description_char_count');
@@ -376,7 +377,7 @@
                 });
                 conditional_field(which_hack, is_not_first_hackathon_mentor, function () {
                     return is_firsttime_mentor.prop("checked");
-                });        
+                });
                 conditional_field(which_hack, is_first_hackathon_mentor, function () {
                     return is_not_first_hackathon_mentor.prop("checked");
                 });
@@ -418,8 +419,6 @@
                 university_mentor.parent().addClass('required');
                 degree_mentor.parent().addClass('required');
                 graduation_year.parent().addClass('required');
-
-            
         {% endif %}
         {% if not application %}
             var timer;
@@ -473,6 +472,9 @@
                     }
                 });
             }
+        {% else %}
+            $('#id_terms_and_conditions').prop('checked', true);
+            $('#id_diet_notice').prop('checked', true);
         {% endif %}
         }
     )
