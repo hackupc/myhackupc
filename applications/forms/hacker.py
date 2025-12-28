@@ -65,6 +65,7 @@ class HackerApplicationForm(_BaseApplicationForm):
             attrs={"class": "form-control", "placeholder": "+#########"}
         ),
         label="Phone number",
+        help_text="Don't worry, we won't call you or use it to contact you.",
     )
 
     github = social_media_field("github", "https://github.com/biene")
