@@ -83,6 +83,7 @@ class VolunteerApplication(BaseApplication):
 
     #About us
     hear_about_us = models.CharField(max_length=300, choices=HEARABOUTUS_ES, default="")
+    other_hear_about_us = models.CharField(max_length=500, blank=True, null=True)
 
     # University
     graduation_year = models.IntegerField(choices=YEARS, default=DEFAULT_YEAR)

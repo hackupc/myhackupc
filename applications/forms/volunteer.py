@@ -30,10 +30,10 @@ class VolunteerApplicationForm(_BaseApplicationForm):
     )
     under_age = forms.TypedChoiceField(
         required=True,
-        label="¿Tienes o tendrás la mayoría de edad antes de la fecha del evento?",
-        initial=True,
+        label="¿Serás mayor de edad en la fecha del evento?",
+        initial=False,
         coerce=lambda x: x == "True",
-        choices=((True, "Sí"),(False, "No")),
+        choices=((False, "Sí"),(True, "No")),
         widget=forms.RadioSelect,
     )
     studies_and_course = forms.CharField(
@@ -91,6 +91,7 @@ class VolunteerApplicationForm(_BaseApplicationForm):
                 {"name": "under_age", "space": 12},
                 {"name": "studies_and_course", "space": 12},
                 {"name": "hear_about_us", "space": 12},
+                {"name": "other_hear_about_us", "space": 12},
                 {"name": "origin", "space": 12},
             ],
             "description": "Hola voluntari@, necesitamos un poco de información antes de empezar :)",
@@ -103,7 +104,7 @@ class VolunteerApplicationForm(_BaseApplicationForm):
                 {"name": "attendance", "space": 12},
                 {"name": "volunteer_motivation", "space": 12},
             ],
-            "description": "Has participado en eventos similares? Cuéntanos más!"
+            "description": "¿Has participado en eventos similares? ¡Cuéntanos más!"
         },
         "❓ Otras Preguntas": {
             "fields": [
@@ -247,6 +248,7 @@ class VolunteerApplicationForm(_BaseApplicationForm):
             "graduation_year": forms.HiddenInput(),
             "phone_number": forms.HiddenInput(),
             "hear_about_us": CustomSelect(choices=models.HEARABOUTUS_ES),
+            "other_hear_about_us": forms.TextInput(attrs={"autocomplete": "off"}),
             "tshirt_size": forms.Select(),
             "diet": forms.Select(),
         }
@@ -268,6 +270,7 @@ class VolunteerApplicationForm(_BaseApplicationForm):
             "cool_skill": "¿Qué habilidad interesante o dato curioso tienes? ¡Sorpréndenos! 🎉",
             "friends": "¿Estás aplicando con otr@s amig@s? Escribe sus nombres completos",
             "hear_about_us": "¿Cómo escuchaste sobre nosotros por primera vez?",
+            "other_hear_about_us": "Especifica cómo nos conociste:",
             "volunteer_motivation": "¿Por qué quieres asistir como voluntari@ a HackUPC?",
         }
 
