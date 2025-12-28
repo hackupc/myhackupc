@@ -39,6 +39,7 @@ def get_exclude_fields():
         "status_update_date",
         "status",
         "contacted_by",
+        "dubious_type",
         "blacklisted_by",
     ]
 
