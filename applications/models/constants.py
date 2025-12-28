@@ -91,6 +91,17 @@ ATTENDANCE = [
     (2, "Sunday")
 ]
 
+ST_SECONDARY = 'SECONDARY'
+ST_VOCATIONAL = 'VOCATIONAL'
+ST_BACHELOR = 'BACHELOR'
+ST_MASTER = 'MASTER'
+ST_OTHER = 'OTHER'
+
+KIND_STUDIES = [
+    (ST_SECONDARY, 'Secondary Education - Baccalaureate'), (ST_VOCATIONAL, 'Vocational Training (FP)'),
+    (ST_BACHELOR, 'Bachelor’s Degree'), (ST_MASTER, 'Master’s Degree'), (ST_OTHER, 'Other')
+]
+
 HACK_NAME = getattr(hackathon_variables, 'HACKATHON_NAME', "HackAssistant")
 EXTRA_NAME = ['2019 o anterior', ' 2021', ' 2022', ' 2023', ' 2024', ' 2025']
 PREVIOUS_HACKS = [(i, HACK_NAME + EXTRA_NAME[i]) for i in range(0, len(EXTRA_NAME))]
