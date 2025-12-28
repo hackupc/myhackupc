@@ -14,6 +14,16 @@
 
 </style>
 <form class="signup " enctype="multipart/form-data" id="signup_form" method="post" action="">
+    {% if app_type == 'H' %}
+      {% if not application or application.can_be_edit %}
+      <div style="background-color: #fff3cd; padding: 15px; border-radius: 6px; border: 1px solid #ffeeba; margin-bottom: 15px; text-align: center;">
+        <p style="margin: 0; color: #856404; font-size: 16px;">
+            ❗ Before filling out the application, read this article about
+          <a href="https://medium.com/@hackupc/the-application-process-44853805521f" target="_blank" rel="noopener noreferrer" style="font-weight: bold; color: #0c5460;">How To Do a Good Application.</a>.
+        </p>
+      </div>
+      {% endif %}
+    {% endif %}
     {% csrf_token %}
     {% include 'include/bootstrap_form.html' %}
     <small><span style="color: red;">*</span> Indicates required field.</small>
