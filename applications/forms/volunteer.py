@@ -30,11 +30,16 @@ class VolunteerApplicationForm(_BaseApplicationForm):
     )
     under_age = forms.TypedChoiceField(
         required=True,
-        label="¿Tienes o tendrás la mayoría de edad antes de la fecha del evento?",
-        initial=True,
+        label="¿Serás mayor de edad en la fecha del evento?",
+        initial=False,
         coerce=lambda x: x == "True",
-        choices=((True, "Sí"),(False, "No")),
+        choices=((False, "Sí"),(True, "No")),
         widget=forms.RadioSelect,
+    )
+    studies_and_course = forms.CharField(
+        required=True,
+        label="¿Qué estudias y en qué curso estás / en qué año te graduaste?",
+        widget=forms.Textarea(attrs={"rows": 1, "cols": 40}),
     )
     night_shifts = forms.TypedChoiceField(
         required=True,
@@ -81,11 +86,12 @@ class VolunteerApplicationForm(_BaseApplicationForm):
     bootstrap_field_info = {
         "👤 Información Personal": {
             "fields": [
-                {"name": "pronouns", "space": 12},
                 {"name": "gender", "space": 12},
                 {"name": "other_gender", "space": 12},
                 {"name": "under_age", "space": 12},
+                {"name": "studies_and_course", "space": 12},
                 {"name": "hear_about_us", "space": 12},
+                {"name": "other_hear_about_us", "space": 12},
                 {"name": "origin", "space": 12},
             ],
             "description": "Hola voluntari@, necesitamos un poco de información antes de empezar :)",
@@ -98,7 +104,7 @@ class VolunteerApplicationForm(_BaseApplicationForm):
                 {"name": "attendance", "space": 12},
                 {"name": "volunteer_motivation", "space": 12},
             ],
-            "description": "Has participado en eventos similares? Cuéntanos más!"
+            "description": "¿Has participado en eventos similares? ¡Cuéntanos más!"
         },
         "❓ Otras Preguntas": {
             "fields": [
@@ -236,22 +242,21 @@ class VolunteerApplicationForm(_BaseApplicationForm):
             "origin": forms.TextInput(attrs={"autocomplete": "off"}),
             "languages": forms.CheckboxSelectMultiple(),
             "friends": forms.Textarea(attrs={"rows": 2, "cols": 40}),
+            "studies_and_course": forms.Textarea(attrs={"rows": 2, "cols": 40}),
             "weakness": forms.Textarea(attrs={"rows": 2, "cols": 40}),
             "quality": forms.Textarea(attrs={"rows": 2, "cols": 40}),
-            "pronouns": forms.TextInput(
-                attrs={"autocomplete": "off", "placeholder": "their/them"}
-            ),
             "graduation_year": forms.HiddenInput(),
             "phone_number": forms.HiddenInput(),
             "hear_about_us": CustomSelect(choices=models.HEARABOUTUS_ES),
+            "other_hear_about_us": forms.TextInput(attrs={"autocomplete": "off"}),
             "tshirt_size": forms.Select(),
             "diet": forms.Select(),
         }
 
         labels = {
-            "pronouns": "¿Cuáles son tus pronombres?",
             "gender": " ¿Con qué género te identificas?",
             "other_gender": "Me quiero describir",
+            "studies_and_course": "¿Qué estudias y en qué curso estás / en qué año te graduaste?",
             "graduation_year": "What year will you graduate?",
             "tshirt_size": "¿Cuál es tu talla de camiseta?",
             "diet": "Restricciones alimentarias",
@@ -265,6 +270,7 @@ class VolunteerApplicationForm(_BaseApplicationForm):
             "cool_skill": "¿Qué habilidad interesante o dato curioso tienes? ¡Sorpréndenos! 🎉",
             "friends": "¿Estás aplicando con otr@s amig@s? Escribe sus nombres completos",
             "hear_about_us": "¿Cómo escuchaste sobre nosotros por primera vez?",
+            "other_hear_about_us": "Especifica cómo nos conociste:",
             "volunteer_motivation": "¿Por qué quieres asistir como voluntari@ a HackUPC?",
         }
 

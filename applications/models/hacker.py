@@ -13,7 +13,8 @@ class HackerApplication(BaseApplication):
     # Random lenny face
     lennyface = models.CharField(max_length=20, default="-.-")
 
-    # University
+    # Studies
+    kind_studies = models.CharField(max_length=300, choices=KIND_STUDIES, default=NO_ANSWER)
     graduation_year = models.IntegerField(choices=YEARS, default=DEFAULT_YEAR)
     university = models.CharField(max_length=300)
     degree = models.CharField(max_length=300)
