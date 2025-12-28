@@ -24,16 +24,16 @@
     {% endif %}
     <div style="padding-left: 15px; padding-right: 15px">
         <div class="alert alert-warning">
-      {% if application.can_be_edit %}
-      
-      
-          <p>
-              Be careful, you can only edit the application until 2 hours after <b style="text-decoration: underline;">{{application.submission_date}}</b></p>
+    {% if application.can_be_edit %}
+    
+    
+            <p>
+                Be careful, you can only edit the application until 2 hours after <b style="text-decoration: underline;">{{application.submission_date}}</b></p>
             
             {% else %}
-            <p>Your application has been reviewed already. Editing has been disabled to make sure all reviewers get the
+                <p>Your application has been reviewed already. Editing has been disabled to make sure all reviewers get the
                 same data. If you would like to change something important, please email us at {{ h_contact_email|urlize }}.</p>
-                {% endif %}
+            {% endif %}
         </div>
     </div>
     {% include 'include/application_form.html' %}
