@@ -41,7 +41,7 @@ class MentorApplication(
     study_work = models.BooleanField(max_length=300, null=False)
     university = models.CharField(max_length=300, null=True, blank=True)
     degree = models.CharField(max_length=300, null=True, blank=True)
-    participated = models.TextField(max_length=500, blank=True, null=True)
+    participated = models.TextField(max_length=500, blank=False)
     resume = models.FileField(
         upload_to=resume_path_mentors,
         null=True,
