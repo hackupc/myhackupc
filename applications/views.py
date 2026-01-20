@@ -200,11 +200,20 @@ class HackerDashboard(DashboardMixin, TabsView):
                 )
             # Google Wallet Pass API
             context.update({"gwallet_enabled": settings.GOOGLE_WALLET_ENABLED})
-            if isset(application) and application.status == models.APP_CONFIRMED and settings.GOOGLE_WALLET_ENABLED:
+            if (
+                isset(application)
+                and application.status == models.APP_CONFIRMED
+                and settings.GOOGLE_WALLET_ENABLED
+            ):
                 # Google Wallet Pass API
                 context.update({"gwallet_enabled": settings.GOOGLE_WALLET_ENABLED})
-                if application.status == models.APP_CONFIRMED and settings.GOOGLE_WALLET_ENABLED:
-                    context.update({"gwalleturl": generateGTicketUrl(application.uuid_str)})
+                if (
+                    application.status == models.APP_CONFIRMED
+                    and settings.GOOGLE_WALLET_ENABLED
+                ):
+                    context.update(
+                        {"gwalleturl": generateGTicketUrl(application.uuid_str)}
+                    )
                     # generate a google pay ticket entrance with a QR code
         except Exception as e:
             # We ignore this as we are okay if the user has not created an application yet
@@ -293,6 +302,7 @@ class HackerApplication(IsHackerMixin, TabsView):
         application = get_object_or_404(Application, user=self.request.user)
         deadline = get_deadline(application)
         form = ApplicationForm(instance=application)
+        form.fields["email_subscribe"].initial = self.request.user.email_subscribed
         if not application.can_be_edit(app_type=self.request.user.type):
             form.set_read_only()
         context.update(
@@ -318,11 +328,12 @@ class HackerApplication(IsHackerMixin, TabsView):
         if form.is_valid():
             email_subscribe = form.cleaned_data.get("email_subscribe", False)
             cvs_edition = "cvs_edition" in form.data
+
             application = form.save(commit=False)
             application.user = request.user
-            if email_subscribe:
-                application.user.email_subscribed = email_subscribe
-                application.user.save()
+            application.user.email_subscribed = email_subscribe
+            application.user.save()
+
             if cvs_edition:
                 application.user.cvs_edition = cvs_edition
                 application.user.save()
