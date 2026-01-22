@@ -1,4 +1,8 @@
-{% if request.user.email_verified and not request.user.is_organizer %}
+{% if request.user.email_verified and not request.user.is_organizer  and not request.user.is_sponsor %}
     <li class="{% if 'dashboard' in request.build_absolute_uri %}active{% endif %}">
         <a href="{% url 'dashboard' %}">Dashboard</a></li>
+{% endif %}
+{% if request.user.email_verified and not request.user.is_organizer  and  request.user.is_sponsor %}
+    <li class="{% if 'dashboard' in request.build_absolute_uri %}active{% endif %}">
+        <a href="{% url 'sponsor_dashboard' %}">Dashboard</a></li>
 {% endif %}
