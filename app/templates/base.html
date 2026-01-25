@@ -96,7 +96,7 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
                     {% if not h_discord %}
-                      {% include 'include/judging_tab.html' %}
+                        {% include 'include/judging_tab.html' %}
                     {% endif %}
                     {% if request.user.is_authenticated and cas != 'True' %}
                         {% include 'include/admin_tab.html' %}
@@ -132,7 +132,7 @@
                             {% endif %}
                         {% endif %}
                     {% elif cas != 'True' %}
-                      {% include 'include/judging_tab.html' %}
+                        {% include 'include/judging_tab.html' %}
                     {% endif %}
                 </ul>
                 <ul class="nav navbar-nav navbar-right">

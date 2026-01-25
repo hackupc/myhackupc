@@ -11,7 +11,7 @@ class HackerApplicationForm(_BaseApplicationForm):
                 {"name": "degree", "space": 12},
                 {"name": "graduation_year", "space": 12},
             ],
-            "description": "Hey there, before we begin, as a student hackathon, we need some information on your education background.",
+            "description": "Hey there! Before we begin, as a student hackathon we need some information on your education background.",
         },
         "👤 Personal Info": {
             "fields": [
@@ -138,18 +138,14 @@ class HackerApplicationForm(_BaseApplicationForm):
             raise forms.ValidationError("Please select your current studies.")
         return data
 
-
     first_timer = common_first_timer()
-    
+
     kind_studies = forms.ChoiceField(
         required=True,
-        label='What kind of studies are you currently pursuing?',
-        choices=([('', '- Select an option -')] + models.constants.KIND_STUDIES),
-        widget=forms.Select(
-            attrs={'class': 'form-control'}
-        )
+        label="What kind of studies are you currently pursuing?",
+        choices=([("", "- Select an option -")] + models.constants.KIND_STUDIES),
+        widget=forms.Select(attrs={"class": "form-control"}),
     )
-
 
     university = common_university()
 
@@ -255,7 +251,7 @@ class HackerApplicationForm(_BaseApplicationForm):
         help_texts = {
             "gender": "This is for demographic purposes. You can skip this question if you want.",
             "degree": "What's your major/degree?",
-            "other_diet": "Please fill here in your dietary requirements. We want to make sure we have food for you!",
+            "other_diet": "Please note that the logistics team needs this information to ensure we can do our best to accommodate everyone’s needs. However, if dietary requirements are not clearly justified or specified in advance, it may be impossible for us to provide the appropriate options.",
             "lennyface": 'tip: you can chose from here <a href="http://textsmili.es/" target="_blank">'
             " http://textsmili.es/</a>",
             "description": "<span id='description_char_count'></span><br>"
