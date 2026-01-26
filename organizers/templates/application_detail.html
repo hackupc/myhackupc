@@ -213,16 +213,6 @@
             <script>
                 // JS script to handle the dubious modal
                 document.addEventListener('DOMContentLoaded', function() {
-                    const confirmBtn = document.getElementById('confirmDubious');
-                    if (confirmBtn) {
-                        confirmBtn.addEventListener('click', function() {
-                            const dubiousType = document.getElementById('dubiousType').value;
-                            document.getElementById('dubiousTypeInput').value = dubiousType;
-                            const commentText = document.getElementById('commentBox').value;
-                            document.getElementById('commentTextInput').value = commentText;
-                            $('#dubiousModal').modal('hide');
-                        });
-                    }
                     const iconOptions = document.querySelectorAll('.icon-option');
                     iconOptions.forEach(option => {
                         option.addEventListener('click', function() {
@@ -232,7 +222,6 @@
                             document.getElementById('dubiousType').value = value;
                         });
                     });
-
                 });
             </script>
             </div>
@@ -279,9 +268,25 @@
                     application
                 </button>
                 {% if h_dubious_enabled %}
-                    <div class="modal fade" id="dubiousModal" tabindex="-1" role="dialog" aria-labelledby="dubiousModalLabel" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
+                    <button type="button" class="btn btn-warning btn-block" data-toggle="modal" data-target="#dubiousModal">
+                        Dubious Application
+                    </button>
+                {% endif %}
+                {% if h_blacklist_enabled %}
+                    <button name="set_blacklist" class="btn btn-danger btn-block" value="set_blacklist"
+                            onclick="return confirm('Are you sure you want set this application as Blacklist?')">
+                        Blacklist Application
+                    </button>
+                {% endif %}
+
+            </form>
+
+            {% if h_dubious_enabled %}
+                <div class="modal fade" id="dubiousModal" tabindex="-1" role="dialog" aria-labelledby="dubiousModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <form action="" method="post">
+                                {% csrf_token %}
                                 <div class="modal-header">
                                     <h5 class="modal-title" id="dubiousModalLabel">Select Dubious Type</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -289,6 +294,8 @@
                                     </button>
                                 </div>
                                 <div class="modal-body">
+                                    <input type="hidden" name="app_id" value="{{ app.pk }}"/>
+                                    <input type="hidden" name="set_dubious" value="true">
                                     <div class="form-group">
                                         <label>Why is this application dubious?</label>
                                         <div class="icon-options-container text-center mb-3">
@@ -328,33 +335,18 @@
                                         <input type="hidden" id="dubiousType" name="dubious_type" required>
                                         
                                         <label for="commentBox">Add a comment on why it's dubious</label>
-                                        <textarea id="commentBox" name="dubious_comment" class="form-control" placeholder="Write a comment..." rows="3" maxlength="500"></textarea>
+                                        <textarea id="commentBox" name="dubious_comment_text" class="form-control" placeholder="Write a comment..." rows="3" maxlength="500"></textarea>
                                     </div>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                                     <button type="submit" class="btn btn-warning" id="confirmDubious">Confirm</button>
                                 </div>
-                            </div>
+                            </form>
                         </div>
                     </div>
-
-                    <button type="button" class="btn btn-warning btn-block" data-toggle="modal" data-target="#dubiousModal">
-                        Dubious Application
-                    </button>
-                    <input type="hidden" name="set_dubious" value="true">
-                    <input type="hidden" name="dubious_type" id="dubiousTypeInput">
-                    <input type="hidden" name="dubious_comment_text" id="commentTextInput">
-                {% endif %}
-                {% if h_blacklist_enabled %}
-                    <button name="set_blacklist" class="btn btn-danger btn-block" value="set_blacklist"
-                            onclick="return confirm('Are you sure you want set this application as Blacklist?')">
-                        Blacklist Application
-                    </button>
-                {% endif %}
-
-            </form>
-        </div>
+                </div>
+            {% endif %}
     {% elif app and user.is_director %}
         <div class="panel-footer">
 
