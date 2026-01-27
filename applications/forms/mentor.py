@@ -4,17 +4,17 @@ from .base import _BaseApplicationForm
 
 class MentorApplicationForm(_BaseApplicationForm):
     first_timer = common_first_timer()
-    #university = common_university()
+    # university = common_university()
     degree = forms.CharField(
         required=False,
-        max_length= 70,
+        max_length=70,
         label="What's your major/degree?",
         help_text="Current or most recent degree you've received",
         widget=forms.TextInput(
             attrs={"class": "typeahead-degrees", "autocomplete": "off"}
         ),
     )
-    #Mandatory social fields
+    # Mandatory social fields
     linkedin = social_required("linkedin", "https://www.linkedin.com/in/john_biene")
 
     # Socials
@@ -28,6 +28,13 @@ class MentorApplicationForm(_BaseApplicationForm):
         required=False,
         widget=forms.HiddenInput(),
         initial=True,
+    )
+
+    gender = forms.ChoiceField(
+        required=True,
+        choices=[("", "- Select an option -")] + list(models.GENDERS),
+        label="What gender do you identify as?",
+        widget=forms.Select(),
     )
 
     def clean_first_time_mentor(self):
@@ -105,9 +112,9 @@ class MentorApplicationForm(_BaseApplicationForm):
         label="What is your current role or most recent role?",
     )
 
-    #university = forms.CharField(
+    # university = forms.CharField(
     #    initial="NA", widget=forms.HiddenInput(), required=False
-    #)
+    # )
 
     graduation_year = forms.ChoiceField(
         required=False,
@@ -119,7 +126,6 @@ class MentorApplicationForm(_BaseApplicationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["gender"].required = False
 
     bootstrap_field_info = {
         "👤 Personal Info": {
@@ -136,7 +142,7 @@ class MentorApplicationForm(_BaseApplicationForm):
             "fields": [
                 {"name": "study_work", "space": 12},
                 {"name": "company", "space": 12},
-                #{"name": "university", "space": 12},
+                # {"name": "university", "space": 12},
                 {"name": "degree", "space": 12},
                 {"name": "graduation_year", "space": 12},
                 {"name": "english_level", "space": 12},
@@ -223,7 +229,7 @@ class MentorApplicationForm(_BaseApplicationForm):
             self.add_error("which_hack", "Choose the hackathons you mentored")
         study = self.cleaned_data["study_work"]
         if study:
-            #if not self.cleaned_data["university"]:
+            # if not self.cleaned_data["university"]:
             #    self.add_error("university", "Type your university, please")
             if not self.cleaned_data["degree"]:
                 self.add_error("degree", "Type your degree, please")
@@ -243,18 +249,18 @@ class MentorApplicationForm(_BaseApplicationForm):
         help_texts = {
             "gender": "This is for demographic purposes.",
             # 'degree': 'What\'s your major/degree?',
-            "other_diet": "Please fill here in your dietary requirements. We want to make sure we have food for you!",
+            "other_diet": "Please note that the logistics team needs this information to ensure we can do our best to accommodate everyone’s needs. However, if dietary requirements are not clearly justified or specified in advance, it may be impossible for us to provide the appropriate options.",
             "lennyface": 'tip: you can chose from here <a href="http://textsmili.es/" target="_blank">'
             " http://textsmili.es/</a>",
-            "participated": "<span id=\'participated_char_count\'></span><br>"
+            "participated": "<span id='participated_char_count'></span><br>"
             "You can talk about about past hackathons or any other events. ",
             "resume": "Accepted file formats: %s"
             % (", ".join(extensions) if extensions else "Any"),
-            "fluent": "<span id=\'fluent_char_count\'></span><br>"
+            "fluent": "<span id='fluent_char_count'></span><br>"
             "Catalan, French, Chinese, Arabic…",
-            "experience": "<span id=\'experience_char_count\'></span><br>"
+            "experience": "<span id='experience_char_count'></span><br>"
             "C++, Java, Docker, Vue, AWS…",
-            "why_mentor": "<span id=\'why_mentor_char_count\'></span><br>"
+            "why_mentor": "<span id='why_mentor_char_count'></span><br>",
         }
 
         widgets = {

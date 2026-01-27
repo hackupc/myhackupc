@@ -1,3 +1,4 @@
+from datetime import timedelta
 from .base import *
 
 
@@ -8,7 +9,7 @@ class MentorApplication(
     attendance = MultiSelectField(choices=ATTENDANCE)
 
     english_level = models.IntegerField(default=0, null=False, choices=ENGLISH_LEVEL)
-    which_hack = MultiSelectField(choices=PREVIOUS_HACKS, null=True, blank=True)
+    which_hack = MultiSelectField(choices=PREVIOUS_HACKS_MENTOR, null=True, blank=True)
 
     # Where is this person coming from?
     origin = models.CharField(max_length=300)
@@ -17,7 +18,7 @@ class MentorApplication(
     first_timer = models.BooleanField(default=False)
 
     # Random lenny face
-    lennyface = models.CharField(max_length=20, default='-.-')
+    lennyface = models.CharField(max_length=20, default="-.-")
 
     # University
     graduation_year = models.IntegerField(choices=YEARS, default=DEFAULT_YEAR)
@@ -41,7 +42,7 @@ class MentorApplication(
     study_work = models.BooleanField(max_length=300, null=False)
     university = models.CharField(max_length=300, null=True, blank=True)
     degree = models.CharField(max_length=300, null=True, blank=True)
-    participated = models.TextField(max_length=500, blank=True, null=True)
+    participated = models.TextField(max_length=500, blank=False)
     resume = models.FileField(
         upload_to=resume_path_mentors,
         null=True,
@@ -51,4 +52,8 @@ class MentorApplication(
     valid = models.BooleanField(default=False)
 
     def can_be_edit(self, app_type="M"):
-        return self.status in [APP_PENDING, APP_DUBIOUS] and not utils.is_app_closed(app_type)
+        return (
+            self.status in [APP_PENDING, APP_DUBIOUS]
+            and not utils.is_app_closed(app_type)
+            and self.submission_date + timedelta(hours=2) > timezone.now()
+        )
