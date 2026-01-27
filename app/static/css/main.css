@@ -17,7 +17,7 @@
 }
 
 body {
-    background-image: url("../img/background.svg");
+    background-image: url("../img/background2026.svg");
     background-size: contain; 
     background-repeat: repeat; 
     font-family: ProximaNovaRegular, 'Roboto', sans-serif;
@@ -72,7 +72,7 @@ a:hover, a:active, a:focus {
     /*-moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);*/
     /*box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);*/
     border: 0;
-    border-top: 5px solid #0060BF;
+    border-top: 5px solid #5B5340;
 }
 
 .btn-primary {
@@ -111,7 +111,7 @@ nav.navbar {
     /*-moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);*/
     /*box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);*/
     border: 0;
-    border-bottom: 5px solid #0060BF;
+    border-bottom: 5px solid #5B5340;
 }
 
 .table {
@@ -122,7 +122,7 @@ div.panel {
     -webkit-border-radius: 8px;
     -moz-border-radius: 8px;
     border-radius: 8px;
-    border: 5px solid #0060BF;
+    border: 5px solid #5B5340;
     z-index: 3;
 }
 
@@ -261,7 +261,7 @@ img {
     padding: 0.5em 1em;
     text-align: center;
     transition: bottom 1s;
-    background-color: #0060BF;
+    background-color: #5B5340;
     z-index:1031; /*footer was set to 1030*/
     box-shadow: 0px 15px 15px 15px black;
     color: black;
