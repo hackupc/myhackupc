@@ -4,12 +4,11 @@ from .base import _BaseApplicationForm
 
 class VolunteerApplicationForm(_BaseApplicationForm):
 
-
     diet = forms.ChoiceField(
         required=True,
-        label='Restricciones alimentarias',
+        label="Restricciones alimentarias",
         choices=models.DIETS_ES,
-        help_text="Estas son las diferentes opciones que tenemos. No podemos asegurar que la carne sea hallal."
+        help_text="Estas son las diferentes opciones que tenemos. No podemos asegurar que la carne sea halal.",
     )
 
     first_timer = forms.BooleanField(
@@ -17,23 +16,25 @@ class VolunteerApplicationForm(_BaseApplicationForm):
     )
     first_time_volunteer = forms.TypedChoiceField(
         required=True,
-        label="¿Es tu primera vez haciendo voluntariado en %s?" % settings.HACKATHON_NAME,
+        label="¿Es tu primera vez haciendo voluntariado en %s?"
+        % settings.HACKATHON_NAME,
         coerce=lambda x: x == "True",
         choices=((True, "Sí"), (False, "No")),
         widget=forms.RadioSelect,
     )
     which_hack = forms.MultipleChoiceField(
         required=False,
-        label="¿En qué ediciones de %s has participado como voluntari@?" % settings.HACKATHON_NAME,
+        label="¿En qué ediciones de %s has participado como voluntari@?"
+        % settings.HACKATHON_NAME,
         widget=forms.CheckboxSelectMultiple,
-        choices=models.PREVIOUS_HACKS,
+        choices=models.PREVIOUS_HACKS_VOLUNTEER,
     )
     under_age = forms.TypedChoiceField(
         required=True,
         label="¿Serás mayor de edad en la fecha del evento?",
         initial=False,
         coerce=lambda x: x == "True",
-        choices=((False, "Sí"),(True, "No")),
+        choices=((False, "Sí"), (True, "No")),
         widget=forms.RadioSelect,
     )
     studies_and_course = forms.CharField(
@@ -48,7 +49,9 @@ class VolunteerApplicationForm(_BaseApplicationForm):
         help_text="No exigimos a nadie quedarse hasta ninguna hora en particular",
         widget=forms.RadioSelect,
     )
-    lennyface = forms.CharField(initial="NA", widget=forms.HiddenInput(), required=False)
+    lennyface = forms.CharField(
+        initial="NA", widget=forms.HiddenInput(), required=False
+    )
 
     university = forms.CharField(
         initial="NA", widget=forms.HiddenInput(), required=False
@@ -59,18 +62,21 @@ class VolunteerApplicationForm(_BaseApplicationForm):
     terms_and_conditions = forms.BooleanField(
         required=False,
         label='He leído, entendido y acepto los <a href="/terms_and_conditions" target="_blank">%s '
-              'Términos y Condiciones</a> '
-              'y la <a href="/privacy_and_cookies" '
-              'target="_blank">%s Política de Privacidad y Cookies'
-              '</a>.<span style="color: red; font-weight: bold;"> '
-              '*</span>' % (settings.HACKATHON_NAME, settings.HACKATHON_NAME)
-              )
+        "Términos y Condiciones</a> "
+        'y la <a href="/privacy_and_cookies" '
+        'target="_blank">%s Política de Privacidad y Cookies'
+        '</a>.<span style="color: red; font-weight: bold;"> '
+        "*</span>" % (settings.HACKATHON_NAME, settings.HACKATHON_NAME),
+    )
 
-    email_subscribe = forms.BooleanField(required=False, label='Suscríbete a nuestra lista de marketing para informarte sobre nuestros próximos eventos.')
+    email_subscribe = forms.BooleanField(
+        required=False,
+        label="Suscríbete a nuestra lista de marketing para informarte sobre nuestros próximos eventos.",
+    )
 
     diet_notice = forms.BooleanField(
         required=False,
-        label='Autorizo a "HackersAtUpc" a utilizar mi información sobre alergias e intolerancias alimentarias únicamente para gestionar el servicio de catering.<span style="color: red; font-weight: bold;"> *</span>'
+        label='Autorizo a "HackersAtUpc" a utilizar mi información sobre alergias e intolerancias alimentarias únicamente para gestionar el servicio de catering.<span style="color: red; font-weight: bold;"> *</span>',
     )
 
     valid = forms.BooleanField(
@@ -104,7 +110,7 @@ class VolunteerApplicationForm(_BaseApplicationForm):
                 {"name": "attendance", "space": 12},
                 {"name": "volunteer_motivation", "space": 12},
             ],
-            "description": "¿Has participado en eventos similares? ¡Cuéntanos más!"
+            "description": "¿Has participado en eventos similares? ¡Cuéntanos más!",
         },
         "❓ Otras Preguntas": {
             "fields": [
@@ -135,7 +141,6 @@ class VolunteerApplicationForm(_BaseApplicationForm):
             self.add_error("which_hack", "Choose the hackathons you volunteered")
 
         return super(VolunteerApplicationForm, self).clean()
-
 
     def volunteer(self):
         return True
@@ -223,14 +228,14 @@ class VolunteerApplicationForm(_BaseApplicationForm):
         }
 
         class CustomSelect(forms.Select):
-                    def create_option(
-                        self, name, value, label, selected, index, subindex=None, attrs=None
-                    ):
-                        if index == 0:
-                            attrs = {"disabled": "disabled"}
-                        return super().create_option(
-                            name, value, label, selected, index, subindex=subindex, attrs=attrs
-                        )
+            def create_option(
+                self, name, value, label, selected, index, subindex=None, attrs=None
+            ):
+                if index == 0:
+                    attrs = {"disabled": "disabled"}
+                return super().create_option(
+                    name, value, label, selected, index, subindex=subindex, attrs=attrs
+                )
 
         def clean_hear_about_us(self):
             hear_about_us = self.cleaned_data.get("hear_about_us")
@@ -262,7 +267,8 @@ class VolunteerApplicationForm(_BaseApplicationForm):
             "diet": "Restricciones alimentarias",
             "other_diet": "Otras dietas",
             "origin": "¿Cuál es tu lugar de residencia actual?",
-            "which_hack": "¿En qué ediciones de %s has participado como voluntari@?" % settings.HACKATHON_NAME,
+            "which_hack": "¿En qué ediciones de %s has participado como voluntari@?"
+            % settings.HACKATHON_NAME,
             "attendance": "¿Qué días asistirás a HackUPC?",
             "languages": "¿En qué idiomas te sientes cómod@ hablando?",
             "quality": "Nombra una cualidad tuya:",
@@ -273,5 +279,3 @@ class VolunteerApplicationForm(_BaseApplicationForm):
             "other_hear_about_us": "Especifica cómo nos conociste:",
             "volunteer_motivation": "¿Por qué quieres asistir como voluntari@ a HackUPC?",
         }
-
-

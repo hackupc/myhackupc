@@ -14,7 +14,9 @@ class HackerApplication(BaseApplication):
     lennyface = models.CharField(max_length=20, default="-.-")
 
     # Studies
-    kind_studies = models.CharField(max_length=300, choices=KIND_STUDIES, default=NO_ANSWER)
+    kind_studies = models.CharField(
+        max_length=300, choices=KIND_STUDIES, default=NO_ANSWER
+    )
     graduation_year = models.IntegerField(choices=YEARS, default=DEFAULT_YEAR)
     university = models.CharField(max_length=300)
     degree = models.CharField(max_length=300)
@@ -35,13 +37,29 @@ class HackerApplication(BaseApplication):
     projects = models.TextField(max_length=500, blank=True, null=True)
 
     # META
-    dubious_type = models.CharField(max_length=300, choices=DUBIOUS_TYPES, default=DUBIOUS_NONE) # Type of dubious application
-    dubioused_by = models.ForeignKey(User, related_name='dubioused_by', blank=True, null=True,
-                                        on_delete=models.SET_NULL)  # User who marked this application as dubious   
-    dubious_comment = models.TextField(max_length=500, blank=True, null=True)  # Comment for dubious application
-    contacted = models.BooleanField(default=False)  # If a dubious application has been contacted yet
-    contacted_by = models.ForeignKey(User, related_name='contacted_by', blank=True, null=True,
-                                     on_delete=models.SET_NULL)
+    dubious_type = models.CharField(
+        max_length=300, choices=DUBIOUS_TYPES, default=DUBIOUS_NONE
+    )  # Type of dubious application
+    dubioused_by = models.ForeignKey(
+        User,
+        related_name="dubioused_by",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+    )  # User who marked this application as dubious
+    dubious_comment = models.TextField(
+        max_length=500, blank=True, null=True
+    )  # Comment for dubious application
+    contacted = models.BooleanField(
+        default=False
+    )  # If a dubious application has been contacted yet
+    contacted_by = models.ForeignKey(
+        User,
+        related_name="contacted_by",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+    )
 
     reviewed = models.BooleanField(
         default=False
@@ -91,11 +109,13 @@ class HackerApplication(BaseApplication):
         Also, if the user has a team, it deletes it.
         """
         if self.status != APP_DUBIOUS:
-            raise ValidationError('Applications can only be marked as invalid if they are dubious first')
-        self.status = APP_INVALID    
-        team = getattr(self.user, 'team', None) 
+            raise ValidationError(
+                "Applications can only be marked as invalid if they are dubious first"
+            )
+        self.status = APP_INVALID
+        team = getattr(self.user, "team", None)
         if team:
-            team.delete()         
+            team.delete()
         self.save()
 
     def set_dubious(self, user, dubious_type, dubious_comment_text):
@@ -117,15 +137,15 @@ class HackerApplication(BaseApplication):
         self.dubious_type = DUBIOUS_NONE
         self.dubious_comment = None
         self.save()
-        
+
     def set_flagged_cv(self):
         """Sets the CV as flagged for review. If there was an accepted
         resume, deletes it so it can be reviewed."""
         self.cv_flagged = True
-        if hasattr(self, 'acceptedresume'):
+        if hasattr(self, "acceptedresume"):
             self.acceptedresume.delete()
         self.save()
-        
+
     def set_contacted(self, user):
         if not self.contacted:
             self.contacted = True
@@ -149,7 +169,7 @@ class HackerApplication(BaseApplication):
                 self.user, motive_of_ban
             )
         blacklist_user.save()
-        team = getattr(self.user, 'team', None) 
+        team = getattr(self.user, "team", None)
         if team:
             team.delete()
         self.save()

@@ -32,7 +32,7 @@
             <div class="col-md-12">
                 <p style="text-align: center; font-size: 1.5em; font-weight: bold;">
                     {% if app_type == 'H' or app_type == 'V' or app_type == 'M' %}
-                        You are applying as a 
+                        You are applying as a
                     {% elif is_sponsor %}
                         You are applying for {{ company_name }} as a sponsor
                     {% endif %}
@@ -93,51 +93,51 @@
             </div>
         {% elif application.answered_invite %}
             {% if not h_discord %}
-              <div class="col-md-4">
-                  <img class="img-responsive "
-                       src="https://quickchart.io/qr?size=350&text={{ application.uuid_str }}"/>
+                <div class="col-md-4">
+                    <img class="img-responsive "
+                        src="https://quickchart.io/qr?size=350&text={{ application.uuid_str }}"/>
                     {% if gwallet_enabled %}
-                       <a href="{{ gwalleturl }}">
-                           <img src='{% static 'img/button.svg' %}' class="img-responsive">
-                       </a>
+                        <a href="{{ gwalleturl }}">
+                            <img src='{% static 'img/button.svg' %}' class="img-responsive">
+                        </a>
                     {% endif %}
-              </div>
+                </div>
             {% else %}
-              <div class="col-md-4">
-                  <img class="img-responsive "
-                       src="https://discord.com/assets/f8389ca1a741a115313bede9ac02e2c0.svg"/>
-              </div>
+                <div class="col-md-4">
+                    <img class="img-responsive "
+                        src="https://discord.com/assets/f8389ca1a741a115313bede9ac02e2c0.svg"/>
+                </div>
             {% endif %}
-            <div class="col-md-8">
+                <div class="col-md-8">
                 {% if not h_discord and not application.online %}
-                  <p>Thank you {{ user.get_full_name }} for confirming your attendance
-                      to {{ h_name }}! In order to make registration go smoother, please show us this QR code during the
-                      process so we can
-                      easily find
-                      you.
-                  </p>
-                  <p>If you want to add your pass to Google Wallet, click on the "Add to Google Wallet" button. 
-                    Sadly, <b>we don't support Apple Wallet</b>, but you can donwload Google Wallet on your iPhone as well!</p>
-                  {% if h_arrive %}
-                      <h3>When to arrive</h3>
-                      <p>{{ h_arrive }}</p>
-                  {% endif %}
-                  {% if h_leave %}
-                      <h3>When to leave</h3>
-                      <p>{{ h_leave }}</p>
-                  {% endif %}
-                {% else %}
-                  <div class="margin-bottom">
                     <p>Thank you {{ user.get_full_name }} for confirming your attendance
-                        to {{ h_name }}!</p>
-                    {% if application.online and application.is_confirmed and h_online_checkin %}
-                      {% include 'include/online_checkin.html' %}
-                    {% elif h_discord and not user.discorduser %}
-                      {% include 'include/discord_button.html' %}
-                    {% elif h_discord %}
-                      {% include 'include/swag_button.html' %}
+                        to {{ h_name }}! In order to make registration go smoother, please show us this QR code during the
+                        process so we can
+                        easily find
+                        you.
+                    </p>
+                    <p>If you want to add your pass to Google Wallet, click on the "Add to Google Wallet" button.
+                    Sadly, <b>we don't support Apple Wallet</b>, but you can download Google Wallet on your iPhone as well!</p>
+                    {% if h_arrive %}
+                        <h3>When to arrive</h3>
+                        <p>{{ h_arrive }}</p>
                     {% endif %}
-                  </div>
+                    {% if h_leave %}
+                        <h3>When to leave</h3>
+                        <p>{{ h_leave }}</p>
+                    {% endif %}
+                {% else %}
+                    <div class="margin-bottom">
+                        <p>Thank you {{ user.get_full_name }} for confirming your attendance
+                            to {{ h_name }}!</p>
+                        {% if application.online and application.is_confirmed and h_online_checkin %}
+                        {% include 'include/online_checkin.html' %}
+                        {% elif h_discord and not user.discorduser %}
+                        {% include 'include/discord_button.html' %}
+                        {% elif h_discord %}
+                        {% include 'include/swag_button.html' %}
+                        {% endif %}
+                    </div>
                 {% endif %}
                 {% include 'include/cancel.html' %}
             </div>
@@ -207,7 +207,7 @@
                                     console.log('reimb Yes');
                                     if ($('#reimbursement_reminder').length === 0) {
                                         // add the reminder to the parent's child that has the help-block classname
-                                        $('#id_reimb').parent().parent().find('.help-block').append(reimbursement_reminder);    
+                                        $('#id_reimb').parent().parent().find('.help-block').append(reimbursement_reminder);
                                     }
                                 } else {
                                     console.log('reimb No');
@@ -216,7 +216,7 @@
                             });
 
                             let origin = $('#origin').text().trim();
-                            origin = origin.toLowerCase().split(',');                            
+                            origin = origin.toLowerCase().split(',');
                             if (origin[1].includes('barcelona') || origin[1].includes('tarragona') || origin[1].includes('lleida') || origin[1].includes('girona')){
                                 // hide the reimbursement field
                                 $('#id_reimb').parent().parent().hide();
@@ -262,13 +262,13 @@
                                                     class="btn  btn-danger btn-block">Cancel</a></div>
             </form>
         {% elif application.is_invalid and not application.user.is_blacklisted %}
-             <div class="col-md-12">
+            <div class="col-md-12">
                 {% include 'include/status.html' %}
                 <p>Application has been marked as invalid. Please reach out to us at {{ h_contact_email|urlize }}
                     if you think this is a mistake.
-                  We are sorry your application, if you want you can apply at {{ h_name }} as mentor.
+                    We are sorry your application, if you want you can apply at {{ h_name }} as mentor.
                 </p>
-               <a class="btn btn-info btn-block" href={% url 'change_to_mentor' %}>Convert to mentor</a>
+                <a class="btn btn-info btn-block" href={% url 'change_to_mentor' %}>Convert to mentor</a>
             </div>
         {% else %}
             <div class="col-md-12">
@@ -285,7 +285,7 @@
                 <p>Thank you so much for applying at {{ h_name }}!</p>
                 <p> When decisions are released, you'll be able to see your results on this page.</p>
                 <p>If you have any questions or concerns, you can still reach us at {{ h_contact_email|urlize }}</p>
-                 <div class="col-md-5 no-padding">
+                <div class="col-md-5 no-padding">
                     <a href="{% url 'application' %}" class="btn  btn-primary btn-block">
                         View{% if application.can_be_edit %}/Edit{% endif %} application
                     </a>
