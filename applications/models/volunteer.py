@@ -1,69 +1,42 @@
 from __future__ import unicode_literals
-
-import json
-import os
-import uuid as uuid
-from datetime import datetime
-
-from django.core.exceptions import ValidationError
-from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator
 from django.db import models
-from django.db.models import Avg
-from django.forms import model_to_dict
-from django.utils import timezone
 from multiselectfield import MultiSelectField
-
-from app import utils, hackathon_variables
-from user.models import User, BlacklistUser
-from user import models as userModels
-from applications.validators import validate_file_extension
-
+from app import utils
 from .base import *
 
 GENDERS_ES = [
-    (NO_ANSWER, 'Prefiero no responder'),
-    (MALE, 'Hombre'),
-    (FEMALE, 'Mujer'),
-    (NON_BINARY, 'No binario'),
-    (GENDER_OTHER, 'Prefiero describirme'),
+    (NO_ANSWER, "Prefiero no responder"),
+    (MALE, "Hombre"),
+    (FEMALE, "Mujer"),
+    (NON_BINARY, "No binario"),
+    (GENDER_OTHER, "Prefiero describirme"),
 ]
 
-LENGUAGUES_ES = [
-("Spanish", "Español"),
-("Catalan", "Catalán"),
-("English", "Inglés")
-]
+LENGUAGUES_ES = [("Spanish", "Español"), ("Catalan", "Catalán"), ("English", "Inglés")]
 
-ATTENDANCE_ES = [
-    (0, "Viernes"),
-    (1, "Sábado"),
-    (2, "Domingo")
-]
+ATTENDANCE_ES = [(0, "Viernes"), (1, "Sábado"), (2, "Domingo")]
 
 HEARABOUTUS_ES = [
-("Posters", "Posters"),
-("Redes Sociales", "Redes Sociales"),
-("Mesas en el bar de la FIB","Mesas en el bar de la FIB"),
-("Mensajes por grupos de Whatsapp","Mensajes por grupos de Whatsapp"),
-("Amigos, compañeros u otras personas","Amigos, compañeros u otras personas"),
-("Anuncios online", "Anuncios online"),
-("Otros", "Otros")
+    ("Posters", "Posters"),
+    ("Redes Sociales", "Redes Sociales"),
+    ("Mesas en el bar de la FIB", "Mesas en el bar de la FIB"),
+    ("Mensajes por grupos de Whatsapp", "Mensajes por grupos de Whatsapp"),
+    ("Amigos, compañeros u otras personas", "Amigos, compañeros u otras personas"),
+    ("Anuncios online", "Anuncios online"),
+    ("Otros", "Otros"),
 ]
 
 
 DIETS_ES = [
-    (D_NONE, 'Sin requerimientos'),
-    (D_VEGETARIAN, 'Vegetariano'),
-    (D_VEGAN, 'Vegano'),
-    (D_GLUTEN_FREE, 'Sin gluten'),
-    (D_OTHER, 'Otros')
+    (D_NONE, "Sin requerimientos"),
+    (D_VEGETARIAN, "Vegetariano"),
+    (D_VEGAN, "Vegano"),
+    (D_GLUTEN_FREE, "Sin gluten"),
+    (D_OTHER, "Otros"),
 ]
 
-NIGHT_SHIFT_ES = [
-    ('No', 'No'),
-    ('Yes', 'Sí'),
-    ('Maybe', 'Puede ser')
-]
+NIGHT_SHIFT_ES = [("No", "No"), ("Yes", "Sí"), ("Maybe", "Puede ser")]
+
 
 class VolunteerApplication(BaseApplication):
 
@@ -81,7 +54,7 @@ class VolunteerApplication(BaseApplication):
     # Random lenny face
     lennyface = models.CharField(max_length=20, default="-.-")
 
-    #About us
+    # About us
     hear_about_us = models.CharField(max_length=300, choices=HEARABOUTUS_ES, default="")
     other_hear_about_us = models.CharField(max_length=500, blank=True, null=True)
 
@@ -93,16 +66,16 @@ class VolunteerApplication(BaseApplication):
     attendance = MultiSelectField(choices=ATTENDANCE_ES)
 
     languages = MultiSelectField(choices=LENGUAGUES_ES)
-    which_hack = MultiSelectField(choices=PREVIOUS_HACKS)
+    which_hack = MultiSelectField(choices=PREVIOUS_HACKS_VOLUNTEER)
 
     cool_skill = models.CharField(max_length=100, null=False)
     first_time_volunteer = models.BooleanField()
     quality = models.CharField(max_length=150, null=False)
     weakness = models.CharField(max_length=150, null=False)
-   
+
     friends = models.CharField(max_length=100, null=True, blank=True)
-    night_shifts = MultiSelectField(choices=NIGHT_SHIFT_ES, default='No')
-    studies_and_course = models.CharField(max_length=500, blank=True, default='')
+    night_shifts = MultiSelectField(choices=NIGHT_SHIFT_ES, default="No")
+    studies_and_course = models.CharField(max_length=500, blank=True, default="")
     volunteer_motivation = models.CharField(max_length=500)
     valid = models.BooleanField(default=True)
 
