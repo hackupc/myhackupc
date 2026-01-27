@@ -30,6 +30,13 @@ class MentorApplicationForm(_BaseApplicationForm):
         initial=True,
     )
 
+    gender = forms.ChoiceField(
+        required=True,
+        choices=[("", "- Select an option -")] + list(models.GENDERS),
+        label="What gender do you identify as?",
+        widget=forms.Select(),
+    )
+
     def clean_first_time_mentor(self):
         data = self.cleaned_data["first_time_mentor"]
         if data:
@@ -119,7 +126,6 @@ class MentorApplicationForm(_BaseApplicationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["gender"].required = False
 
     bootstrap_field_info = {
         "👤 Personal Info": {

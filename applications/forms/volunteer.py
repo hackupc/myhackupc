@@ -85,9 +85,15 @@ class VolunteerApplicationForm(_BaseApplicationForm):
         initial=True,
     )
 
+    gender = forms.ChoiceField(
+        required=True,
+        choices=[("", "- Selecciona una opción -")] + list(models.GENDERS_ES),
+        label=" ¿Con qué género te identificas?",
+        widget=forms.Select(),
+    )
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["gender"].required = False
 
     bootstrap_field_info = {
         "👤 Información Personal": {
