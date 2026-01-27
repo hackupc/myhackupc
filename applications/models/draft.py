@@ -1,9 +1,9 @@
-
-
 from user.models import User, BlacklistUser
 from user import models as userModels
 
 from .base import *
+
+
 class DraftApplication(models.Model):
     content = models.CharField(max_length=7000)
     user = models.OneToOneField(User, primary_key=True, on_delete=models.CASCADE)
@@ -17,7 +17,14 @@ class DraftApplication(models.Model):
     @staticmethod
     def create_draft_application(instance):
         dict = model_to_dict(instance)
-        for key in ['user', 'invited_by', 'submission_date', 'status_update_date', 'status', 'resume']:
+        for key in [
+            "user",
+            "invited_by",
+            "submission_date",
+            "status_update_date",
+            "status",
+            "resume",
+        ]:
             dict.pop(key, None)
         d = DraftApplication()
         d.user_id = instance.user_id
