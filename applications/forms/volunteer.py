@@ -31,10 +31,10 @@ class VolunteerApplicationForm(_BaseApplicationForm):
     )
     under_age = forms.TypedChoiceField(
         required=True,
-        label="¿Serás mayor de edad en la fecha del evento?",
+        label="¿Cuántos años tendrás en la fecha del evento?",
         initial=False,
         coerce=lambda x: x == "True",
-        choices=((False, "Sí"), (True, "No")),
+        choices=((False, "18 o más"), (True, "Entre 14 (incluido) y 18")),
         widget=forms.RadioSelect,
     )
     studies_and_course = forms.CharField(
@@ -85,9 +85,15 @@ class VolunteerApplicationForm(_BaseApplicationForm):
         initial=True,
     )
 
+    gender = forms.ChoiceField(
+        required=True,
+        choices=[("", "- Selecciona una opción -")] + list(models.GENDERS_ES),
+        label=" ¿Con qué género te identificas?",
+        widget=forms.Select(),
+    )
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["gender"].required = False
 
     bootstrap_field_info = {
         "👤 Información Personal": {

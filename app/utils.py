@@ -298,7 +298,7 @@ def generateGTicketUrl(qrValue: str):
                 },
             },
         },
-        "dateTime": {"start": "2025-05-02T16:00", "end": "2025-05-04T17:00"},
+        "dateTime": {"start": "2026-04-24T16:00", "end": "2026-04-26T17:00"},
         "reviewStatus": "UNDER_REVIEW",
         "hexBackgroundColor": "#231F20",
         "heroImage": {
