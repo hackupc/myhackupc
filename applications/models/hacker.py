@@ -3,9 +3,7 @@ from .base import BaseApplication
 from datetime import timedelta
 
 
-class HackerApplication(
-    BaseApplication
-):
+class HackerApplication(BaseApplication):
     # Where is this person coming from?
     origin = models.CharField(max_length=300)
 
@@ -13,9 +11,12 @@ class HackerApplication(
     first_timer = models.BooleanField(default=False)
 
     # Random lenny face
-    lennyface = models.CharField(max_length=20, default='-.-')
+    lennyface = models.CharField(max_length=20, default="-.-")
 
-    # University
+    # Studies
+    kind_studies = models.CharField(
+        max_length=300, choices=KIND_STUDIES, default=NO_ANSWER
+    )
     graduation_year = models.IntegerField(choices=YEARS, default=DEFAULT_YEAR)
     university = models.CharField(max_length=300)
     degree = models.CharField(max_length=300)
@@ -36,27 +37,60 @@ class HackerApplication(
     projects = models.TextField(max_length=500, blank=True, null=True)
 
     # META
-    contacted = models.BooleanField(default=False)  # If a dubious application has been contacted yet
-    contacted_by = models.ForeignKey(User, related_name='contacted_by', blank=True, null=True,
-                                     on_delete=models.SET_NULL)
+    dubious_type = models.CharField(
+        max_length=300, choices=DUBIOUS_TYPES, default=DUBIOUS_NONE
+    )  # Type of dubious application
+    dubioused_by = models.ForeignKey(
+        User,
+        related_name="dubioused_by",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+    )  # User who marked this application as dubious
+    dubious_comment = models.TextField(
+        max_length=500, blank=True, null=True
+    )  # Comment for dubious application
+    contacted = models.BooleanField(
+        default=False
+    )  # If a dubious application has been contacted yet
+    contacted_by = models.ForeignKey(
+        User,
+        related_name="contacted_by",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+    )
 
-    reviewed = models.BooleanField(default=False)  # If a blacklisted application has been reviewed yet
-    blacklisted_by = models.ForeignKey(User, related_name='blacklisted_by', blank=True, null=True,
-                                       on_delete=models.SET_NULL)
+    reviewed = models.BooleanField(
+        default=False
+    )  # If a blacklisted application has been reviewed yet
+    blacklisted_by = models.ForeignKey(
+        User,
+        related_name="blacklisted_by",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+    )
 
     # Why do you want to come to X?
     description = models.TextField(max_length=500)
 
     # Reimbursement
     reimb = models.BooleanField(default=False)
-    reimb_amount = models.FloatField(blank=True, null=True, validators=[
-        MinValueValidator(0, "Negative? Really? Please put a positive value"),
-        MaxValueValidator(200.0, "Do not exceed the maximum amount of 200")])
+    reimb_amount = models.FloatField(
+        blank=True,
+        null=True,
+        validators=[
+            MinValueValidator(0, "Negative? Really? Please put a positive value"),
+            MaxValueValidator(200.0, "Do not exceed the maximum amount of 200"),
+        ],
+    )
 
     # Info for hardware
     hardware = models.CharField(max_length=300, null=True, blank=True)
 
     cvs_edition = models.BooleanField(default=False)
+    cv_flagged = models.BooleanField(default=False)
 
     resume = models.FileField(
         upload_to=resume_path_hackers,
@@ -67,26 +101,49 @@ class HackerApplication(
 
     @classmethod
     def annotate_vote(cls, qs):
-        return qs.annotate(vote_avg=Avg('vote__calculated_vote'))
+        return qs.annotate(vote_avg=Avg("vote__calculated_vote"))
 
     def invalidate(self):
+        """
+        Marks the application as invalid, but only if its current status is "dubious".
+        Also, if the user has a team, it deletes it.
+        """
         if self.status != APP_DUBIOUS:
-            raise ValidationError('Applications can only be marked as invalid if they are dubious first')
+            raise ValidationError(
+                "Applications can only be marked as invalid if they are dubious first"
+            )
         self.status = APP_INVALID
+        team = getattr(self.user, "team", None)
+        if team:
+            team.delete()
         self.save()
 
-    def set_dubious(self):
+    def set_dubious(self, user, dubious_type, dubious_comment_text):
         self.status = APP_DUBIOUS
         self.contacted = False
         self.status_update_date = timezone.now()
+        self.dubioused_by = user
+        self.dubious_type = dubious_type
+        self.dubious_comment = dubious_comment_text
         self.vote_set.all().delete()
-        if hasattr(self, 'acceptedresume'):
+        if hasattr(self, "acceptedresume"):
             self.acceptedresume.delete()
         self.save()
 
     def unset_dubious(self):
         self.status = APP_PENDING
         self.status_update_date = timezone.now()
+        self.dubioused_by = None
+        self.dubious_type = DUBIOUS_NONE
+        self.dubious_comment = None
+        self.save()
+
+    def set_flagged_cv(self):
+        """Sets the CV as flagged for review. If there was an accepted
+        resume, deletes it so it can be reviewed."""
+        self.cv_flagged = True
+        if hasattr(self, "acceptedresume"):
+            self.acceptedresume.delete()
         self.save()
 
     def set_contacted(self, user):
@@ -96,15 +153,25 @@ class HackerApplication(
             self.save()
 
     def confirm_blacklist(self, user, motive_of_ban):
+        """
+        Confirms the application as blacklisted, but only if its current status is "APP_BLACKLISTED".
+        Also, if the user has a team, it deletes it.
+        """
         if self.status != APP_BLACKLISTED:
-            raise ValidationError('Applications can only be confirmed as blacklisted if they are blacklisted first')
+            raise ValidationError(
+                "Applications can only be confirmed as blacklisted if they are blacklisted first"
+            )
         self.status = APP_INVALID
         self.set_blacklisted_by(user)
         blacklist_user = BlacklistUser.objects.filter(email=self.user.email).first()
         if not blacklist_user:
             blacklist_user = BlacklistUser.objects.create_blacklist_user(
-                self.user, motive_of_ban)
+                self.user, motive_of_ban
+            )
         blacklist_user.save()
+        team = getattr(self.user, "team", None)
+        if team:
+            team.delete()
         self.save()
 
     def set_blacklist(self):
@@ -123,12 +190,18 @@ class HackerApplication(
 
     def is_blacklisted(self):
         return self.status == APP_BLACKLISTED
-        
+
     def can_be_edit(self, app_type="H"):
-        return self.status in [APP_PENDING, APP_DUBIOUS, APP_INVITED] and not self.vote_set.exists() and not \
-            utils.is_app_closed(app_type) and self.submission_date + timedelta(hours=2) > timezone.now()
+        return (
+            self.status in [APP_PENDING, APP_DUBIOUS, APP_INVITED]
+            and not self.vote_set.exists()
+            and not utils.is_app_closed(app_type)
+            and self.submission_date + timedelta(hours=2) > timezone.now()
+        )
 
 
 class AcceptedResume(models.Model):
-    application = models.OneToOneField(HackerApplication, primary_key=True, on_delete=models.CASCADE)
+    application = models.OneToOneField(
+        HackerApplication, primary_key=True, on_delete=models.CASCADE
+    )
     accepted = models.BooleanField()

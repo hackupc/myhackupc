@@ -12,6 +12,7 @@ from django.db.models.functions import Concat
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.views import View
 from django.views.generic import TemplateView
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
@@ -24,29 +25,67 @@ from app.mixins import TabsViewMixin
 from app.slack import SlackInvitationException
 from applications import emails
 from applications.emails import send_batch_emails
-from applications.models import APP_PENDING, APP_DUBIOUS, APP_BLACKLISTED, APP_INVITED, APP_LAST_REMIDER, \
-    APP_CONFIRMED, AcceptedResume, APP_ATTENDED, APP_REJECTED
+from applications.models import (
+    APP_PENDING,
+    APP_DUBIOUS,
+    APP_BLACKLISTED,
+    APP_INVITED,
+    APP_LAST_REMIDER,
+    APP_CONFIRMED,
+    AcceptedResume,
+    APP_ATTENDED,
+    APP_REJECTED,
+)
 from organizers import models
-from organizers.tables import ApplicationsListTable, ApplicationFilter, AdminApplicationsListTable, \
-    AdminTeamListTable, InviteFilter, DubiousListTable, DubiousApplicationFilter, VolunteerFilter, \
-    VolunteerListTable, MentorListTable, MentorFilter, SponsorListTable, SponsorFilter, SponsorUserListTable, \
-    SponsorUserFilter, BlacklistListTable, BlacklistApplicationFilter
+from organizers.tables import (
+    ApplicationsListTable,
+    ApplicationFilter,
+    AdminApplicationsListTable,
+    AdminTeamListTable,
+    InviteFilter,
+    DubiousListTable,
+    DubiousApplicationFilter,
+    VolunteerFilter,
+    VolunteerListTable,
+    MentorListTable,
+    MentorFilter,
+    SponsorListTable,
+    SponsorFilter,
+    SponsorUserListTable,
+    SponsorUserFilter,
+    BlacklistListTable,
+    BlacklistApplicationFilter,
+)
 from teams.models import Team
-from user.mixins import IsOrganizerMixin, IsDirectorMixin, HaveDubiousPermissionMixin, HaveVolunteerPermissionMixin, \
-    HaveSponsorPermissionMixin, HaveMentorPermissionMixin, IsBlacklistAdminMixin
+from user.mixins import (
+    IsOrganizerMixin,
+    IsDirectorMixin,
+    HaveDubiousPermissionMixin,
+    HaveVolunteerPermissionMixin,
+    HaveSponsorPermissionMixin,
+    HaveMentorPermissionMixin,
+    IsBlacklistAdminMixin,
+)
 from user.models import User, USR_SPONSOR
 
-if getattr(settings, 'REIMBURSEMENT_ENABLED', False):
+if getattr(settings, "REIMBURSEMENT_ENABLED", False):
     from reimbursement.models import Reimbursement, RE_PEND_APPROVAL
 
 
 def add_vote(application, user, tech_rat, pers_rat):
+    """
+    Save the vote of the application and
+    if the number of votes is >= 5 and the CV is not flagged, create an AcceptedResume
+    """
     v = models.Vote()
     v.user = user
     v.application = application
     v.tech = tech_rat
     v.personal = pers_rat
     v.save()
+    votes_count = application.vote_set.count()
+    if votes_count >= 5 and not application.cv_flagged:
+        AcceptedResume.objects.update_or_create(application=application, defaults={'accepted': True})
     return v
 
 
@@ -60,82 +99,157 @@ def add_comment(application, user, text):
 
 
 def hacker_tabs(user):
-    new_app = models.HackerApplication.objects.exclude(vote__user_id=user.id)\
-        .filter(status=APP_PENDING, submission_date__lte=timezone.now() - timedelta(hours=2))
-    t = [('Application', reverse('app_list'), False), ('Review', reverse('review'), 'new' if new_app else '')]
-    if user.has_dubious_access and getattr(settings, 'DUBIOUS_ENABLED', False):
-        t.append(('Dubious', reverse('dubious'),
-                  'new' if models.HackerApplication.objects.filter(status=APP_DUBIOUS,
-                                                                   contacted=False).count() else ''))
-    if user.has_blacklist_access and getattr(settings, 'BLACKLIST_ENABLED', False):
-        t.append(('Blacklist', reverse('blacklist'),
-                  'new' if models.HackerApplication.objects.filter(status=APP_BLACKLISTED, contacted=False).count()
-                  else ''))
-    t.append(('Check-in', reverse('check_in_list'), False))
+    new_app = models.HackerApplication.objects.exclude(vote__user_id=user.id).filter(
+        status=APP_PENDING, submission_date__lte=timezone.now() - timedelta(hours=2)
+    )
+    t = [
+        ("Application", reverse("app_list"), False),
+        ("Review", reverse("review"), "new" if new_app else ""),
+    ]
+    if user.has_dubious_access and getattr(settings, "DUBIOUS_ENABLED", False):
+        t.append(
+            (
+                "Dubious",
+                reverse("dubious"),
+                (
+                    "new"
+                    if models.HackerApplication.objects.filter(
+                        status=APP_DUBIOUS, contacted=False
+                    ).count()
+                    else ""
+                ),
+            )
+        )
+    if user.has_blacklist_access and getattr(settings, "BLACKLIST_ENABLED", False):
+        t.append(
+            (
+                "Blacklist",
+                reverse("blacklist"),
+                (
+                    "new"
+                    if models.HackerApplication.objects.filter(
+                        status=APP_BLACKLISTED, contacted=False
+                    ).count()
+                    else ""
+                ),
+            )
+        )
+    t.append(("Check-in", reverse("check_in_list"), False))
     if user.has_reimbursement_access:
-        t.extend([('Reimbursements', reverse('reimbursement_list'), False),
-                  ('Receipts', reverse('receipt_review'), 'new' if Reimbursement.objects.filter(
-                      status=RE_PEND_APPROVAL).count() else False), ])
+        t.extend(
+            [
+                ("Reimbursements", reverse("reimbursement_list"), False),
+                (
+                    "Receipts",
+                    reverse("receipt_review"),
+                    (
+                        "new"
+                        if Reimbursement.objects.filter(status=RE_PEND_APPROVAL).count()
+                        else False
+                    ),
+                ),
+            ]
+        )
     if user.has_sponsor_access:
-        new_resume = models.HackerApplication.objects.filter(acceptedresume__isnull=True, cvs_edition=True)\
-            .exclude(status__in=[APP_DUBIOUS, APP_BLACKLISTED]).first()
-        t.append(('Review resume', reverse('review_resume'), 'new' if new_resume else ''))
+        new_resume = (
+            models.HackerApplication.objects.filter(
+                acceptedresume__isnull=True, cvs_edition=True
+            )
+            .exclude(status__in=[APP_DUBIOUS, APP_BLACKLISTED])
+            .first()
+        )
+        t.append(
+            ("Review resume", reverse("review_resume"), "new" if new_resume else "")
+        )
     return t
 
 
 def sponsor_tabs(user):
-    return [('Users', reverse('sponsor_user_list'), False), ('Application', reverse('sponsor_list'), False),
-            ('Check-in', reverse('check_in_sponsor_list'), False)]
+    return [
+        ("Users", reverse("sponsor_user_list"), False),
+        ("Application", reverse("sponsor_list"), False),
+        ("Check-in", reverse("check_in_sponsor_list"), False),
+    ]
 
 
 def volunteer_tabs(user):
-    return [('Application', reverse('volunteer_list'), False), ('Check-in', reverse('check_in_volunteer_list'), False)]
+    return [
+        ("Application", reverse("volunteer_list"), False),
+        ("Check-in", reverse("check_in_volunteer_list"), False),
+    ]
 
 
 def mentor_tabs(user):
-    return [('Application', reverse('mentor_list'), False), ('Check-in', reverse('check_in_mentor_list'), False)]
+    return [
+        ("Application", reverse("mentor_list"), False),
+        ("Check-in", reverse("check_in_mentor_list"), False),
+    ]
 
 
-class ApplicationsListView(TabsViewMixin, IsOrganizerMixin, ExportMixin, SingleTableMixin, FilterView):
-    template_name = 'applications_list.html'
+class ApplicationsListView(
+    TabsViewMixin, IsOrganizerMixin, ExportMixin, SingleTableMixin, FilterView
+):
+    template_name = "applications_list.html"
     table_class = ApplicationsListTable
     filterset_class = ApplicationFilter
-    table_pagination = {'per_page': 100}
-    exclude_columns = ('detail', 'status', 'vote_avg')
-    export_name = 'applications'
+    table_pagination = {"per_page": 100}
+    exclude_columns = ("detail", "status", "vote_avg")
+    export_name = "applications"
 
     def get(self, request, *args, **kwargs):
-        request.session['edit_app_back'] = 'app_list'
+        request.session["edit_app_back"] = "app_list"
         return super().get(request, *args, **kwargs)
 
     def get_current_tabs(self):
         return hacker_tabs(self.request.user)
 
     def get_queryset(self):
-        return models.HackerApplication.annotate_vote(models.HackerApplication.objects.all())
+        return models.HackerApplication.annotate_vote(
+            models.HackerApplication.objects.all()
+        )
 
     def get_context_data(self, **kwargs):
         context = super(ApplicationsListView, self).get_context_data(**kwargs)
-        context['otherApplication'] = False
+        context["otherApplication"] = False
         list_email = ""
-        for u in context.get('object_list').values_list('user__email', flat=True):
+        for u in context.get("object_list").values_list("user__email", flat=True):
             list_email += "%s, " % u
-        context['emails'] = list_email
+        context["emails"] = list_email
         return context
 
 
 class InviteListView(TabsViewMixin, IsDirectorMixin, SingleTableMixin, FilterView):
-    template_name = 'invite_list.html'
+    template_name = "invite_list.html"
     table_class = AdminApplicationsListTable
     filterset_class = InviteFilter
-    table_pagination = {'per_page': 100}
+    table_pagination = {"per_page": 100}
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        n_live_hackers = models.HackerApplication.objects.filter(status__in=[APP_INVITED, APP_LAST_REMIDER,
-                                                                             APP_CONFIRMED], online=False).count()
-        context.update({'n_live_hackers': n_live_hackers,
-                        'n_live_per_hackers': n_live_hackers * 100 / getattr(settings, 'N_MAX_LIVE_HACKERS', 0)})
+        n_invited_hackers_today = models.HackerApplication.objects.filter(
+            status=APP_INVITED,
+            online=False,
+            status_update_date__date=timezone.now().date(),
+        ).count()
+
+        n_waitlisted_hackers = models.HackerApplication.objects.filter(
+            status=APP_REJECTED, online=False
+        ).count()
+        n_live_hackers = models.HackerApplication.objects.filter(
+            status__in=[APP_INVITED, APP_LAST_REMIDER, APP_CONFIRMED], online=False
+        ).count()
+
+        context.update(
+            {
+                "n_live_hackers": n_live_hackers,
+                "n_live_per_hackers": n_live_hackers
+                * 100
+                / getattr(settings, "N_MAX_LIVE_HACKERS", 0),
+                "n_waitlisted_hackers": n_waitlisted_hackers,
+                "n_invited_hackers_today": n_invited_hackers_today,
+            }
+        )
+
         return context
 
     def get_current_tabs(self):
@@ -143,16 +257,22 @@ class InviteListView(TabsViewMixin, IsDirectorMixin, SingleTableMixin, FilterVie
 
     def get_queryset(self):
         return models.HackerApplication.annotate_vote(
-            models.HackerApplication.objects.filter(status__in=[APP_PENDING, APP_REJECTED])).order_by('-vote_avg')
+            models.HackerApplication.objects.filter(
+                status__in=[APP_PENDING, APP_REJECTED]
+            )
+        ).order_by("-vote_avg")
 
     def post(self, request, *args, **kwargs):
-        ids = request.POST.getlist('selected')
+        ids = request.POST.getlist("selected")
         apps = models.HackerApplication.objects.filter(pk__in=ids).all()
         mails = []
         errors = 0
         for app in apps:
             try:
-                app.invite(request.user, online=request.POST.get('force_online', 'false') == 'true')
+                app.invite(
+                    request.user,
+                    online=request.POST.get("force_online", "false") == "true",
+                )
                 m = emails.create_invite_email(app, request)
                 if m:
                     mails.append(m)
@@ -167,41 +287,56 @@ class InviteListView(TabsViewMixin, IsDirectorMixin, SingleTableMixin, FilterVie
                 errorMsg = "%s applications not invited" % errors
             messages.error(request, errorMsg)
 
-        return HttpResponseRedirect(reverse('invite_list'))
+        return HttpResponseRedirect(reverse("invite_list"))
 
 
 class ApplicationDetailView(TabsViewMixin, IsOrganizerMixin, TemplateView):
-    template_name = 'application_detail.html'
+    template_name = "application_detail.html"
 
     def get_back_url(self):
-        back = self.request.session.get('edit_app_back', 'app_list')
+        back = self.request.session.get("edit_app_back", "app_list")
         return reverse(back)
 
     def get_context_data(self, **kwargs):
         context = super(ApplicationDetailView, self).get_context_data(**kwargs)
         application = self.get_application(kwargs)
-        context['app'] = application
-        context['vote'] = self.can_vote()
-        context['max_vote'] = dict(models.VOTES)
-        if (self.can_vote()):
-            context['apps_left_to_vote'] = \
-                models.HackerApplication.objects.exclude(vote__user_id=self.request.user.id)\
-                .filter(status=APP_PENDING, submission_date__lte=timezone.now() - timedelta(hours=2))\
+        context["app"] = application
+        context["vote"] = self.can_vote()
+        context["max_vote"] = dict(models.VOTES)
+        if self.can_vote():
+            context["apps_left_to_vote"] = (
+                models.HackerApplication.objects.exclude(
+                    vote__user_id=self.request.user.id
+                )
+                .filter(
+                    status=APP_PENDING,
+                    submission_date__lte=timezone.now() - timedelta(hours=2),
+                )
                 .count()
+            )
 
-        context['comments'] = models.ApplicationComment.objects.filter(hacker=application)
-        if application and getattr(application.user, 'team', False) and settings.TEAMS_ENABLED:
-            context['teammates'] = Team.objects.filter(team_code=application.user.team.team_code) \
-                .values('user__name', 'user__email', 'user')
+        context["comments"] = models.ApplicationComment.objects.filter(
+            hacker=application
+        ).order_by("created_at")
+        if (
+            application
+            and getattr(application.user, "team", False)
+            and settings.TEAMS_ENABLED
+        ):
+            context["teammates"] = Team.objects.filter(
+                team_code=application.user.team.team_code
+            ).values("user__name", "user__email", "user")
 
-            for mate in context['teammates']:
-                if application.user.id == mate['user']:
-                    mate['is_me'] = True
+            for mate in context["teammates"]:
+                if application.user.id == mate["user"]:
+                    mate["is_me"] = True
                     continue
 
-                mate_app = models.HackerApplication.objects.filter(user=mate['user']).first()
+                mate_app = models.HackerApplication.objects.filter(
+                    user=mate["user"]
+                ).first()
                 if mate_app:
-                    mate['app_uuid_str'] = mate_app.uuid_str
+                    mate["app_uuid_str"] = mate_app.uuid_str
 
         return context
 
@@ -209,84 +344,118 @@ class ApplicationDetailView(TabsViewMixin, IsOrganizerMixin, TemplateView):
         return False
 
     def get_application(self, kwargs):
-        application_id = kwargs.get('id', None)
+        application_id = kwargs.get("id", None)
         if not application_id:
             raise Http404
-        application = models.HackerApplication.objects.filter(uuid=application_id).first()
+        application = models.HackerApplication.objects.filter(
+            uuid=application_id
+        ).first()
         if not application:
             raise Http404
 
         return application
 
     def post(self, request, *args, **kwargs):
-        id_ = request.POST.get('app_id')
+        id_ = request.POST.get("app_id")
         application = models.HackerApplication.objects.get(pk=id_)
 
         comment_text = request.POST.get('comment_text', None)
         motive_of_ban = request.POST.get('motive_of_ban', None)
+        dubious_type = request.POST.get('dubious_type', None)
+        dubious_comment_text = request.POST.get('dubious_comment_text', None)
+
         if request.POST.get('add_comment'):
             add_comment(application, request.user, comment_text)
-        elif request.POST.get('invite') and request.user.is_director:
+        elif request.POST.get("invite") and request.user.is_director:
             self.invite_application(application)
-        elif request.POST.get('confirm') and request.user.is_director:
+        elif request.POST.get("confirm") and request.user.is_director:
             self.confirm_application(application)
-        elif request.POST.get('cancel') and request.user.is_director:
+        elif request.POST.get("cancel") and request.user.is_director:
             self.cancel_application(application)
-        elif request.POST.get('waitlist') and request.user.is_director:
+        elif request.POST.get("waitlist") and request.user.is_director:
             self.waitlist_application(application)
-        elif request.POST.get('slack') and request.user.is_organizer:
+        elif request.POST.get("slack") and request.user.is_organizer:
             self.slack_invite(application)
         elif request.POST.get('set_dubious') and request.user.is_organizer:
-            application.set_dubious()
-        elif request.POST.get('contact_user') and request.user.has_dubious_access:
+            application.set_dubious(request.user, dubious_type, dubious_comment_text)
+        elif request.POST.get("set_flagged_cv") and request.user.is_organizer:
+            application.set_flagged_cv()
+        elif request.POST.get("unset_flagged_cv") and request.user.is_organizer:
+            application.unset_flagged_cv()
+        elif request.POST.get("contact_user") and request.user.has_dubious_access:
             application.set_contacted(request.user)
-        elif request.POST.get('unset_dubious') and request.user.has_dubious_access:
-            add_comment(application, request.user,
-                        "Dubious review result: No problems, hacker allowed to participate in hackathon!")
+        elif request.POST.get("unset_dubious") and request.user.has_dubious_access:
+            add_comment(
+                application,
+                request.user,
+                "Dubious review result: No problems, hacker allowed to participate in hackathon!",
+            )
             application.unset_dubious()
-        elif request.POST.get('invalidate') and request.user.has_dubious_access:
-            add_comment(application, request.user,
-                        "Dubious review result: Hacker is not allowed to participate in hackathon.")
+        elif request.POST.get("invalidate") and request.user.has_dubious_access:
+            add_comment(
+                application,
+                request.user,
+                "Dubious review result: Hacker is not allowed to participate in hackathon.",
+            )
             application.invalidate()
-        elif request.POST.get('set_blacklist') and request.user.is_organizer:
+        elif request.POST.get("set_blacklist") and request.user.is_organizer:
             application.set_blacklist()
-        elif request.POST.get('unset_blacklist') and request.user.has_blacklist_access:
-            add_comment(application, request.user,
-                        "Blacklist review result: No problems, hacker allowed to participate in hackathon!")
+        elif request.POST.get("unset_blacklist") and request.user.has_blacklist_access:
+            add_comment(
+                application,
+                request.user,
+                "Blacklist review result: No problems, hacker allowed to participate in hackathon!",
+            )
             application.unset_blacklist()
-        elif request.POST.get('confirm_blacklist') and request.user.has_blacklist_access:
-            add_comment(application, request.user,
-                        "Blacklist review result: Hacker is not allowed to participate in hackathon. " +
-                        "Motive of ban: " + motive_of_ban)
+        elif (
+            request.POST.get("confirm_blacklist") and request.user.has_blacklist_access
+        ):
+            add_comment(
+                application,
+                request.user,
+                "Blacklist review result: Hacker is not allowed to participate in hackathon. "
+                + "Motive of ban: "
+                + motive_of_ban,
+            )
             application.confirm_blacklist(request.user, motive_of_ban)
 
-        return HttpResponseRedirect(reverse('app_detail', kwargs={'id': application.uuid_str}))
+        return HttpResponseRedirect(
+            reverse("app_detail", kwargs={"id": application.uuid_str})
+        )
 
     def waitlist_application(self, application):
         try:
             application.reject()
-            messages.success(self.request, "%s application wait listed" % application.user.email)
+            messages.success(
+                self.request, "%s application wait listed" % application.user.email
+            )
         except ValidationError as e:
             messages.error(self.request, e.message)
 
     def slack_invite(self, application):
         try:
             slack.send_slack_invite(application.user.email)
-            messages.success(self.request, "Slack invite sent to %s" % application.user.email)
+            messages.success(
+                self.request, "Slack invite sent to %s" % application.user.email
+            )
         except SlackInvitationException as e:
             messages.error(self.request, "Slack error: %s" % str(e))
 
     def cancel_application(self, application):
         try:
             application.cancel()
-            messages.success(self.request, "%s application cancelled" % application.user.email)
+            messages.success(
+                self.request, "%s application cancelled" % application.user.email
+            )
         except ValidationError as e:
             messages.error(self.request, e.message)
 
     def confirm_application(self, application):
         try:
             application.confirm()
-            messages.success(self.request, "Ticket to %s successfully sent" % application.user.email)
+            messages.success(
+                self.request, "Ticket to %s successfully sent" % application.user.email
+            )
             m = emails.create_confirmation_email(application, self.request)
             if m:
                 m.send()
@@ -296,7 +465,9 @@ class ApplicationDetailView(TabsViewMixin, IsOrganizerMixin, TemplateView):
     def invite_application(self, application):
         try:
             application.invite(self.request.user)
-            messages.success(self.request, "Invite to %s successfully sent" % application.user.email)
+            messages.success(
+                self.request, "Invite to %s successfully sent" % application.user.email
+            )
             m = emails.create_invite_email(application, self.request)
             if m:
                 m.send()
@@ -318,40 +489,60 @@ class ReviewApplicationView(ApplicationDetailView):
         :return: pending aplication that has not been voted by the current
         user and that has less votes and its older
         """
-        max_votes_to_app = getattr(settings, 'MAX_VOTES_TO_APP', 50)
-        return models.HackerApplication.objects \
-            .exclude(Q(vote__user_id=self.request.user.id) | Q(user_id=self.request.user.id)) \
-            .filter(status=APP_PENDING) \
-            .filter(submission_date__lte=timezone.now() - timedelta(hours=2)) \
-            .annotate(count=Count('vote__calculated_vote')) \
-            .filter(count__lte=max_votes_to_app) \
-            .order_by('count', 'submission_date') \
+        max_votes_to_app = getattr(settings, "MAX_VOTES_TO_APP", 50)
+        return (
+            models.HackerApplication.objects.exclude(
+                Q(vote__user_id=self.request.user.id) | Q(user_id=self.request.user.id)
+            )
+            .filter(status=APP_PENDING)
+            .filter(submission_date__lte=timezone.now() - timedelta(hours=2))
+            .annotate(count=Count("vote__calculated_vote"))
+            .filter(count__lte=max_votes_to_app)
+            .order_by("count", "submission_date")
             .first()
+        )
 
     def get(self, request, *args, **kwargs):
         r = super(ReviewApplicationView, self).get(request, *args, **kwargs)
         return r
 
     def post(self, request, *args, **kwargs):
-        tech_vote = request.POST.get('tech_rat', None)
-        pers_vote = request.POST.get('pers_rat', None)
-        comment_text = request.POST.get('comment_text', None)
+        tech_vote = request.POST.get("tech_rat", None)
+        pers_vote = request.POST.get("pers_rat", None)
+        comment_text = request.POST.get("comment_text", None)
+        dubious_type = request.POST.get('dubious_type', None)
+        dubious_comment_text = request.POST.get('dubious_comment_text', None)
 
-        application = models.HackerApplication.objects.get(pk=request.POST.get('app_id'))
+        application = models.HackerApplication.objects.get(
+            pk=request.POST.get("app_id")
+        )
         try:
-            if request.POST.get('skip'):
+            if request.POST.get("skip"):
                 add_vote(application, request.user, None, None)
-            elif request.POST.get('add_comment'):
+            elif request.POST.get("add_comment"):
                 add_comment(application, request.user, comment_text)
-            elif request.POST.get('set_dubious'):
-                application.set_dubious()
-            elif request.POST.get('unset_dubious'):
+                return HttpResponseRedirect(
+                    "/applications/hacker/review/" + application.uuid_str
+                )
+            elif request.POST.get("set_dubious"):
+                application.set_dubious(request.user, dubious_type, dubious_comment_text)
+            elif request.POST.get("unset_dubious"):
                 application.unset_dubious()
-            elif request.POST.get('set_blacklist') and request.user.is_organizer:
+            elif request.POST.get("set_flagged_cv") and request.user.is_organizer:
+                application.set_flagged_cv()
+            elif request.POST.get("unset_flagged_cv") and request.user.is_organizer:
+                application.unset_flagged_cv()
+            elif request.POST.get("set_blacklist") and request.user.is_organizer:
                 application.set_blacklist()
-            elif request.POST.get('unset_blacklist') and request.user.has_blacklist_access:
-                add_comment(application, request.user,
-                            "Blacklist review result: No problems, hacker allowed to participate in hackathon!")
+            elif (
+                request.POST.get("unset_blacklist")
+                and request.user.has_blacklist_access
+            ):
+                add_comment(
+                    application,
+                    request.user,
+                    "Blacklist review result: No problems, hacker allowed to participate in hackathon!",
+                )
                 application.unset_blacklist()
             else:
                 add_vote(application, request.user, tech_vote, pers_vote)
@@ -359,53 +550,212 @@ class ReviewApplicationView(ApplicationDetailView):
         # application
         except IntegrityError:
             pass
-        return HttpResponseRedirect(reverse('review'))
+        return HttpResponseRedirect(reverse("review"))
 
     def can_vote(self):
         return True
 
 
-class InviteTeamListView(TabsViewMixin, IsDirectorMixin, SingleTableMixin, TemplateView):
-    template_name = 'invite_list.html'
+class ReviewApplicationDetailView(ApplicationDetailView):
+    def get_current_tabs(self):
+        return hacker_tabs(self.request.user)
+
+    def get_back_url(self):
+        return None
+
+    def get_application(self, kwargs):
+        """
+        Django model to the rescue. This is transformed to an SQL sentence
+        that does exactly what we need
+        :return: pending aplication that has not been voted by the current
+        user and that has less votes and its older
+        """
+        if "id" in kwargs:
+            if (
+                models.HackerApplication.objects.filter(uuid=kwargs["id"])
+                .first()
+                .status
+                != APP_PENDING
+            ):
+                max_votes_to_app = getattr(settings, "MAX_VOTES_TO_APP", 50)
+                return (
+                    models.HackerApplication.objects.exclude(
+                        Q(vote__user_id=self.request.user.id)
+                        | Q(user_id=self.request.user.id)
+                    )
+                    .filter(status=APP_PENDING)
+                    .filter(submission_date__lte=timezone.now() - timedelta(hours=2))
+                    .annotate(count=Count("vote__calculated_vote"))
+                    .filter(count__lte=max_votes_to_app)
+                    .order_by("count", "submission_date")
+                    .first()
+                )
+            else:
+                return models.HackerApplication.objects.get(uuid=kwargs["id"])
+        else:
+            max_votes_to_app = getattr(settings, "MAX_VOTES_TO_APP", 50)
+            return (
+                models.HackerApplication.objects.exclude(
+                    Q(vote__user_id=self.request.user.id)
+                    | Q(user_id=self.request.user.id)
+                )
+                .filter(status=APP_PENDING)
+                .filter(submission_date__lte=timezone.now() - timedelta(hours=2))
+                .annotate(count=Count("vote__calculated_vote"))
+                .filter(count__lte=max_votes_to_app)
+                .order_by("count", "submission_date")
+                .first()
+            )
+
+    def get(self, request, *args, **kwargs):
+        r = super(ReviewApplicationDetailView, self).get(request, *args, **kwargs)
+        return r
+
+    def post(self, request, *args, **kwargs):
+        tech_vote = request.POST.get("tech_rat", None)
+        pers_vote = request.POST.get("pers_rat", None)
+        comment_text = request.POST.get("comment_text", None)
+        dubious_type = request.POST.get('dubious_type', None)
+        dubious_comment_text = request.POST.get('dubious_comment_text', None)
+
+        application = models.HackerApplication.objects.get(
+            pk=request.POST.get("app_id")
+        )
+        try:
+            if request.POST.get("skip"):
+                add_vote(application, request.user, None, None)
+            elif request.POST.get("add_comment"):
+                add_comment(application, request.user, comment_text)
+                return HttpResponseRedirect(
+                    "/applications/hacker/review/" + application.uuid_str
+                )
+            elif request.POST.get("set_dubious"):
+                application.set_dubious(request.user, dubious_type, dubious_comment_text)
+            elif request.POST.get("unset_dubious"):
+                application.unset_dubious()
+            elif request.POST.get("set_flagged_cv") and request.user.is_organizer:
+                application.set_flagged_cv()
+            elif request.POST.get("unset_flagged_cv") and request.user.is_organizer:
+                application.unset_flagged_cv()
+            elif request.POST.get("set_blacklist") and request.user.is_organizer:
+                application.set_blacklist()
+            elif (
+                request.POST.get("unset_blacklist")
+                and request.user.has_blacklist_access
+            ):
+                add_comment(
+                    application,
+                    request.user,
+                    "Blacklist review result: No problems, hacker allowed to participate in hackathon!",
+                )
+                application.unset_blacklist()
+            else:
+                add_vote(application, request.user, tech_vote, pers_vote)
+        # If application has already been voted -> Skip and bring next
+        # application
+        except IntegrityError:
+            pass
+        return HttpResponseRedirect(reverse("review"))
+
+    def can_vote(self):
+        return True
+
+
+class InviteTeamListView(
+    TabsViewMixin, IsDirectorMixin, SingleTableMixin, TemplateView
+):
+    template_name = "invite_list.html"
     table_class = AdminTeamListTable
-    table_pagination = {'per_page': 100}
+    table_pagination = {"per_page": 100}
 
     def get_current_tabs(self):
         return hacker_tabs(self.request.user)
 
     def get_queryset(self):
-        return models.HackerApplication.objects.filter(status__in=[APP_PENDING, APP_CONFIRMED, APP_LAST_REMIDER,
-                                                                   APP_INVITED, APP_REJECTED]) \
-            .exclude(user__team__team_code__isnull=True).values('user__team__team_code') \
-            .annotate(vote_avg=Avg('vote__calculated_vote'),
-                      members=Count('user', distinct=True),
-                      invited=Count(Concat('status', 'user__id', output_field=CharField()),
-                                    filter=Q(status__in=[APP_INVITED, APP_LAST_REMIDER]), distinct=True),
-                      accepted=Count(Concat('status', 'user__id', output_field=CharField()),
-                                     filter=Q(status=APP_CONFIRMED), distinct=True),
-                      live_pending=Count(Concat('status', 'user__id', output_field=CharField()),
-                                         filter=Q(status__in=[APP_PENDING, APP_REJECTED], online=False),
-                                         distinct=True))\
-            .exclude(members=F('accepted')).order_by('-vote_avg')
+        hackersList = (
+            models.HackerApplication.objects.filter(
+                status__in=[
+                    APP_PENDING,
+                    APP_CONFIRMED,
+                    APP_LAST_REMIDER,
+                    APP_INVITED,
+                    APP_REJECTED,
+                ]
+            )
+            .exclude(user__team__team_code__isnull=True)
+            .values("user__team__team_code")
+            .annotate(
+                vote_avg=Avg("vote__calculated_vote"),
+                members=Count("user", distinct=True),
+                invited=Count(
+                    Concat("status", "user__id", output_field=CharField()),
+                    filter=Q(status__in=[APP_INVITED, APP_LAST_REMIDER]),
+                    distinct=True,
+                ),
+                accepted=Count(
+                    Concat("status", "user__id", output_field=CharField()),
+                    filter=Q(status=APP_CONFIRMED),
+                    distinct=True,
+                ),
+                live_pending=Count(
+                    Concat("status", "user__id", output_field=CharField()),
+                    filter=Q(status__in=[APP_PENDING, APP_REJECTED], online=False),
+                    distinct=True,
+                ),
+            )
+            .exclude(members=F("accepted"))
+            .exclude(Q(live_pending=0) | Q(live_pending__gt=F("members") / 2))
+            .order_by("-vote_avg")
+        )
+
+        return hackersList
 
     def get_context_data(self, **kwargs):
         context = super(InviteTeamListView, self).get_context_data(**kwargs)
-        context.update({'teams': True})
-        n_live_hackers = models.HackerApplication.objects.filter(status__in=[APP_INVITED, APP_LAST_REMIDER,
-                                                                             APP_CONFIRMED], online=False).count()
-        context.update({'n_live_hackers': n_live_hackers,
-                        'n_live_per_hackers': n_live_hackers * 100 / getattr(settings, 'N_MAX_LIVE_HACKERS', 0)})
+        context.update({"teams": True})
+
+        n_live_hackers = models.HackerApplication.objects.filter(
+            status__in=[APP_INVITED, APP_LAST_REMIDER, APP_CONFIRMED], online=False
+        ).count()
+
+        n_invited_hackers_today = models.HackerApplication.objects.filter(
+            status__in=[APP_INVITED],
+            online=False,
+            status_update_date__date=timezone.now().date(),
+        ).count()
+
+        n_waitlisted_hackers = models.HackerApplication.objects.filter(
+            status__in=[APP_REJECTED], online=False
+        ).count()
+
+        context.update(
+            {
+                "n_live_hackers": n_live_hackers,
+                "n_live_per_hackers": n_live_hackers
+                * 100
+                / getattr(settings, "N_MAX_LIVE_HACKERS", 0),
+                "n_invited_hackers_today": n_invited_hackers_today,
+                "n_waitlisted_hackers": n_waitlisted_hackers,
+            }
+        )
         return context
 
     def post(self, request, *args, **kwargs):
-        ids = request.POST.getlist('selected')
-        apps = models.HackerApplication.objects.filter(user__team__team_code__in=ids)\
-            .exclude(status__in=[APP_DUBIOUS, APP_BLACKLISTED]).annotate(count=Count('vote')).filter(count__gte=5)
+        ids = request.POST.getlist("selected")
+        apps = (
+            models.HackerApplication.objects.filter(user__team__team_code__in=ids)
+            .exclude(status__in=[APP_DUBIOUS, APP_BLACKLISTED])
+            .annotate(count=Count("vote"))
+            .filter(count__gte=5)
+        )
         mails = []
         errors = 0
         for app in apps:
             try:
-                app.invite(request.user, online=request.POST.get('force_online', 'false') == 'true')
+                app.invite(
+                    request.user,
+                    online=request.POST.get("force_online", "false") == "true",
+                )
                 m = emails.create_invite_email(app, request)
                 mails.append(m)
             except ValidationError:
@@ -419,39 +769,55 @@ class InviteTeamListView(TabsViewMixin, IsDirectorMixin, SingleTableMixin, Templ
                 errorMsg = "%s applications not invited" % errors
             messages.error(request, errorMsg)
 
-        return HttpResponseRedirect(reverse('invite_teams_list'))
+        return HttpResponseRedirect(reverse("invite_teams_list"))
 
 
-class DubiousApplicationsListView(TabsViewMixin, HaveDubiousPermissionMixin, ExportMixin, SingleTableMixin,
-                                  FilterView):
-    template_name = 'dubious_list.html'
+class WaitlistedApplicationsListView(
+    IsDirectorMixin, ExportMixin, SingleTableMixin, View
+):
+    # This view is to send all hacker applications left under_review to waitlisted
+    def post(self, request, *args, **kwargs):
+        models.HackerApplication.objects.filter(status=APP_PENDING).update(
+            status=APP_REJECTED
+        )
+        return HttpResponse(status=200)
+
+
+class DubiousApplicationsListView(
+    TabsViewMixin, HaveDubiousPermissionMixin, ExportMixin, SingleTableMixin, FilterView
+):
+    template_name = "dubious_list.html"
     table_class = DubiousListTable
     filterset_class = DubiousApplicationFilter
-    table_pagination = {'per_page': 100}
-    exclude_columns = ('status', 'vote_avg')
-    export_name = 'dubious_applications'
+    table_pagination = {"per_page": 100}
+    exclude_columns = ("status", "vote_avg")
+    export_name = "dubious_applications"
 
     def get(self, request, *args, **kwargs):
-        request.session['edit_app_back'] = 'dubious'
+        request.session["edit_app_back"] = "dubious"
         return super().get(request, *args, **kwargs)
 
     def get_current_tabs(self):
         return hacker_tabs(self.request.user)
 
     def get_queryset(self):
-        return models.HackerApplication.objects.filter(status=APP_DUBIOUS).order_by('-status_update_date')
+        return models.HackerApplication.objects.filter(status=APP_DUBIOUS).order_by(
+            "-status_update_date"
+        )
 
 
-class BlacklistApplicationsListView(TabsViewMixin, IsBlacklistAdminMixin, ExportMixin, SingleTableMixin, FilterView):
-    template_name = 'blacklist_list.html'
+class BlacklistApplicationsListView(
+    TabsViewMixin, IsBlacklistAdminMixin, ExportMixin, SingleTableMixin, FilterView
+):
+    template_name = "blacklist_list.html"
     table_class = BlacklistListTable
     filterset_class = BlacklistApplicationFilter
-    table_pagination = {'per_page': 100}
-    exclude_columns = ('status', 'vote_avg')
-    export_name = 'blacklist_applications'
+    table_pagination = {"per_page": 100}
+    exclude_columns = ("status", "vote_avg")
+    export_name = "blacklist_applications"
 
     def get(self, request, *args, **kwargs):
-        request.session['edit_app_back'] = 'blacklist'
+        request.session["edit_app_back"] = "blacklist"
         return super().get(request, *args, **kwargs)
 
     def get_current_tabs(self):
@@ -461,24 +827,28 @@ class BlacklistApplicationsListView(TabsViewMixin, IsBlacklistAdminMixin, Export
         return models.HackerApplication.objects.filter(status=APP_BLACKLISTED)
 
 
-class _OtherApplicationsListView(TabsViewMixin, ExportMixin, SingleTableMixin, FilterView):
-    template_name = 'applications_list.html'
-    table_pagination = {'per_page': 100}
-    exclude_columns = ('detail', 'status')
-    export_name = 'applications'
-    email_field = 'user__email'
+class _OtherApplicationsListView(
+    TabsViewMixin, ExportMixin, SingleTableMixin, FilterView
+):
+    template_name = "applications_list.html"
+    table_pagination = {"per_page": 100}
+    exclude_columns = ("detail", "status")
+    export_name = "applications"
+    email_field = "user__email"
 
     def get_context_data(self, **kwargs):
         context = super(_OtherApplicationsListView, self).get_context_data(**kwargs)
-        context['otherApplication'] = True
+        context["otherApplication"] = True
         list_email = ""
-        for u in context.get('object_list').values_list(self.email_field, flat=True):
+        for u in context.get("object_list").values_list(self.email_field, flat=True):
             list_email += "%s, " % u
-        context['emails'] = list_email
+        context["emails"] = list_email
         return context
 
 
-class VolunteerApplicationsListView(HaveVolunteerPermissionMixin, _OtherApplicationsListView):
+class VolunteerApplicationsListView(
+    HaveVolunteerPermissionMixin, _OtherApplicationsListView
+):
     table_class = VolunteerListTable
     filterset_class = VolunteerFilter
 
@@ -489,28 +859,32 @@ class VolunteerApplicationsListView(HaveVolunteerPermissionMixin, _OtherApplicat
         return volunteer_tabs(self.request.user)
 
 
-class SponsorApplicationsListView(HaveSponsorPermissionMixin, _OtherApplicationsListView):
+class SponsorApplicationsListView(
+    HaveSponsorPermissionMixin, _OtherApplicationsListView
+):
     table_class = SponsorListTable
     filterset_class = SponsorFilter
-    email_field = 'email'
+    email_field = "email"
 
     def get_queryset(self):
         return models.SponsorApplication.objects.all()
 
     def get_context_data(self, **kwargs):
         context = super(SponsorApplicationsListView, self).get_context_data(**kwargs)
-        context['otherApplication'] = True
+        context["otherApplication"] = True
         return context
 
     def get_current_tabs(self):
         return sponsor_tabs(self.request.user)
 
 
-class SponsorUserListView(HaveSponsorPermissionMixin, TabsViewMixin, ExportMixin, SingleTableMixin, FilterView):
-    template_name = 'applications_list.html'
-    table_pagination = {'per_page': 100}
-    exclude_columns = ('detail', 'status')
-    export_name = 'applications'
+class SponsorUserListView(
+    HaveSponsorPermissionMixin, TabsViewMixin, ExportMixin, SingleTableMixin, FilterView
+):
+    template_name = "applications_list.html"
+    table_pagination = {"per_page": 100}
+    exclude_columns = ("detail", "status")
+    export_name = "applications"
     table_class = SponsorUserListTable
     filterset_class = SponsorUserFilter
 
@@ -519,8 +893,8 @@ class SponsorUserListView(HaveSponsorPermissionMixin, TabsViewMixin, ExportMixin
 
     def get_context_data(self, **kwargs):
         context = super(SponsorUserListView, self).get_context_data(**kwargs)
-        context['otherApplication'] = True
-        context['createUser'] = True
+        context["otherApplication"] = True
+        context["createUser"] = True
         return context
 
     def get_queryset(self):
@@ -538,184 +912,218 @@ class MentorApplicationsListView(HaveMentorPermissionMixin, _OtherApplicationsLi
         return mentor_tabs(self.request.user)
 
 
-class ReviewVolunteerApplicationView(TabsViewMixin, HaveVolunteerPermissionMixin, TemplateView):
-    template_name = 'other_application_detail.html'
+class ReviewVolunteerApplicationView(
+    TabsViewMixin, HaveVolunteerPermissionMixin, TemplateView
+):
+    template_name = "other_application_detail.html"
 
     def get_application(self, kwargs):
-        application_id = kwargs.get('id', None)
+        application_id = kwargs.get("id", None)
         if not application_id:
             raise Http404
-        application = models.VolunteerApplication.objects.filter(uuid=application_id).first()
+        application = models.VolunteerApplication.objects.filter(
+            uuid=application_id
+        ).first()
         if not application:
             raise Http404
 
         return application
 
     def post(self, request, *args, **kwargs):
-        id_ = request.POST.get('app_id')
-        comment_text = request.POST.get('comment_text', None)
+        id_ = request.POST.get("app_id")
+        comment_text = request.POST.get("comment_text", None)
         application = models.VolunteerApplication.objects.get(pk=id_)
-        if request.POST.get('invite') and request.user.is_organizer:
+        if request.POST.get("invite") and request.user.is_organizer:
             application.invite(request.user)
             application.save()
             m = emails.create_invite_email(application, self.request)
             if m:
                 m.send()
-                messages.success(request, 'Volunteer invited!')
-        elif request.POST.get('reject') and request.user.is_organizer:
+                messages.success(request, "Volunteer invited!")
+        elif request.POST.get("reject") and request.user.is_organizer:
             application.reject()
             application.save()
-        elif request.POST.get('cancel_invite') and request.user.is_organizer:
+        elif request.POST.get("cancel_invite") and request.user.is_organizer:
             application.move_to_pending()
-            messages.success(request, 'Volunteer invite canceled')
-        elif request.POST.get('add_comment'):
+            messages.success(request, "Volunteer invite canceled")
+        elif request.POST.get("add_comment"):
             add_comment(application, request.user, comment_text)
-            messages.success(request, 'Comment added')
-        elif request.POST.get('change_valid') and request.user.is_organizer:
+            messages.success(request, "Comment added")
+        elif request.POST.get("change_valid") and request.user.is_organizer:
             application.valid = not application.valid
             application.save()
-            messages.success(request, 'Volunteer valid status changed')
+            messages.success(request, "Volunteer valid status changed")
 
-        return HttpResponseRedirect(reverse('volunteer_detail', kwargs={'id': application.uuid_str}))
+        return HttpResponseRedirect(
+            reverse("volunteer_detail", kwargs={"id": application.uuid_str})
+        )
 
     def get_back_url(self):
-        return reverse('volunteer_list')
+        return reverse("volunteer_list")
 
     def get_context_data(self, **kwargs):
         context = super(ReviewVolunteerApplicationView, self).get_context_data(**kwargs)
         application = self.get_application(kwargs)
-        context['app'] = application
-        context['comments'] = models.ApplicationComment.objects.filter(volunteer=application)
+        context["app"] = application
+        context["comments"] = models.ApplicationComment.objects.filter(
+            volunteer=application
+        ).order_by("created_at")
         return context
 
 
-class ReviewSponsorApplicationView(TabsViewMixin, HaveSponsorPermissionMixin, TemplateView):
-    template_name = 'other_application_detail.html'
+class ReviewSponsorApplicationView(
+    TabsViewMixin, HaveSponsorPermissionMixin, TemplateView
+):
+    template_name = "other_application_detail.html"
 
     def get_application(self, kwargs):
-        application_id = kwargs.get('id', None)
+        application_id = kwargs.get("id", None)
         if not application_id:
             raise Http404
-        application = models.SponsorApplication.objects.filter(uuid=application_id).first()
+        application = models.SponsorApplication.objects.filter(
+            uuid=application_id
+        ).first()
         if not application:
             raise Http404
 
         return application
 
     def get_back_url(self):
-        return reverse('sponsor_list')
+        return reverse("sponsor_list")
 
     def post(self, request, *args, **kwargs):
-        id_ = request.POST.get('app_id')
-        comment_text = request.POST.get('comment_text', None)
+        id_ = request.POST.get("app_id")
+        comment_text = request.POST.get("comment_text", None)
         application = models.SponsorApplication.objects.get(pk=id_)
-        if request.POST.get('add_comment'):
+        if request.POST.get("add_comment"):
             add_comment(application, request.user, comment_text)
-            messages.success(request, 'Comment added')
+            messages.success(request, "Comment added")
 
-        return HttpResponseRedirect(reverse('sponsor_detail', kwargs={'id': application.uuid_str}))
+        return HttpResponseRedirect(
+            reverse("sponsor_detail", kwargs={"id": application.uuid_str})
+        )
 
     def get_context_data(self, **kwargs):
         context = super(ReviewSponsorApplicationView, self).get_context_data(**kwargs)
         application = self.get_application(kwargs)
-        context['app'] = application
-        context['comments'] = models.ApplicationComment.objects.filter(sponsor=application)
+        context["app"] = application
+        context["comments"] = models.ApplicationComment.objects.filter(
+            sponsor=application
+        ).order_by("created_at")
         return context
 
 
-class ReviewMentorApplicationView(TabsViewMixin, HaveMentorPermissionMixin, TemplateView):
-    template_name = 'other_application_detail.html'
+class ReviewMentorApplicationView(
+    TabsViewMixin, HaveMentorPermissionMixin, TemplateView
+):
+    template_name = "other_application_detail.html"
 
     def get_application(self, kwargs):
-        application_id = kwargs.get('id', None)
+        application_id = kwargs.get("id", None)
         if not application_id:
             raise Http404
-        application = models.MentorApplication.objects.filter(uuid=application_id).first()
+        application = models.MentorApplication.objects.filter(
+            uuid=application_id
+        ).first()
         if not application:
             raise Http404
 
         return application
 
     def post(self, request, *args, **kwargs):
-        id_ = request.POST.get('app_id')
+        id_ = request.POST.get("app_id")
         application = models.MentorApplication.objects.get(pk=id_)
-        comment_text = request.POST.get('comment_text', None)
-        if request.POST.get('invite') and request.user.is_organizer:
+        comment_text = request.POST.get("comment_text", None)
+        if request.POST.get("invite") and request.user.is_organizer:
             application.invite(request.user)
             application.save()
             m = emails.create_invite_email(application, self.request)
             if m:
                 m.send()
-                messages.success(request, 'Mentor invited!')
-        elif request.POST.get('cancel_invite') and request.user.is_organizer:
+                messages.success(request, "Mentor invited!")
+        elif request.POST.get("cancel_invite") and request.user.is_organizer:
             application.move_to_pending()
-            messages.success(request, 'Mentor invite canceled')
-        elif request.POST.get('add_comment'):
+            messages.success(request, "Mentor invite canceled")
+        elif request.POST.get("add_comment"):
             add_comment(application, request.user, comment_text)
-            messages.success(request, 'comment added')
-        elif request.POST.get('change_valid') and request.user.is_organizer:
+            messages.success(request, "comment added")
+        elif request.POST.get("change_valid") and request.user.is_organizer:
             application.valid = not application.valid
             application.save()
-            messages.success(request, 'Mentor valid status changed')
+            messages.success(request, "Mentor valid status changed")
 
-        return HttpResponseRedirect(reverse('mentor_detail', kwargs={'id': application.uuid_str}))
+        return HttpResponseRedirect(
+            reverse("mentor_detail", kwargs={"id": application.uuid_str})
+        )
 
     def get_back_url(self):
-        return reverse('mentor_list')
+        return reverse("mentor_list")
 
     def get_context_data(self, **kwargs):
         context = super(ReviewMentorApplicationView, self).get_context_data(**kwargs)
         application = self.get_application(kwargs)
-        context['app'] = application
-        context['comments'] = models.ApplicationComment.objects.filter(mentor=application)
+        context["app"] = application
+        context["comments"] = models.ApplicationComment.objects.filter(
+            mentor=application
+        ).order_by("created_at")
         return context
 
 
 class ReviewResume(TabsViewMixin, HaveSponsorPermissionMixin, TemplateView):
-    template_name = 'review_resume.html'
+    template_name = "review_resume.html"
 
     def get_current_tabs(self):
         return hacker_tabs(self.request.user)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        app = models.HackerApplication.objects.filter(acceptedresume__isnull=True, cvs_edition=True)\
-            .exclude(status__in=[APP_DUBIOUS, APP_BLACKLISTED]).first()
-        context.update({'app': app})
+        app = (
+            models.HackerApplication.objects.filter(
+                acceptedresume__isnull=True, cv_flagged=True, resume__isnull=False
+            )
+            .exclude(status__in=[APP_DUBIOUS, APP_BLACKLISTED])
+            .first()
+        )
+        context.update({"app": app})
         return context
 
     def post(self, request, *args, **kwargs):
-        app_id = request.POST.get('app_id')
-        accepted = request.POST.get('accepted')
-        AcceptedResume(application_id=app_id, accepted=(accepted == 'true')).save()
-        return redirect(reverse('review_resume'))
+        app_id = request.POST.get("app_id")
+        accepted = request.POST.get("accepted")
+        AcceptedResume(application_id=app_id, accepted=(accepted == "true")).save()
+        return redirect(reverse("review_resume"))
 
     def get(self, request, *args, **kwargs):
-        file = request.GET.get('files', False)
+        file = request.GET.get("files", False)
         if file:
             s = BytesIO()
-            accepted_resumes = AcceptedResume.objects.filter(accepted=True, application__status__in=[
-                APP_CONFIRMED, APP_ATTENDED]).select_related('application')
+            accepted_resumes = AcceptedResume.objects.filter(
+                accepted=True, application__status__in=[APP_CONFIRMED, APP_ATTENDED]
+            ).select_related("application")
             with ZipFile(s, "w") as zip_file:
                 for accepted_resume in accepted_resumes:
                     file_path = accepted_resume.application.resume.path
                     _, fname = os.path.split(file_path)
                     zip_path = os.path.join("resumes", fname)
                     zip_file.write(file_path, zip_path)
-            resp = HttpResponse(s.getvalue(), content_type="application/x-zip-compressed")
-            resp['Content-Disposition'] = 'attachment; filename=resumes.zip'
+            resp = HttpResponse(
+                s.getvalue(), content_type="application/x-zip-compressed"
+            )
+            resp["Content-Disposition"] = "attachment; filename=resumes.zip"
             return resp
         return super().get(request, *args, **kwargs)
 
 
 class VisualizeResume(IsOrganizerMixin, TemplateView):
-    template_name = 'pdf_view.html'
+    template_name = "pdf_view.html"
 
     def get_application(self, kwargs):
-        application_id = kwargs.get('id', None)
+        application_id = kwargs.get("id", None)
         if not application_id:
             raise Http404
-        application = models.HackerApplication.objects.filter(uuid=application_id).first()
+        application = models.HackerApplication.objects.filter(
+            uuid=application_id
+        ).first()
         if not application:
             raise Http404
         return application
@@ -723,5 +1131,5 @@ class VisualizeResume(IsOrganizerMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super(VisualizeResume, self).get_context_data(**kwargs)
         application = self.get_application(kwargs)
-        context['app'] = application
+        context["app"] = application
         return context

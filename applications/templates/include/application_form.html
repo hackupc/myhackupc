@@ -14,6 +14,16 @@
 
 </style>
 <form class="signup " enctype="multipart/form-data" id="signup_form" method="post" action="">
+    {% if app_type == 'H' %}
+      {% if not application or application.can_be_edit %}
+      <div style="background-color: #fff3cd; padding: 15px; border-radius: 6px; border: 1px solid #ffeeba; margin-bottom: 15px; text-align: center;">
+        <p style="margin: 0; color: #856404; font-size: 16px;">
+            ❗ Before filling out the application, read this article about
+          <a href="https://medium.com/@hackupc/the-application-process-44853805521f" target="_blank" rel="noopener noreferrer" style="font-weight: bold; color: #0c5460;">How To Do a Good Application.</a>.
+        </p>
+      </div>
+      {% endif %}
+    {% endif %}
     {% csrf_token %}
     {% include 'include/bootstrap_form.html' %}
     <small><span style="color: red;">*</span> Indicates required field.</small>
@@ -72,7 +82,7 @@
                 } else {
                     description.parent().removeClass('has-error');
                 }
-            } 
+            }
         }
         description_remaining.innerText = (current + '/' + max_length + ' characters');
     }
@@ -165,14 +175,14 @@
             title[0].addEventListener('click', function () {
                 this.classList.toggle('active');
                 var fieldset = this.closest('fieldset');
-                var content = $(fieldset).children().not(':first'); 
+                var content = $(fieldset).children().not(':first');
                 
                 content.each(function () {
                     var isVisible = $(this).css('display') === 'block';
                     $(this).css('display', isVisible ? 'none' : 'block');
                 });
-            });           
-            */ 
+            });
+            */
         });
         
         // Handles the sending of the form --> Expands sections with errors - Commented out for further testing
@@ -226,6 +236,12 @@
         var gender = $('#id_gender');
         conditional_field(other_gender, gender, function () {
             return gender.val() === 'X';
+        }, 1);
+
+        var other_hear_about_us = $('#id_other_hear_about_us');
+        var hear_about_us = $('#id_hear_about_us');
+        conditional_field(other_hear_about_us, hear_about_us, function () {
+            return hear_about_us.val() === 'Otros';
         }, 1);
             
         var online = $('input[name="online"][value="True"]');
@@ -293,20 +309,21 @@
         var experienced = $('input[name="first_timer"][value="False"]');
         
         var projects = $('#projects');
-        conditional_field(projects, is_firsttime, function () {
-            return experienced.prop("checked");
-        }, 1);
-        conditional_field(projects, experienced, function () {
-            return experienced.prop("checked");
-        }, 1);
-        
-        // Making projects look like required
-        projects.parent().addClass('required');
+
+
+        // Refresh projects field when first_timer changes
+        $('input[name="first_timer"]').change(function() {
+            if ($(this).val() === "False") {
+            projects.parent().addClass('required');
+            } else {
+            projects.parent().removeClass('required');
+            }
+        });
 
         
         function setUpCharCounterOn(elementStrId, elementCharCounterStrId){
             var element = $(elementStrId);
-            var max_length = parseInt(element.attr('maxLength')); // to int 
+            var max_length = parseInt(element.attr('maxLength')); // to int
         
 
             element.removeAttr('maxLength');
@@ -322,7 +339,7 @@
                 });
             }
             
-            {% if app_type == 'H' %}            
+            {% if app_type == 'H' %}
             
                 // check and display remaining characters from the textarea with id description and projects
                 setUpCharCounterOn('#description', '#description_char_count');
@@ -376,7 +393,7 @@
                 });
                 conditional_field(which_hack, is_not_first_hackathon_mentor, function () {
                     return is_firsttime_mentor.prop("checked");
-                });        
+                });
                 conditional_field(which_hack, is_first_hackathon_mentor, function () {
                     return is_not_first_hackathon_mentor.prop("checked");
                 });
@@ -418,8 +435,6 @@
                 university_mentor.parent().addClass('required');
                 degree_mentor.parent().addClass('required');
                 graduation_year.parent().addClass('required');
-
-            
         {% endif %}
         {% if not application %}
             var timer;
@@ -473,6 +488,9 @@
                     }
                 });
             }
+        {% else %}
+            $('#id_terms_and_conditions').prop('checked', true);
+            $('#id_diet_notice').prop('checked', true);
         {% endif %}
         }
     )

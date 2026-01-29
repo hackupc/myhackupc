@@ -8,19 +8,43 @@
     <link rel="stylesheet" href="{% static 'lib/bars-square.css' %}">
     <link rel="stylesheet" href="{% static 'css/vote.css' %}">
     <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        .icon-option {
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .icon-option:hover {
+            background-color: #f8f9fa;
+            border-color: #adb5bd;
+        }
+        .icon-option.active {
+            background-color: #fff3cd;
+            border-color: #ffc107;
+        }
+        .icon-option i {
+            color: #6c757d;
+        }
+        .icon-option.active i {
+            color: #ffc107;
+        }
+    </style>
 {% endblock %}
 {% block panel %}
     {% if app %}
         <div class="col-md-8 margin-right">
             <h2>{% if vote %}Review applications{% else %}{{ app.user.name }}'s application{% endif %}
                 {% if vote %}
-                <span style="font-size:18px"> 
+                <span style="font-size:18px">
                     ({{ apps_left_to_vote }} left)
                 </span>
                 {% endif %}
             </h2>
             <a target="_blank" style="color:black; text-decoration: none;" class="pull-right fa-solid fa-link"
-               href="{% url 'app_detail' app.uuid_str %}">
+                href="{% url 'app_detail' app.uuid_str %}">
             </a>
 
             <dl class="dl-horizontal">
@@ -38,12 +62,26 @@
                     {% include 'include/field.html' with desc='Email' value=app.user.email %}
                     {% include 'include/field.html' with desc='Travel reimbursement?' value=app.reimb|yesno:'Yes,No,Maybe' %}
                     {% include 'include/field.html' with desc='Money needed' value=app.reimb_amount %}
-                  {% include 'include/field.html' with desc='Origin' value=app.origin %}
+                    {% include 'include/field.html' with desc='Origin' value=app.origin %}
                 {% endif %}
                 {% include 'include/field.html' with desc='Under age (-18)' value=app.under_age|yesno:'Yes,No,Maybe' %}
                 {% if app.resume %}
                     <dt>Resume</dt>
-                    <dd><a href="{% url 'app_resume' app.uuid %}" target="_blank">{{ app.resume.name }}</a></dd>
+                    <dd>
+                        <a href="{% url 'app_resume' app.uuid %}" target="_blank">{{ app.resume.name }}</a>
+                        {% if app.cv_flagged %}
+                            <p class="text-danger" style="margin-top:5px;">CV already flagged for review</p>
+                        {% else %}
+                            <form action="" method="post" style="margin-top:8px;">
+                                {% csrf_token %}
+                                <input type="hidden" name="app_id" value="{{ app.pk }}"/>
+                                <button name="set_flagged_cv" class="btn btn-warning btn-sm btn-block" value="set_flagged_cv"
+                                        onclick="return confirm('Are you sure you want set this application as Flagged?')">
+                                    Flag CV for Review
+                                </button>
+                            </form>
+                        {% endif %}
+                    </dd>
 
                 {% endif %}
                 <hr>
@@ -70,6 +108,27 @@
                     <h3>Dubious info</h3>
                     </dt>
                     <dd></dd>
+                    {% include 'include/field.html' with desc='Sent to dubious by' value=app.dubioused_by %}
+
+                    {% if app.dubious_type == 'OK' %}
+                        {% include 'include/field.html' with desc='Dubious reason' value='No reason selected' %}
+                    {% elif app.dubious_type == 'INVALID_CV' %}
+                        {% include 'include/field.html' with desc='Dubious reason' value='Invalid CV' %}
+                    {% elif app.dubious_type == 'LATE_GRAD' %}
+                        {% include 'include/field.html' with desc='Dubious reason' value='Wrong Graduation Date' %}
+                    {% elif app.dubious_type == 'NOT_STUDENT' %}
+                        {% include 'include/field.html' with desc='Dubious reason' value='Not a Student' %}
+                    {% elif app.dubious_type == 'INVALID_SCHOOL' %}
+                        {% include 'include/field.html' with desc='Dubious reason' value='Invalid School' %}
+                    {% elif app.dubious_type == 'OTHER' %}
+                        {% include 'include/field.html' with desc='Dubious reason' value='Other' %}
+                    {% endif %}
+
+                    {% if app.dubious_comment %}
+                        {% include 'include/field.html' with desc='Dubious Comment' value=app.dubious_comment %}
+                    {% endif %}
+
+                    <br>
                     {% include 'include/field.html' with desc='Contacted' value=app.contacted|yesno:'Yes,No,Maybe' %}
                     {% include 'include/field.html' with desc='Contacted by' value=app.contacted_by %}
                 {% endif %}
@@ -131,7 +190,7 @@
                 <input type="hidden" name="app_id" value="{{ app.pk }}"/>
                 <textarea id="commentSection" name="comment_text" class="form-control" placeholder="Write a comment..." rows="3" required maxlength="500"></textarea>
                 <input type="hidden" name="add_comment" value="comment">
-                <button id="submitCommentButton" type="submit" class="btn btn-block btn-default">Add comment
+                <button id="submitCommentButton" type="submit" class="btn btn-block btn-default" style="margin-bottom: 10px;">Add comment
                 </button>
             </form>
             <script>
@@ -149,6 +208,20 @@
                     $('#submitCommentButton').click();
                     // document.getElementById('commentsForm').submit();
                     }
+                });
+            </script>
+            <script>
+                // JS script to handle the dubious modal
+                document.addEventListener('DOMContentLoaded', function() {
+                    const iconOptions = document.querySelectorAll('.icon-option');
+                    iconOptions.forEach(option => {
+                        option.addEventListener('click', function() {
+                            iconOptions.forEach(opt => opt.classList.remove('active'));
+                            this.classList.add('active');
+                            const value = this.getAttribute('data-value');
+                            document.getElementById('dubiousType').value = value;
+                        });
+                    });
                 });
             </script>
             </div>
@@ -195,8 +268,7 @@
                     application
                 </button>
                 {% if h_dubious_enabled %}
-                    <button name="set_dubious" class="btn btn-warning btn-block" value="set_dubious"
-                            onclick="return confirm('Are you sure you want set this application as Dubious?')">
+                    <button type="button" class="btn btn-warning btn-block" data-toggle="modal" data-target="#dubiousModal">
                         Dubious Application
                     </button>
                 {% endif %}
@@ -208,8 +280,74 @@
                 {% endif %}
 
             </form>
-        </div>
-      {% elif app and user.is_director %}
+
+            {% if h_dubious_enabled %}
+                <div class="modal fade" id="dubiousModal" tabindex="-1" role="dialog" aria-labelledby="dubiousModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <form action="" method="post">
+                                {% csrf_token %}
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="dubiousModalLabel">Select Dubious Type</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <input type="hidden" name="app_id" value="{{ app.pk }}"/>
+                                    <input type="hidden" name="set_dubious" value="true">
+                                    <div class="form-group">
+                                        <label>Why is this application dubious?</label>
+                                        <div class="icon-options-container text-center mb-3">
+                                            <div class="row">
+                                                <div class="col-3 mb-3">
+                                                    <div class="icon-option" data-value="INVALID_CV">
+                                                        <i class="fas fa-file-alt fa-2x mb-2"></i>
+                                                        <div>Invalid CV</div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-3 mb-3">
+                                                    <div class="icon-option" data-value="LATE_GRAD">
+                                                        <i class="fas fa-graduation-cap fa-2x mb-2"></i>
+                                                        <div>Wrong Graduation</div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-3">
+                                                    <div class="icon-option" data-value="NOT_STUDENT">
+                                                        <i class="fas fa-briefcase fa-2x mb-2"></i>
+                                                        <div>Not a Student</div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-3">
+                                                    <div class="icon-option" data-value="INVALID_SCHOOL">
+                                                        <i class="fas fa-school fa-2x mb-2"></i>
+                                                        <div>Invalid School</div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-3">
+                                                    <div class="icon-option" data-value="OTHER">
+                                                        <i class="fas fa-question fa-2x mb-2"></i>
+                                                        <div>Other</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" id="dubiousType" name="dubious_type" required>
+                                        
+                                        <label for="commentBox">Add a comment on why it's dubious</label>
+                                        <textarea id="commentBox" name="dubious_comment_text" class="form-control" placeholder="Write a comment..." rows="3" maxlength="500"></textarea>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-warning" id="confirmDubious">Confirm</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+    {% elif app and user.is_director %}
         <div class="panel-footer">
 
             {% if app.is_blacklisted %}
@@ -239,10 +377,72 @@
                             Wait list
                         </button>
                         {% if h_dubious_enabled %}
-                            <button name="set_dubious" class="btn btn-warning btn-block" value="set_dubious"
-                                    onclick="return confirm('Are you sure you want set this application as Dubious?')">
+                            <div class="modal fade" id="dubiousModal" tabindex="-1" role="dialog" aria-labelledby="dubiousModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="dubiousModalLabel">Select Dubious Type</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="form-group">
+                                                <label>Why is this application dubious?</label>
+                                                <div class="icon-options-container text-center mb-3">
+                                                    <div class="row">
+                                                        <div class="col-3 mb-3">
+                                                            <div class="icon-option" data-value="INVALID_CV">
+                                                                <i class="fas fa-file-alt fa-2x mb-2"></i>
+                                                                <div>Invalid CV</div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-3 mb-3">
+                                                            <div class="icon-option" data-value="LATE_GRAD">
+                                                                <i class="fas fa-graduation-cap fa-2x mb-2"></i>
+                                                                <div>Wrong Graduation</div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-3">
+                                                            <div class="icon-option" data-value="NOT_STUDENT">
+                                                                <i class="fas fa-briefcase fa-2x mb-2"></i>
+                                                                <div>Not a Student</div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-3">
+                                                            <div class="icon-option" data-value="INVALID_SCHOOL">
+                                                                <i class="fas fa-school fa-2x mb-2"></i>
+                                                                <div>Invalid School</div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-3">
+                                                            <div class="icon-option" data-value="OTHER">
+                                                                <i class="fas fa-question fa-2x mb-2"></i>
+                                                                <div>Other</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <input type="hidden" id="dubiousType" name="dubious_type" required>
+                                                
+                                                <label for="commentBox">Add a comment on why it's dubious</label>
+                                                <textarea id="commentBox" name="dubious_comment" class="form-control" placeholder="Write a comment..." rows="3" maxlength="500"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                            <button type="submit" class="btn btn-warning" id="confirmDubious">Confirm</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="button" class="btn btn-warning btn-block" data-toggle="modal" data-target="#dubiousModal">
                                 Dubious Application
                             </button>
+                            <input type="hidden" name="set_dubious" value="true">
+                            <input type="hidden" name="dubious_type" id="dubiousTypeInput">
+                            <input type="hidden" name="dubious_comment_text" id="commentTextInput">
                         {% endif %}
                         {% if h_blacklist_enabled %}
                             <button name="set_blacklist" class="btn btn-warning btn-block" value="set_blacklist"
@@ -328,6 +528,81 @@
                 <button name="unset_blacklist" class="btn btn-success btn-block" value="unset_blacklist">Mark as not
                     blacklisted
                 </button>
+            </form>
+        </div>
+    {% else%}
+        <div class="panel-footer">
+            <form action="" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="app_id" value="{{ app.pk }}"/>
+                {% if user.can_review_dubious and app.is_pending%}
+                    <div class="modal fade" id="dubiousModal" tabindex="-1" role="dialog" aria-labelledby="dubiousModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="dubiousModalLabel">Select Dubious Type</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label>Why is this application dubious?</label>
+                                        <div class="icon-options-container text-center mb-3">
+                                            <div class="row">
+                                                <div class="col-3 mb-3">
+                                                    <div class="icon-option" data-value="INVALID_CV">
+                                                        <i class="fas fa-file-alt fa-2x mb-2"></i>
+                                                        <div>Invalid CV</div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-3 mb-3">
+                                                    <div class="icon-option" data-value="LATE_GRAD">
+                                                        <i class="fas fa-graduation-cap fa-2x mb-2"></i>
+                                                        <div>Wrong Graduation</div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-3">
+                                                    <div class="icon-option" data-value="NOT_STUDENT">
+                                                        <i class="fas fa-briefcase fa-2x mb-2"></i>
+                                                        <div>Not a Student</div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-3">
+                                                    <div class="icon-option" data-value="INVALID_SCHOOL">
+                                                        <i class="fas fa-school fa-2x mb-2"></i>
+                                                        <div>Invalid School</div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-3">
+                                                    <div class="icon-option" data-value="OTHER">
+                                                        <i class="fas fa-question fa-2x mb-2"></i>
+                                                        <div>Other</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" id="dubiousType" name="dubious_type" required>
+                                        
+                                        <label for="commentBox">Add a comment on why it's dubious</label>
+                                        <textarea id="commentBox" name="dubious_comment" class="form-control" placeholder="Write a comment..." rows="3" maxlength="500"></textarea>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-warning" id="confirmDubious">Confirm</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn btn-warning btn-block" data-toggle="modal" data-target="#dubiousModal">
+                        Dubious Application
+                    </button>
+                    <input type="hidden" name="set_dubious" value="true">
+                    <input type="hidden" name="dubious_type" id="dubiousTypeInput">
+                    <input type="hidden" name="dubious_comment_text" id="commentTextInput">
+                {% endif %}
             </form>
         </div>
     {% endif %}
