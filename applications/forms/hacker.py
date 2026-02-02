@@ -294,9 +294,9 @@ class HackerApplicationForm(_BaseApplicationForm):
         widgets = {
             "origin": forms.TextInput(attrs={"autocomplete": "off"}),
             "description": forms.Textarea(
-                attrs={"rows": 3, "cols": 40, "id": "description"}
+                attrs={"rows": 3, "cols": 40, "id": "description", "maxlength": "500"}
             ),
-            "projects": forms.Textarea(attrs={"rows": 3, "cols": 40, "id": "projects"}),
+            "projects": forms.Textarea(attrs={"rows": 3, "cols": 40, "id": "projects", "maxlength": "500"}),
             "discover": CustomSelect(choices=discover_choices),
             "tshirt_size": forms.Select(),
             "diet": forms.Select(),

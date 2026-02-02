@@ -185,19 +185,25 @@
             */
         });
         
-        // Handles the sending of the form --> Expands sections with errors - Commented out for further testing
-        /*
-        document.querySelector("#signup_form > button").addEventListener('click', function () {
+        // Handles the sending of the form --> Expands sections with errors and shows error message
+        document.querySelector("#signup_form").addEventListener('submit', function (e) {
+            var hasAnyError = false;
             var sections = document.querySelectorAll('fieldset');
+            
             sections.forEach(function (section) {
                 var title = section.querySelector('div');
                 var content = $(section).children().not(':first');
                 var hasError = section.querySelector('.has-error');
                 var hasEmptyFields = Array.from(section.querySelectorAll('input, select, textarea')).some(function (input) {
                     if (input.type === 'radio') {
-                        return Array.from(document.querySelectorAll('input[name="' + input.name + '"]')).every(function (radio) {
-                            return !radio.checked;
-                        });
+                        var radioGroup = document.querySelectorAll('input[name="' + input.name + '"]');
+                        var radioRequired = Array.from(radioGroup).some(function(r) { return r.required; });
+                        if (radioRequired) {
+                            return Array.from(radioGroup).every(function (radio) {
+                                return !radio.checked;
+                            });
+                        }
+                        return false;
                     }
                     else if (input.type === 'checkbox') {
                         return !input.checked && input.required;
@@ -205,29 +211,40 @@
                     else if (input.type === 'file') {
                         return input.files.length === 0 && input.required;
                     }
-                    else if (input.type === 'select-one') {
-                        return input.value === '' && input.required;
+                    else if (input.tagName.toLowerCase() === 'select') {
+                        return (input.value === '' || input.value === null) && input.required;
                     }
                     return input.value === '' && input.required;
                 });
 
                 if (hasError || hasEmptyFields) {
-                    console.log('hasError', hasError);
-                    console.log('hasEmptyFields', hasEmptyFields);
+                    hasAnyError = true;
                     if (content.css('display') === 'none') {
                         title.click();
                     }
                 }
-                //Show an error message on error_message p in red
-                if (hasError || hasEmptyFields) {
-                    var errorMessage = document.querySelector("#error_message");
-                    errorMessage.style = 'display: block; color: #8f1007; font-weight: bold; background-color: #f8d7da; border-color: #f5c6cb; padding: 10px; margin-bottom: 15px; border: 1px solid transparent; border-radius: 4px; text-align: center;';
-                    errorMessage.innerText = '* Please correctly fill in all required fields before submitting.';
-                }
-                
             });
+            
+            // Show or hide error message based on validation
+            var errorMessage = document.querySelector("#error_message");
+            if (hasAnyError) {
+                errorMessage.style.display = 'block';
+                errorMessage.style.color = '#8f1007';
+                errorMessage.style.fontWeight = 'bold';
+                errorMessage.style.backgroundColor = '#f8d7da';
+                errorMessage.style.borderColor = '#f5c6cb';
+                errorMessage.style.padding = '10px';
+                errorMessage.style.marginBottom = '15px';
+                errorMessage.style.border = '1px solid transparent';
+                errorMessage.style.borderRadius = '4px';
+                errorMessage.style.textAlign = 'center';
+                errorMessage.innerText = '* Please correctly fill in all required fields before submitting.';
+                // Scroll to the error message
+                errorMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else {
+                errorMessage.style.display = 'none';
+            }
         });
-        */
         
         var resume = $('#id_resume');
         resume.attr('accept', '.pdf');
@@ -325,9 +342,8 @@
             var element = $(elementStrId);
             var max_length = parseInt(element.attr('maxLength')); // to int
         
-
-            element.removeAttr('maxLength');
-            // remove maxlength
+            //element.removeAttr('maxLength');
+            // don't remove maxlength
 
             var elementCharCounter = document.querySelector(elementCharCounterStrId);
 
