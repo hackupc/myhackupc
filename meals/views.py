@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from django.contrib import messages
-from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.http import JsonResponse
 from django.shortcuts import redirect
@@ -189,13 +188,13 @@ class MealsCheckin(IsVolunteerMixin, TemplateView):
             'meal_name': meal.name,
             'back': 'meals_list' if not meal.activity() else 'activity_list'
         })
-        
+
         if not meal.opened:
             context.update({
                 'error': 'This meal is currently not active.',
                 'meal_closed': True
             })
-            
+
         if self.request.GET.get('success', False):
             context.update({
                 'success': True,
