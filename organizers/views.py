@@ -61,7 +61,6 @@ from user.mixins import (
     IsOrganizerMixin,
     IsDirectorMixin,
     HaveDubiousPermissionMixin,
-    HaveVolunteerPermissionMixin,
     HaveSponsorPermissionMixin,
     HaveMentorPermissionMixin,
     IsBlacklistAdminMixin,
