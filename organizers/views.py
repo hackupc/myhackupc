@@ -85,7 +85,9 @@ def add_vote(application, user, tech_rat, pers_rat):
     v.save()
     votes_count = application.vote_set.count()
     if votes_count >= 5 and not application.cv_flagged:
-        AcceptedResume.objects.update_or_create(application=application, defaults={'accepted': True})
+        AcceptedResume.objects.update_or_create(
+            application=application, defaults={"accepted": True}
+        )
     return v
 
 
@@ -359,12 +361,12 @@ class ApplicationDetailView(TabsViewMixin, IsOrganizerMixin, TemplateView):
         id_ = request.POST.get("app_id")
         application = models.HackerApplication.objects.get(pk=id_)
 
-        comment_text = request.POST.get('comment_text', None)
-        motive_of_ban = request.POST.get('motive_of_ban', None)
-        dubious_type = request.POST.get('dubious_type', None)
-        dubious_comment_text = request.POST.get('dubious_comment_text', None)
+        comment_text = request.POST.get("comment_text", None)
+        motive_of_ban = request.POST.get("motive_of_ban", None)
+        dubious_type = request.POST.get("dubious_type", None)
+        dubious_comment_text = request.POST.get("dubious_comment_text", None)
 
-        if request.POST.get('add_comment'):
+        if request.POST.get("add_comment"):
             add_comment(application, request.user, comment_text)
         elif request.POST.get("invite") and request.user.is_director:
             self.invite_application(application)
@@ -376,7 +378,7 @@ class ApplicationDetailView(TabsViewMixin, IsOrganizerMixin, TemplateView):
             self.waitlist_application(application)
         elif request.POST.get("slack") and request.user.is_organizer:
             self.slack_invite(application)
-        elif request.POST.get('set_dubious') and request.user.is_organizer:
+        elif request.POST.get("set_dubious") and request.user.is_organizer:
             application.set_dubious(request.user, dubious_type, dubious_comment_text)
         elif request.POST.get("set_flagged_cv") and request.user.is_organizer:
             application.set_flagged_cv()
@@ -510,8 +512,8 @@ class ReviewApplicationView(ApplicationDetailView):
         tech_vote = request.POST.get("tech_rat", None)
         pers_vote = request.POST.get("pers_rat", None)
         comment_text = request.POST.get("comment_text", None)
-        dubious_type = request.POST.get('dubious_type', None)
-        dubious_comment_text = request.POST.get('dubious_comment_text', None)
+        dubious_type = request.POST.get("dubious_type", None)
+        dubious_comment_text = request.POST.get("dubious_comment_text", None)
 
         application = models.HackerApplication.objects.get(
             pk=request.POST.get("app_id")
@@ -525,7 +527,9 @@ class ReviewApplicationView(ApplicationDetailView):
                     "/applications/hacker/review/" + application.uuid_str
                 )
             elif request.POST.get("set_dubious"):
-                application.set_dubious(request.user, dubious_type, dubious_comment_text)
+                application.set_dubious(
+                    request.user, dubious_type, dubious_comment_text
+                )
             elif request.POST.get("unset_dubious"):
                 application.unset_dubious()
             elif request.POST.get("set_flagged_cv") and request.user.is_organizer:
@@ -615,8 +619,8 @@ class ReviewApplicationDetailView(ApplicationDetailView):
         tech_vote = request.POST.get("tech_rat", None)
         pers_vote = request.POST.get("pers_rat", None)
         comment_text = request.POST.get("comment_text", None)
-        dubious_type = request.POST.get('dubious_type', None)
-        dubious_comment_text = request.POST.get('dubious_comment_text', None)
+        dubious_type = request.POST.get("dubious_type", None)
+        dubious_comment_text = request.POST.get("dubious_comment_text", None)
 
         application = models.HackerApplication.objects.get(
             pk=request.POST.get("app_id")
@@ -630,7 +634,9 @@ class ReviewApplicationDetailView(ApplicationDetailView):
                     "/applications/hacker/review/" + application.uuid_str
                 )
             elif request.POST.get("set_dubious"):
-                application.set_dubious(request.user, dubious_type, dubious_comment_text)
+                application.set_dubious(
+                    request.user, dubious_type, dubious_comment_text
+                )
             elif request.POST.get("unset_dubious"):
                 application.unset_dubious()
             elif request.POST.get("set_flagged_cv") and request.user.is_organizer:
@@ -846,9 +852,7 @@ class _OtherApplicationsListView(
         return context
 
 
-class VolunteerApplicationsListView(
-    HaveVolunteerPermissionMixin, _OtherApplicationsListView
-):
+class VolunteerApplicationsListView(IsOrganizerMixin, _OtherApplicationsListView):
     table_class = VolunteerListTable
     filterset_class = VolunteerFilter
 
@@ -912,9 +916,7 @@ class MentorApplicationsListView(HaveMentorPermissionMixin, _OtherApplicationsLi
         return mentor_tabs(self.request.user)
 
 
-class ReviewVolunteerApplicationView(
-    TabsViewMixin, HaveVolunteerPermissionMixin, TemplateView
-):
+class ReviewVolunteerApplicationView(IsOrganizerMixin, TabsViewMixin, TemplateView):
     template_name = "other_application_detail.html"
 
     def get_application(self, kwargs):

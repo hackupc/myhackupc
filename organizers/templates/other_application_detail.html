@@ -20,7 +20,7 @@
                   {% include 'include/field.html' with desc='Name' value=app.name %}
                 {% elif app.user.is_volunteer %}
                   {% include 'include/field.html' with desc='Name' value=app.user.name %}
-                  {% include 'include/field.html' with desc='Is over 18?' value=app.under_age|yesno %}
+                  {% include 'include/field.html' with desc='Is underage?' value=app.under_age|yesno %}
                   {% include 'include/field.html' with desc='Studies and course/graduation' value=app.studies_and_course %}
                 {% else %}
                   {% include 'include/field.html' with desc='Name' value=app.user.name %}
@@ -35,7 +35,7 @@
                     {% include 'include/field.html' with desc='Gender' value=app.get_gender_display %}
                     {% include 'include/field.html' with desc='Other gender' value=app.other_gender %}
                     {% include 'include/field.html' with desc='In BCN Apr-May' value=app.lennyface|yesno %}
-                  <hr>
+                    <hr>
                     <dt>
                     <h3>Validation</h3>
                     </dt>
@@ -45,16 +45,18 @@
                     <form action="" method="post">
                         {% csrf_token %}
                         <input type="hidden" name="app_id" value="{{ app.pk }}"/>
-                        <button name="change_valid" class="btn btn-default btn-block" value="valid">
-                            {% if app.valid %}
-                                Invalidate
-                            {% else %}
-                                Validate
-                            {% endif %}
-                        </button>
+                        {% if user.has_volunteer_access %}
+                            <button name="change_valid" class="btn btn-default btn-block" value="valid">
+                                {% if app.valid %}
+                                    Invalidate
+                                {% else %}
+                                    Validate
+                                {% endif %}
+                            </button>
+                        {% endif %}
                     </form>
                     <br>
-                  <hr>
+                    <hr>
                     <dt>
                     <h3>Volunteering</h3>
                     </dt>
@@ -188,7 +190,7 @@
                 {% csrf_token %}
                 <input type="hidden" name="app_id" value="{{ app.pk }}"/>
                 <textarea name="comment_text" class="form-control" placeholder="Write a comment..."
-                          rows="3" required maxlength="500"></textarea>
+                        rows="3" required maxlength="500"></textarea>
                 <button name="add_comment" class="btn btn-block btn-default" value="comment">Add comment
                 </button>
             </form>
@@ -198,28 +200,29 @@
 
 {% block out_panel %}
     {% if app and not app.user.is_sponsor %}
-        <div class="panel-footer">
-
-            <form action="" method="post">
-                {% csrf_token %}
-                <input type="hidden" name="app_id" value="{{ app.pk }}"/>
-                {% if app.is_pending %}
-                    <button name="invite" class="btn btn-success btn-block" value="invite">Invite</button>
-                {% elif app.is_expired %}
-                    <button name="invite" class="btn btn-success btn-block" value="invite">Invite again</button>
-                {% elif app.is_invited %}
-                    <button name="cancel_invite" class="btn btn-danger btn-block" value="cancel_invite">Cancel invitation</button>
-                {% elif app.is_rejected %}
-                    <button name="cancel_invite" class="btn btn-danger btn-block" value="cancel_invite">Move back to review</button>
-                {% endif %}
-            </form>
-        <br>
-            <form action="" method="post">
-                {% csrf_token %}
-                <input type="hidden" name="app_id" value="{{ app.pk }}"/>
-                <button name="reject" class="btn btn-danger btn-block" value="reject">Reject</button>
-            </form>
-        </div>
-
+        {% if app and app.user.is_volunteer and not user.has_volunteer_access %}
+        {% else %}
+            <div class="panel-footer">
+                <form action="" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="app_id" value="{{ app.pk }}"/>
+                    {% if app.is_pending %}
+                        <button name="invite" class="btn btn-success btn-block" value="invite">Invite</button>
+                    {% elif app.is_expired %}
+                        <button name="invite" class="btn btn-success btn-block" value="invite">Invite again</button>
+                    {% elif app.is_invited %}
+                        <button name="cancel_invite" class="btn btn-danger btn-block" value="cancel_invite">Cancel invitation</button>
+                    {% elif app.is_rejected %}
+                        <button name="cancel_invite" class="btn btn-danger btn-block" value="cancel_invite">Move back to review</button>
+                    {% endif %}
+                </form>
+            <br>
+                <form action="" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="app_id" value="{{ app.pk }}"/>
+                    <button name="reject" class="btn btn-danger btn-block" value="reject">Reject</button>
+                </form>
+            </div>
+        {% endif %}
     {% endif %}
 {% endblock %}
