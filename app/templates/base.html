@@ -111,10 +111,8 @@
                                     {% endif %}
                                 </li>
                                 {% if request.user.is_organizer %}
-                                    {% if request.user.has_volunteer_access %}
-                                        <li class="{% if 'volunteer' in request.build_absolute_uri %}active{% endif %}"><a
-                                                href="{% url 'volunteer_list' %}">Volunteer</a></li>
-                                    {% endif %}
+                                    <li class="{% if 'volunteer' in request.build_absolute_uri %}active{% endif %}"><a
+                                            href="{% url 'volunteer_list' %}">Volunteer</a></li>
                                     {% if request.user.has_mentor_access %}
                                         <li class="{% if 'mentor' in request.build_absolute_uri %}active{% endif %}"><a
                                             href="{% url 'mentor_list' %}">Mentor</a></li>
