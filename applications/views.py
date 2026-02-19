@@ -80,6 +80,12 @@ class ConfirmApplication(IsHackerMixin, UserPassesTestMixin, View):
 
         if msg:
             msg.send()
+            if application.user.is_hacker() and application.reimb:
+                from reimbursement import emails as reimb_emails
+                reimb_msg = reimb_emails.create_travel_tickets_upload_email(
+                    application.user.reimbursement, request
+                )
+                reimb_msg.send()
             try:
                 slack.send_slack_invite(request.user.email)
             # Ignore if we can't send, it's only optional
