@@ -235,7 +235,7 @@ def generateGTicketUrl(qrValue: str):
         },
         "logo": {
             "sourceUri": {
-                "uri": "https://i.ibb.co/b5TQV4md/hackupc2025.png",
+                "uri": "https://i.ibb.co/g2GGdMB/Copy-of-Isotipo-B-6.png",
             },
             "contentDescription": {
                 "defaultValue": {
@@ -253,7 +253,7 @@ def generateGTicketUrl(qrValue: str):
         "imageModulesData": [
             {
                 "mainImage": {
-                    "sourceUri": {"uri": "https://hackupc.com/ogimage.png"},
+                    "sourceUri": {"uri": "https://hackupc.com/og_image2026.png"},
                     "contentDescription": {
                         "defaultValue": {"language": "en-US", "value": "Event picture"}
                     },
