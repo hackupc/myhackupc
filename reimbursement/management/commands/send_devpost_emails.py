@@ -4,6 +4,7 @@ from django.conf import settings
 from reimbursement.models import Reimbursement, RE_APPROVED
 from reimbursement import emails
 
+
 class Command(BaseCommand):
     help = 'Sends automatic emails to upload Devpost link to approved reimbursements'
 
@@ -21,9 +22,9 @@ class Command(BaseCommand):
             devpost='',
             devpost_email_sent=False
         )
-        
+
         self.stdout.write(f'Found {reimbursements.count()} reimbursements pending Devpost link.')
-        
+ 
         sent_count = 0
         for reimb in reimbursements:
             try:
@@ -34,5 +35,5 @@ class Command(BaseCommand):
                 sent_count += 1
             except Exception as e:
                 self.stderr.write(f'Error sending email to {reimb.hacker.email}: {str(e)}')
-        
+
         self.stdout.write(self.style.SUCCESS(f'Successfully sent {sent_count} emails.'))
