@@ -170,7 +170,8 @@ class ReimbursementDetail(IsOrganizerMixin, TabsView):
         elif "invalidate" in request.POST:
             id_ = kwargs.get("id", None)
             reimb = models.Reimbursement.objects.get(pk=id_)
-            reimb.invalidate(request.user)
+            reimb.invalidate(request.user, request.POST.get("invalidate_reason"))
+            emails.create_project_invalidated_email(reimb, request).send()
             messages.success(request, "Reimbursement invalidated")
         else:
             id_ = request.POST.get("id", None)
@@ -183,6 +184,7 @@ class ReimbursementDetail(IsOrganizerMixin, TabsView):
                 if a_form.is_valid():
                     a_form.save(commit=False)
                     a_form.instance.accept_receipt(request.user)
+                    emails.create_ticket_accepted_email(a_form.instance, request).send()
                     a_form.save()
                     messages.success(request, "Receipt accepted")
                 else:

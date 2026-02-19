@@ -2,3 +2,5 @@
 6 */2 * * * root /usr/local/bin/python /code/manage.py expire_applications
 # Run expire reimbursements job at 6 minutes past the hour, every 2 hours
 36 */2 * * * root /usr/local/bin/python /code/manage.py expire_reimbursements
+# Run send devpost emails job every Sunday at 20:00
+0 20 * * 0 root /usr/local/bin/python /code/manage.py send_devpost_emails

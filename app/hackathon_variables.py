@@ -60,6 +60,11 @@ HACKATHON_ARRIVE = ""
 # (OPTIONAL) When to arrive at the hackathon
 HACKATHON_LEAVE = ""
 
+# (OPTIONAL) When the event ends (to send Devpost link emails)
+HACKATHON_EVENT_END = timezone.datetime(
+    2026, 4, 26, 20, 00, tzinfo=timezone.pytz.timezone(TIME_ZONE)
+)
+
 # (OPTIONAL) Hackathon live page
 HACKATHON_LIVE_PAGE = "https://live.hackupc.com"
 
@@ -80,11 +85,11 @@ REIMBURSEMENT_ENABLED = True
 DEFAULT_REIMBURSEMENT_AMOUNT = 100
 CURRENCY = "€"
 REIMBURSEMENT_EXPIRY_DATE = timezone.datetime(
-    2025, 5, 2, 17, 00, tzinfo=timezone.pytz.timezone(TIME_ZONE)
+    2026, 5, 2, 17, 00, tzinfo=timezone.pytz.timezone(TIME_ZONE)
 )
 REIMBURSEMENT_REQUIREMENTS = "You have to submit a project and demo it during the event in order to get reimbursed"
 REIMBURSEMENT_DEADLINE = timezone.datetime(
-    2025, 5, 5, 23, 59, tzinfo=timezone.pytz.timezone(TIME_ZONE)
+    2026, 5, 5, 23, 59, tzinfo=timezone.pytz.timezone(TIME_ZONE)
 )
 
 # (OPTIONAL) Max team members. Defaults to 4

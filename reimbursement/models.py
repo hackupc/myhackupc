@@ -19,6 +19,7 @@ RE_PEND_DEMO_VAL = "PD"
 RE_FINALIZED = "F"
 RE_EXPIRED = "X"
 RE_FRIEND_SUBMISSION = "FS"
+RE_INVALID = "I"
 
 RE_STATUS = [
     (RE_WAITLISTED, "Wait listed"),
@@ -29,6 +30,7 @@ RE_STATUS = [
     (RE_FRIEND_SUBMISSION, "Friend submission"),
     (RE_FINALIZED, "Reimbursement Approved"),
     (RE_PEND_DEMO_VAL, "Pending demo validation"),
+    (RE_INVALID, "Invalid"),
 ]
 
 
@@ -65,6 +67,7 @@ class Reimbursement(models.Model):
     public_comment = models.CharField(max_length=300, null=True, blank=True)
 
     devpost = models.URLField(blank=True, null=True, default="")
+    devpost_email_sent = models.BooleanField(default=False)
 
     # User controlled
     paypal_email = models.EmailField(null=True, blank=True)
@@ -157,9 +160,10 @@ class Reimbursement(models.Model):
             self.reimbursed_by = user
             self.save()
 
-    def invalidate(self, user):
+    def invalidate(self, user, reason):
         if self.status == RE_PEND_DEMO_VAL:
-            self.status = RE_WAITLISTED
+            self.status = RE_INVALID
+            self.public_comment = reason
             self.status_update_date = timezone.now()
             self.reimbursed_by = user
             self.save()
