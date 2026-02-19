@@ -24,7 +24,7 @@ class Command(BaseCommand):
         )
 
         self.stdout.write(f'Found {reimbursements.count()} reimbursements pending Devpost link.')
- 
+
         sent_count = 0
         for reimb in reimbursements:
             try:
