@@ -308,7 +308,7 @@ def generateGTicketUrl(qrValue: str):
             "contentDescription": {
                 "defaultValue": {
                     "language": "en-US",
-                    "value": "HackUPC galactic banner",
+                    "value": "HackUPC 2026 Banner",
                 },
             },
         },
