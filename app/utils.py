@@ -303,7 +303,7 @@ def generateGTicketUrl(qrValue: str):
         "hexBackgroundColor": "#AADEFE",
         "heroImage": {
             "sourceUri": {
-                "uri": "https://i.ibb.co/6Rkp3P6M/og-image2026.png",
+                "uri": "https://i.ibb.co/nN4GxfFt/imatge-wallet.png",
             },
             "contentDescription": {
                 "defaultValue": {
