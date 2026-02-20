@@ -235,7 +235,7 @@ def generateGTicketUrl(qrValue: str):
         },
         "logo": {
             "sourceUri": {
-                "uri": "https://i.ibb.co/b5TQV4md/hackupc2025.png",
+                "uri": "https://i.ibb.co/g2GGdMB/Copy-of-Isotipo-B-6.png",
             },
             "contentDescription": {
                 "defaultValue": {
@@ -253,7 +253,7 @@ def generateGTicketUrl(qrValue: str):
         "imageModulesData": [
             {
                 "mainImage": {
-                    "sourceUri": {"uri": "https://hackupc.com/ogimage.png"},
+                    "sourceUri": {"uri": "https://hackupc.com/og_image2026.png"},
                     "contentDescription": {
                         "defaultValue": {"language": "en-US", "value": "Event picture"}
                     },
@@ -300,15 +300,15 @@ def generateGTicketUrl(qrValue: str):
         },
         "dateTime": {"start": "2026-04-24T16:00", "end": "2026-04-26T17:00"},
         "reviewStatus": "UNDER_REVIEW",
-        "hexBackgroundColor": "#231F20",
+        "hexBackgroundColor": "#AADEFE",
         "heroImage": {
             "sourceUri": {
-                "uri": "https://i.ibb.co/LL5T8d0/walletv2.png",
+                "uri": "https://i.ibb.co/nN4GxfFt/imatge-wallet.png",
             },
             "contentDescription": {
                 "defaultValue": {
                     "language": "en-US",
-                    "value": "HackUPC galactic banner",
+                    "value": "HackUPC 2026 Banner",
                 },
             },
         },
