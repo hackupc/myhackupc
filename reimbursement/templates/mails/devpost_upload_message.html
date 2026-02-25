@@ -5,13 +5,11 @@
 <p> Hey {{ app.user.get_full_name }},</p>
 <br>
 <p>HackUPC has officially come to an end, and we hope you enjoyed the event as much as we did!</p>
-<p>The next step to get your travel reimbursement is to upload the link to your project on Devpost. This will allow us
+<p>The next step to get your travel reimbursement is to <b>upload the link</b> to your project on Devpost. This will allow us
     to validate your submission and verify that the project is valid and that it complies with the requirements that
     were previously communicated.</p>
 
-<p>Upload your link here: <a
-        href="https://my.hackupc.com/reimbursement/dash_board/">https://my.hackupc.com/reimbursement/dash_board/</a>.
-</p>
+<p>Upload your link here: </p>
 
 {% include 'mails/include/email_button.html' with text='Upload Devpost link' url=form_url %}
 

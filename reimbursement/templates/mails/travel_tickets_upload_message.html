@@ -4,19 +4,19 @@
 {% block content %}
 <p> Hey {{ app.user.get_full_name }},</p>
 <br>
-<p>For us to accept your travel reimbursement request, you need to upload VALID travel tickets in <a
-        href="https://my.hackupc.com/reimbursement/dash_board/">https://my.hackupc.com/reimbursement/dash_board/</a>.
-</p>
-<p>A ticket is considered valid if and only if:</p>
-<ul>
-    <li>The receipts are in the name of the participant requesting the reimbursement.</li>
-    <li>It includes a detailed price breakdown, the purchase date, and the travel dates, clearly indicating which costs
-        correspond to the travel itself and which relate to additional services (e.g. extra luggage).</li>
-    <li>The travel dates are within one week before or one week after the event.</li>
-    <li>The ticket is uploaded before the start of the event.</li>
-</ul>
+<p>For us to accept your travel reimbursement request, you need to upload VALID travel tickets here:</p>
 
 {% include 'mails/include/email_button.html' with text='Upload tickets' url=form_url %}
+
+<p>A ticket is considered <b>valid</b> if and only if:</p>
+<ul>
+    <li>The receipts are in the <b>name of the participant</b> requesting the reimbursement.</li>
+    <li>It includes a detailed price <b>breakdown</b>, the purchase date, and the travel dates, clearly indicating which costs
+        correspond to the travel itself and which relate to additional services (e.g. extra luggage).</li>
+    <li>The travel dates are within <b>one week before or one week after the eventevent, between April 21st and May 5th 
+        (both included).</b>.</li>
+    <li>The ticket is uploaded <b>before</b> the start of the event.</li>
+</ul>
 
 {% include 'mails/include/closing.html' with travel="true" %}
 {% endblock %}
