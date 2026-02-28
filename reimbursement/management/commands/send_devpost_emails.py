@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from django.conf import settings
-from reimbursement.models import Reimbursement, RE_PEND_DEMO_VAL
+from reimbursement.models import Reimbursement, RE_APPROVED
 from reimbursement import emails
 
 
@@ -18,7 +18,8 @@ class Command(BaseCommand):
         # hasn't uploaded a devpost link yet (devpost=''),
         # and we haven't sent the reminder email yet (devpost_email_sent=False).
         reimbursements = Reimbursement.objects.filter(
-            status=RE_PEND_DEMO_VAL,
+            status=RE_APPROVED,
+            devpost='',
             devpost_email_sent=False
         )
 
