@@ -249,6 +249,7 @@ class ReceiptReview(ReimbursementDetail):
             if a_form.is_valid():
                 a_form.save(commit=False)
                 a_form.instance.accept_receipt(request.user)
+                emails.create_ticket_accepted_email(a_form.instance, request).send()
                 a_form.save()
                 messages.success(request, "Receipt accepted")
             else:
