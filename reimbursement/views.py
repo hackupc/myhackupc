@@ -145,6 +145,7 @@ class ReimbursementDetail(IsOrganizerMixin, TabsView):
             if form.is_valid():
                 form.save(commit=False)
                 reimb.validate(request.user)
+                emails.create_devpost_approved_email(reimb, request).send()
                 form.save()
                 messages.success(self.request, "Reimbursement successfully validated!")
             else:

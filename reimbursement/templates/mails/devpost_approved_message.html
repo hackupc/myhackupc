@@ -1,0 +1,14 @@
+{% extends 'base_email.html' %}
+{% block preheader %}Your travel reimbursement has been approved!{% endblock %}
+
+{% block content %}
+<p>Congratulations {{ app.user.get_full_name }}!</p>
+<br>
+<p>Your travel reimbursement request has been approved by our Finance Team. You will receive the reimbursed amount within two months after the event. Please note that minor delays may occur due to the high volume of travel reimbursement requests this year.</p>
+
+<p><b>You have been assigned: {{ reimb.assigned_money }} €</b></p>
+
+<p>The money will be transferred to your PayPal account. Make sure the PayPal account you provided is correct and active.</p>
+
+{% include 'mails/include/closing.html' with travel="true" %}
+{% endblock %}

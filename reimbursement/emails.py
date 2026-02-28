@@ -53,6 +53,12 @@ def create_project_invalidated_email(reimb, request):
     return emails.render_mail("mails/project_invalidated", reimb.hacker.email, c)
 
 
+def create_devpost_approved_email(reimb, request):
+    app = reimb.hacker.application
+    c = _get_context(app, reimb, request)
+    return emails.render_mail("mails/devpost_approved", reimb.hacker.email, c)
+
+
 def _get_context(app, reimb, request):
     from django.conf import settings
 
