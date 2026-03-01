@@ -1,0 +1,19 @@
+{% extends 'base_email.html' %}
+{% block preheader %}Upload your Devpost link{% endblock %}
+
+{% block content %}
+<p> Hey {{ app.user.get_full_name }},</p>
+<br>
+<p>HackUPC has officially come to an end, and we hope you enjoyed the event as much as we did!</p>
+<p>The next step to get your travel reimbursement is to <b>upload the link</b> to your project on Devpost. This will allow us
+    to validate your submission and verify that the project is valid and that it complies with the requirements that
+    were previously communicated.</p>
+
+<p>Upload your link here: </p>
+
+{% include 'mails/include/email_button.html' with text='Upload Devpost link' url=form_url %}
+
+<p>Thank you for your collaboration!!</p>
+
+{% include 'mails/include/closing.html' with travel="true" %}
+{% endblock %}

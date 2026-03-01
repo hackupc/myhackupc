@@ -1,0 +1,31 @@
+{% extends 'base_email.html' %}
+{% block preheader %}Your ticket has been accepted{% endblock %}
+
+{% block content %}
+<p> Hey {{ app.user.get_full_name }},</p>
+<br>
+<p>If you are receiving this mail is because your travel ticket has been accepted.</p>
+<p>However, the process requires you to follow the below instructions during the event to consider you eligible for a
+    reimbursement.</p>
+
+<p><b>Regarding the project:</b></p>
+<ul>
+    <li>The participant must demo a <b>valid project</b> to the HackUPC judges.</li>
+    <li>The <b>Devpost username</b> must be similar to the participant’s real name. Usernames that do not reasonably resemble
+        the real name (e.g. TheBest) will not be accepted.</li>
+    <li>The <b>completeness</b> of the GitHub repository will be taken into account, including aspects such as regular commits
+        throughout the weekend.</li>
+</ul>
+
+<p><b>Regarding the attendance:</b></p>
+<ul>
+    <li>It must be demonstrable that the participant attended the event and stayed at the venue for a <b>minimum period of
+        participation</b>. Attendance to meals, activities, workshops, and other official event activities may be taken into
+        account to verify participation.</li>
+</ul>
+
+<p>The money will be transferred to the participant using PayPal in the following 60 days after the event. The paypal
+    account <b>MUST exist.</b></p>
+
+{% include 'mails/include/closing.html' with travel="true" %}
+{% endblock %}

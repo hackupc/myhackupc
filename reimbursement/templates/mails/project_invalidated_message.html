@@ -1,0 +1,17 @@
+{% extends 'base_email.html' %}
+{% block preheader %}Your travel reimbursement request – Not Approved{% endblock %}
+
+{% block content %}
+<p>Dear {{ app.user.get_full_name }},</p>
+<br>
+<p>After reviewing your travel reimbursement request, we regret to inform you that your application cannot be approved. This may be due to one of the following reasons:</p>
+
+<ul>
+    <li>You did not meet the minimum required attendance time at the venue.</li>
+    <li>The project or Devpost submission provided was invalid or did not meet the established criteria.</li>
+</ul>
+
+<p>If you believe this decision has been made in error or would like further clarification, please feel free to contact us.</p>
+<p>Best regards,</p>
+
+{% endblock %}

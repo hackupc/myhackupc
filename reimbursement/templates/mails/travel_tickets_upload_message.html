@@ -1,0 +1,34 @@
+{% extends 'base_email.html' %}
+{% block preheader %}Upload your travel ticket{% endblock %}
+
+{% block content %}
+<p>Hey {{ app.user.get_full_name }},</p>
+<br>
+
+<p>Congratulations on being accepted to HackUPC 2026! 🎉</p>
+
+<p>We noticed that you selected the travel reimbursement option. To proceed, please upload a <b>valid travel ticket</b> to your MyHackUPC dashboard as soon as possible.</p>
+
+{% include 'mails/include/email_button.html' with text='Upload ticket' url=form_url %}
+
+<p><b>A ticket will be considered valid only if:</b></p>
+<ul>
+    <li>We only accept bus, plane or train tickets.</li>
+    <li>The receipt is issued <b>in the name of the participant</b> requesting the reimbursement.</li>
+    <li>It includes a <b>detailed price breakdown</b>, the <b>purchase date</b>, the <b>travel dates</b>, and a clear distinction between the <b>basic fare</b> and any additional services (e.g., extra luggage, seat selection, insurance). Any additional service will be discounted.</li>
+    <li>The travel dates are <b>within one week before or after the event</b> (between <b>April 21st and May 5th, inclusive).</b></li>
+    <li>The ticket is uploaded <b>before the start of the event.</b></li>
+    <li>You have a <b>valid PayPal account</b> to receive the reimbursement.</li>
+</ul>
+
+<br>
+
+<p><b>Reimbursement Policy</b></p>
+<p>The reimbursed amount will be the <b>minimum of:</b></p>
+<ul>
+    <li>50% of your travel expenses (calculated based on the basic fare only), and</li>
+    <li>The maximum amount assigned to your destination, determined by the organizing team based on budget and demand.</li>
+</ul>
+
+{% include 'mails/include/closing.html' with travel="true" %}
+{% endblock %}
