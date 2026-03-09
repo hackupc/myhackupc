@@ -84,9 +84,9 @@ BAGGAGE_PICTURE = True
 REIMBURSEMENT_ENABLED = True
 DEFAULT_REIMBURSEMENT_AMOUNT = 100
 CURRENCY = "€"
-REIMBURSEMENT_EXPIRY_DATE = timezone.datetime(2026, 4, 4, 17, 00, tzinfo=timezone.pytz.timezone(TIME_ZONE))
+REIMBURSEMENT_EXPIRY_DATE = timezone.datetime(2026, 4, 24, 17, 00, tzinfo=timezone.pytz.timezone(TIME_ZONE))
 REIMBURSEMENT_REQUIREMENTS = 'You have to submit a project and demo it during the event in order to get reimbursed'
-REIMBURSEMENT_DEADLINE = timezone.datetime(2026, 4, 4, 23, 59, tzinfo=timezone.pytz.timezone(TIME_ZONE))
+REIMBURSEMENT_DEADLINE = timezone.datetime(2026, 4, 24, 17, 00, tzinfo=timezone.pytz.timezone(TIME_ZONE))
 
 # (OPTIONAL) Max team members. Defaults to 4
 TEAMS_ENABLED = True
