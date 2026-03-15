@@ -18,14 +18,17 @@ from django.views import View
 from django.views.generic import TemplateView
 
 from app import slack
+from app.hackathon_variables import MAX_REIMBURSEMENTS_UNTIL_WAITLIST
 from app.slack import SlackInvitationException
 from app.utils import reverse, hacker_tabs
 from app.views import TabsView
 from applications import models, emails, forms
 from organizers.tables import SponsorFilter, SponsorListTableWithNoAction
 from organizers.views import _OtherApplicationsListView
+from reimbursement.models import RE_WAITLISTED, Reimbursement
 from user.mixins import IsHackerMixin, is_hacker, IsSponsorMixin, DashboardMixin
 from user import models as userModels
+from reimbursement import emails as reimb_emails
 
 from django.conf import settings
 
@@ -81,11 +84,14 @@ class ConfirmApplication(IsHackerMixin, UserPassesTestMixin, View):
         if msg:
             msg.send()
             if application.user.is_hacker() and application.reimb:
-                from reimbursement import emails as reimb_emails
-                reimb_msg = reimb_emails.create_travel_tickets_upload_email(
-                    application.user.reimbursement, request
-                )
-                reimb_msg.send()
+                if Reimbursement.objects.count() > MAX_REIMBURSEMENTS_UNTIL_WAITLIST:
+                    application.user.reimbursement.status = RE_WAITLISTED
+                    application.user.reimbursement.save()
+                else:
+                    reimb_msg = reimb_emails.create_travel_tickets_upload_email(
+                        application.user.reimbursement, request
+                    )
+                    reimb_msg.send()
             try:
                 slack.send_slack_invite(request.user.email)
             # Ignore if we can't send, it's only optional
