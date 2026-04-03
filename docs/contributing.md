@@ -52,11 +52,13 @@ Start the dev server, go to the hacker application form, and confirm the new fie
 
 Same pattern as the hacker application, different files:
 
-| Layer | Volunteer | Mentor |
-|---|---|---|
-| Model | `applications/models/volunteer.py` | `applications/models/mentor.py` |
-| Form | `applications/forms/volunteer.py` | `applications/forms/mentor.py` |
-| Template | `applications/templates/` (look for volunteer/mentor form template) | same |
+
+| Layer    | Volunteer                                                           | Mentor                          |
+| -------- | ------------------------------------------------------------------- | ------------------------------- |
+| Model    | `applications/models/volunteer.py`                                  | `applications/models/mentor.py` |
+| Form     | `applications/forms/volunteer.py`                                   | `applications/forms/mentor.py`  |
+| Template | `applications/templates/` (look for volunteer/mentor form template) | same                            |
+
 
 Run `python manage.py makemigrations && python manage.py migrate` after changing the model.
 
@@ -72,16 +74,17 @@ Find and update the reimbursement limit variables. No migration or code change n
 
 ## Where to Look for Other Things
 
-| What you want to change | Where to look |
-|---|---|
-| Application status flow (pending → invited → confirmed) | `applications/models/base.py` |
-| Who can review applications and vote | `organizers/views/review.py` |
-| Batch invite algorithm | `organizers/views/batch_ops.py` |
-| Email content | See `docs/email-templates.md` |
-| Check-in logic | `checkin/views.py` |
-| User roles and permissions | `user/models.py`, `user/mixins.py` |
-| Hackathon name, dates, deadlines | `app/hackathon_variables.py` |
-| Global styles | `app/static/css/main.css` |
-| Bootstrap component styles | `app/static/css/bootstrap-overrides/` |
 
-> **Note:** `organizers/views/review.py` and `organizers/views/batch_ops.py` are created as part of this refactor. Until the refactor is complete, this logic lives in `organizers/views.py`.
+| What you want to change                                 | Where to look                         |
+| ------------------------------------------------------- | ------------------------------------- |
+| Application status flow (pending → invited → confirmed) | `applications/models/base.py`         |
+| Who can review applications and vote                    | `organizers/views/review.py`          |
+| Batch invite algorithm                                  | `organizers/views/batch_ops.py`       |
+| Email content                                           | See `docs/email-templates.md`         |
+| Check-in logic                                          | `checkin/views.py`                    |
+| User roles and permissions                              | `user/models.py`, `user/mixins.py`    |
+| Hackathon name, dates, deadlines                        | `app/hackathon_variables.py`          |
+| Global styles                                           | `app/static/css/main.css`             |
+| Bootstrap component styles                              | `app/static/css/bootstrap-overrides/` |
+
+
