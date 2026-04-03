@@ -1,28 +1,16 @@
-# Create your views here.
-import os
-from io import BytesIO
-from zipfile import ZipFile
-
 from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import ValidationError
-from django.db import IntegrityError
-from django.db.models import Count, Avg, F, Q, CharField
-from django.db.models.functions import Concat
-from django.http import Http404, HttpResponseRedirect, HttpResponse
-from django.shortcuts import redirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.views import View
-from django.views.generic import TemplateView
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 from django_tables2.export import ExportMixin
 from django.utils import timezone
 from datetime import timedelta
 
-from app import slack
 from app.mixins import TabsViewMixin
-from app.slack import SlackInvitationException
 from applications import emails
 from applications.emails import send_batch_emails
 from applications.models import (
@@ -32,8 +20,6 @@ from applications.models import (
     APP_INVITED,
     APP_LAST_REMIDER,
     APP_CONFIRMED,
-    AcceptedResume,
-    APP_ATTENDED,
     APP_REJECTED,
 )
 from organizers import models
@@ -41,7 +27,6 @@ from organizers.tables import (
     ApplicationsListTable,
     ApplicationFilter,
     AdminApplicationsListTable,
-    AdminTeamListTable,
     InviteFilter,
     DubiousListTable,
     DubiousApplicationFilter,
@@ -56,7 +41,6 @@ from organizers.tables import (
     BlacklistListTable,
     BlacklistApplicationFilter,
 )
-from teams.models import Team
 from user.mixins import (
     IsOrganizerMixin,
     IsDirectorMixin,
