@@ -31,7 +31,7 @@ jobs:
           name: Running tests
           command: |
             . env/bin/activate
-            python manage.py test
+            pytest --cov
       - run:
           name: Linting code
           command: |
