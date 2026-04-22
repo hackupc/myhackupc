@@ -4,62 +4,6 @@
     <label>Hacker:</label>
     <input id="qr-result" class="typeahead" style="color: #0f0f0f" name="email" type="text"/><i id='{{ id }}-qr' class='fa-solid fa-qrcode fa-2x qr-btn'></i>
     <video id="qr-video" style="margin-top: 10px; border-radius: 5px; display: none; width: 100%"></video>
-
-    <script nonce="{{ request.csp_nonce }}">
-      document.addEventListener("DOMContentLoaded", ()=>{
-            if (!document.getElementById('qr-result')) return;
-
-            let scanner = new Scanner('qr-video', (content) => {
-              const qrContent = content?.data ?? content?.toString?.() ?? content;
-              let input = $('#qr-result')
-              scanner.hide()
-              input.val('')
-              input.focus().typeahead('val', qrContent).focus();
-            }, {
-              popup: true,
-              popup_title: 'QR scanner',
-            })
-
-            let qrButton = document.getElementById("{{ id }}-qr");
-            qrButton.onclick = function () {
-              scanner.show()
-            }
-        })
-    </script>
-{#	<script type="module">#}
-{#        import QrScanner from '/static/lib/qr-scanner.min.js';#}
-{#        QrScanner.WORKER_PATH = '/static/lib/qr-scanner-worker.min.js';#}
-{#        // Video stream#}
-{#        const video = document.getElementById('qr-video');#}
-{#        // Result elements and set function#}
-{#        const camQrResult = document.getElementById('qr-result');#}
-{#        function setResult(result) {#}
-{#            camQrResult.focus();#}
-{#            camQrResult.value = result;#}
-{#            hideQR();#}
-{#            $(".typeahead").typeahead('val', '')#}
-{#            $(".typeahead").focus().typeahead('val',result.toString()).focus();#}
-{#        }#}
-{#        // Scan#}
-{#        const scanner = new QrScanner(video, result => setResult(result));#}
-{#        $("#{{ id }}-qr").click(function () {#}
-{#            let veil = document.createElement("div");#}
-{#            document.body.appendChild(veil);#}
-{#            veil.classList.add('veil');#}
-{#            veil.id = 'veil';#}
-{#            $("#popup-scan").show();#}
-{#            document.getElementById("veil").addEventListener("click", function(){#}
-{#                hideQR();#}
-{#            });#}
-{#          scanner.start();#}
-{#        });#}
-{#        function hideQR() {#}
-{#            $("#popup-scan").hide();#}
-{#            var el = document.getElementById("veil");#}
-{#            el.parentNode.removeChild(el);#}
-{#            scanner.stop();#}
-{#        }#}
-{#    </script>#}
     <div class='hw-centered'>
     {% if item_id %}
     	<button id="hw-user-send-noreq" data-item-id="{{item_id}}" class="btn btn-success">Send</button>

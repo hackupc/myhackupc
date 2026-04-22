@@ -6,9 +6,10 @@ let hw_admin = ((hw)=>{
     }
     let obj = {}
     let cams = []
+    obj.qrScanner = null
 
     obj.initTypeaheads = ()=>{
-        if($("#qr-result"))
+        if($("#qr-result").length)
             $("#qr-result").typeahead({
                 hint:true,
                 highlight:true,
@@ -33,6 +34,49 @@ let hw_admin = ((hw)=>{
                 }
             });
     }
+
+    obj.destroyQrScanner = ()=>{
+        if (obj.qrScanner) {
+            try {
+                obj.qrScanner.hide()
+            } catch (e) {
+                try {
+                    obj.qrScanner.stop()
+                } catch (err) {
+                    console.warn(err)
+                }
+            }
+            obj.qrScanner = null
+        }
+        $('#veil').remove()
+    }
+
+    obj.initQrScanner = ()=>{
+        let inputElem = document.getElementById('qr-result')
+        let videoElem = document.getElementById('qr-video')
+        let qrButton = document.querySelector('.qr-btn')
+
+        if (!inputElem || !videoElem || !qrButton) return
+        if (inputElem.dataset.qrScannerInitialized === 'true') return
+
+        inputElem.dataset.qrScannerInitialized = 'true'
+        obj.destroyQrScanner()
+
+        obj.qrScanner = new Scanner('qr-video', (content) => {
+            let qrContent = content && content.data ? content.data : content.toString()
+            let input = $('#qr-result')
+            obj.qrScanner.hide()
+            input.val('')
+            input.focus().typeahead('val', qrContent).focus()
+        }, {
+            popup: true,
+            popup_title: 'QR scanner',
+        })
+
+        qrButton.onclick = function () {
+            obj.qrScanner.show()
+        }
+    }
     //-Updates the content
     //-Shows a toast if there's a message
     obj.processResponse = (data)=>{
@@ -42,16 +86,13 @@ let hw_admin = ((hw)=>{
         }
 
         if(data.content){
+            obj.destroyQrScanner()
             $('#hw-container').fadeTo(200, 0, ()=>{
                 $('#hw-container').html(data.content)
                 obj.initListeners()
                 obj.initTypeaheads()
+                obj.initQrScanner()
                 $('#hw-container').fadeTo(200, 1)
-
-                window.document.dispatchEvent(new Event("DOMContentLoaded", {
-                  bubbles: true,
-                  cancelable: true
-                }));
             })
         }
     }
@@ -124,4 +165,5 @@ let hw_admin = ((hw)=>{
 document.addEventListener("DOMContentLoaded", ()=>{
     hw_admin.initListeners()
     hw_admin.initTypeaheads()
+    hw_admin.initQrScanner()
 })
