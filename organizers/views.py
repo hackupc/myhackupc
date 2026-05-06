@@ -1099,7 +1099,7 @@ class ReviewResume(TabsViewMixin, HaveSponsorPermissionMixin, TemplateView):
         if file:
             s = BytesIO()
             accepted_resumes = AcceptedResume.objects.filter(
-                accepted=True, application__status__in=[APP_ATTENDED] # also =[APP_CONFIRMED, APP_ATENDED]
+                accepted=True, application__status__in=[APP_ATTENDED]
             ).select_related("application")
             with ZipFile(s, "w") as zip_file:
                 for accepted_resume in accepted_resumes:
