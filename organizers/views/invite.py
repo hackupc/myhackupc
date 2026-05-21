@@ -26,7 +26,7 @@ from organizers import models
 from organizers.tables import AdminTeamListTable
 from user.mixins import IsDirectorMixin
 
-from organizers.views.lists import hacker_tabs
+from organizers.views.application_lists import hacker_tabs
 
 
 class InviteTeamListView(

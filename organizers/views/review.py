@@ -35,7 +35,7 @@ from user.mixins import (
     HaveMentorPermissionMixin,
 )
 
-from organizers.views.lists import hacker_tabs
+from organizers.views.application_lists import hacker_tabs
 
 
 def add_vote(application, user, tech_rat, pers_rat):
