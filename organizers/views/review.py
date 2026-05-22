@@ -23,7 +23,6 @@ from applications.models import (
     APP_PENDING,
     APP_DUBIOUS,
     APP_BLACKLISTED,
-    APP_CONFIRMED,
     AcceptedResume,
     APP_ATTENDED,
 )
