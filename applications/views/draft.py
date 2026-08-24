@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 
 from applications import models, forms
-from applications.views.hacker import VIEW_APPLICATION_TYPE, VIEW_APPLICATION_FORM_TYPE
+from applications.views.application import VIEW_APPLICATION_TYPE, VIEW_APPLICATION_FORM_TYPE
 from user.mixins import is_hacker
 
 
