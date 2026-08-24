@@ -23,7 +23,6 @@ from applications.models import (
     APP_PENDING,
     APP_DUBIOUS,
     APP_BLACKLISTED,
-    APP_CONFIRMED,
     AcceptedResume,
     APP_ATTENDED,
 )
@@ -35,7 +34,7 @@ from user.mixins import (
     HaveMentorPermissionMixin,
 )
 
-from organizers.views.lists import hacker_tabs
+from organizers.views.application_lists import hacker_tabs
 
 
 def add_vote(application, user, tech_rat, pers_rat):
@@ -625,7 +624,7 @@ class ReviewResume(TabsViewMixin, HaveSponsorPermissionMixin, TemplateView):
         if file:
             s = BytesIO()
             accepted_resumes = AcceptedResume.objects.filter(
-                accepted=True, application__status__in=[APP_CONFIRMED, APP_ATTENDED]
+                accepted=True, application__status__in=[APP_ATTENDED]
             ).select_related("application")
             with ZipFile(s, "w") as zip_file:
                 for accepted_resume in accepted_resumes:

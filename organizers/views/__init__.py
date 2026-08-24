@@ -1,4 +1,4 @@
-from organizers.views.lists import (
+from organizers.views.application_lists import (
     hacker_tabs,
     volunteer_tabs,
     mentor_tabs,
@@ -26,7 +26,7 @@ from organizers.views.review import (
     ReviewResume,
     VisualizeResume,
 )
-from organizers.views.batch_ops import InviteTeamListView
+from organizers.views.invite import InviteTeamListView
 
 __all__ = [
     'hacker_tabs', 'volunteer_tabs', 'mentor_tabs', 'sponsor_tabs',

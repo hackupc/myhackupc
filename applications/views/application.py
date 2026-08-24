@@ -156,14 +156,14 @@ def get_deadline(application):
     return deadline
 
 
-class HackerDashboard(DashboardMixin, TabsView):
+class ApplicationDashboard(DashboardMixin, TabsView):
     template_name = "dashboard.html"
 
     def get_current_tabs(self):
         return hacker_tabs(self.request.user)
 
     def get_context_data(self, **kwargs):
-        context = super(HackerDashboard, self).get_context_data(**kwargs)
+        context = super(ApplicationDashboard, self).get_context_data(**kwargs)
         Application = VIEW_APPLICATION_TYPE.get(
             self.request.user.type, models.HackerApplication
         )
@@ -286,14 +286,14 @@ class HackerDashboard(DashboardMixin, TabsView):
         return render(request, self.template_name, c)
 
 
-class HackerApplication(IsHackerMixin, TabsView):
+class ApplicationEditView(IsHackerMixin, TabsView):
     template_name = "application.html"
 
     def get_current_tabs(self):
         return hacker_tabs(self.request.user)
 
     def get_context_data(self, **kwargs):
-        context = super(HackerApplication, self).get_context_data(**kwargs)
+        context = super(ApplicationEditView, self).get_context_data(**kwargs)
 
         Application = VIEW_APPLICATION_TYPE.get(
             self.request.user.type, models.HackerApplication
