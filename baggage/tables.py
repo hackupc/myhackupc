@@ -21,9 +21,12 @@ class BaggageListFilter(django_filters.FilterSet):
 
     def search_filter(self, queryset, name, value):
         queryfilter = queryset.annotate(fullpos=Concat('room', 'row', 'col', output_field=CharField()))
-        return queryfilter.filter((Q(owner__email__unaccent__icontains=value) | Q(owner__name__unaccent__icontains=value) |
-                                   Q(status__unaccent__icontains=value) | Q(btype__unaccent__icontains=value) | Q(color__unaccent__icontains=value) |
-                                   Q(description__unaccent__icontains=value) | Q(fullpos__unaccent__icontains=value)))
+        return queryfilter.filter((Q(owner__email__unaccent__icontains=value) |
+                                   Q(owner__name__unaccent__icontains=value) |
+                                   Q(status__unaccent__icontains=value) | Q(btype__unaccent__icontains=value) |
+                                   Q(color__unaccent__icontains=value) |
+                                   Q(description__unaccent__icontains=value) |
+                                   Q(fullpos__unaccent__icontains=value)))
 
     def search_time(self, queryset, name, value):
         if name == 'time_from':

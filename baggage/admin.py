@@ -19,7 +19,8 @@ class BaggageListAdmin(admin.ModelAdmin):
         'bid', 'owner', 'status', 'btype', 'color', 'description', 'special', 'time', 'updated'
     )
     search_fields = (
-        'owner__email__unaccent', 'owner__name__unaccent', 'status__unaccent', 'btype__unaccent', 'color__unaccent', 'description__unaccent'
+        'owner__email__unaccent', 'owner__name__unaccent', 'status__unaccent', 'btype__unaccent',
+        'color__unaccent', 'description__unaccent'
     )
     list_filter = (
         'status', 'btype', 'color', 'special'

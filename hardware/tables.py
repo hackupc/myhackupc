@@ -50,7 +50,8 @@ class BorrowingFilter(django_filters.FilterSet):
             return queryset.get_active()
 
     def search_filter(self, queryset, name, value):
-        return queryset.filter(Q(item__item_type__name__unaccent__icontains=value) | Q(user__name__unaccent__icontains=value))
+        return queryset.filter(Q(item__item_type__name__unaccent__icontains=value) |
+                               Q(user__name__unaccent__icontains=value))
 
     class Meta:
         model = Borrowing
