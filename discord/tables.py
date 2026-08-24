@@ -24,10 +24,10 @@ class DiscordFilter(django_filters.FilterSet):
     search = django_filters.CharFilter(method='search_filter', label='Search')
 
     def search_filter(self, queryset, name, value):
-        return queryset.filter(Q(user__email__icontains=value) |
-                               Q(user__name__icontains=value) |
-                               Q(discord_username__icontains=value) |
-                               Q(team_name__icontains=value))
+        return queryset.filter(Q(user__email__unaccent__icontains=value) |
+                               Q(user__name__unaccent__icontains=value) |
+                               Q(discord_username__unaccent__icontains=value) |
+                               Q(team_name__unaccent__icontains=value))
 
     class Meta:
         model = DiscordUser

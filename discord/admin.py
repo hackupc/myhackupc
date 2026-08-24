@@ -7,7 +7,7 @@ class DiscordUserAdmin(admin.ModelAdmin):
     list_display = (
         'user', 'discord_id', 'checked_in'
     )
-    search_fields = ('user__email', 'user__name')
+    search_fields = ('user__email__unaccent', 'user__name__unaccent')
     list_filter = ('user',)
     actions = ['delete_selected', ]
 

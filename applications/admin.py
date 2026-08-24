@@ -15,8 +15,8 @@ class ApplicationAdmin(admin.ModelAdmin):
     list_filter = ('status', 'first_timer', 'reimb', 'graduation_year',
                    'university', 'origin', 'under_age', 'diet')
     list_per_page = 200
-    search_fields = ('user__name', 'user__email',
-                     'description',)
+    search_fields = ('user__name__unaccent', 'user__email__unaccent',
+                     'description__unaccent',)
     ordering = ('submission_date',)
     date_hierarchy = 'submission_date'
 
@@ -47,7 +47,7 @@ class OtherApplicationAdmin(admin.ModelAdmin):
     list_display = ('user', 'name', 'status', 'status_last_updated', 'diet')
     list_filter = ('status', 'under_age', 'diet')
     list_per_page = 200
-    search_fields = ('user__name', 'user__email',)
+    search_fields = ('user__name__unaccent', 'user__email__unaccent',)
     ordering = ('submission_date',)
     date_hierarchy = 'submission_date'
 
@@ -72,7 +72,7 @@ class SponsorApplicationAdmin(OtherApplicationAdmin):
 class DraftApplicationAdmin(admin.ModelAdmin):
     list_display = ('user', 'name')
     list_per_page = 200
-    search_fields = ('user__name', 'user__email',)
+    search_fields = ('user__name__unaccent', 'user__email__unaccent',)
     ordering = ('user__name',)
 
     def name(self, obj):

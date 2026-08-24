@@ -11,7 +11,7 @@ class MealsListFilter(django_filters.FilterSet):
     kind = django_filters.ChoiceFilter(label='Type', choices=MEAL_TYPE, empty_label='Any')
 
     def search_filter(self, queryset, name, value):
-        return queryset.filter((Q(name__icontains=value) | Q(kind__icontains=value)))
+        return queryset.filter((Q(name__unaccent__icontains=value) | Q(kind__unaccent__icontains=value)))
 
     class Meta:
         model = Meal
@@ -55,8 +55,8 @@ class MealsUsersFilter(django_filters.FilterSet):
             checkin = CheckIn.objects.get(qr_identifier=value)
             return queryset.filter(user=checkin.application.user)
         except CheckIn.DoesNotExist:
-            return queryset.filter(Q(meal__name__icontains=value) |
-                                   Q(user__name__icontains=value) | Q(user__email__icontains=value))
+            return queryset.filter(Q(meal__name__unaccent__icontains=value) |
+                                   Q(user__name__unaccent__icontains=value) | Q(user__email__unaccent__icontains=value))
 
     class Meta:
         model = Meal

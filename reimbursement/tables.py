@@ -14,9 +14,9 @@ class ReimbursementFilter(django_filters.FilterSet):
 
     def search_filter(self, queryset, name, value):
         return queryset.filter(
-            Q(hacker__email__icontains=value)
-            | Q(hacker__name__icontains=value)
-            | Q(origin__icontains=value)
+            Q(hacker__email__unaccent__icontains=value)
+            | Q(hacker__name__unaccent__icontains=value)
+            | Q(origin__unaccent__icontains=value)
         )
 
     class Meta:
@@ -51,9 +51,9 @@ class SendReimbursementFilter(django_filters.FilterSet):
 
     def search_filter(self, queryset, name, value):
         return queryset.filter(
-            Q(hacker__email__icontains=value)
-            | Q(hacker__name__icontains=value)
-            | Q(origin__icontains=value)
+            Q(hacker__email__unaccent__icontains=value)
+            | Q(hacker__name__unaccent__icontains=value)
+            | Q(origin__unaccent__icontains=value)
         )
 
     class Meta:

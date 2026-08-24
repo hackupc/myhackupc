@@ -7,7 +7,7 @@ class MealsMealAdmin(admin.ModelAdmin):
         'id', 'name', 'times', 'opened', 'starts', 'ends'
     )
     search_fields = (
-        'name',
+        'name__unaccent',
     )
 
     def get_actions(self, request):
@@ -19,7 +19,7 @@ class MealsEatenAdmin(admin.ModelAdmin):
         'id', 'meal', 'user', 'time'
     )
     search_fields = (
-        'name', 'user__name', 'user__email'
+        'meal__name__unaccent', 'user__name__unaccent', 'user__email__unaccent'
     )
     list_filter = (
         'meal', 'user'

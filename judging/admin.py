@@ -5,19 +5,19 @@ from judging import models
 
 class ProjectAdmin(admin.ModelAdmin):
     list_display = ('title', 'url', 'desired_prizes', 'description', 'university')
-    search_fields = ['title', 'url', 'university', 'desired_prizes',
-                     'submitter_first_name', 'submitter_last_name']
+    search_fields = ['title__unaccent', 'url', 'university__unaccent', 'desired_prizes__unaccent',
+                     'submitter_first_name__unaccent', 'submitter_last_name__unaccent']
     list_per_page = 100
 
 
 class ChallengeAdmin(admin.ModelAdmin):
     list_display = ('name',)
-    search_fields = ['name']
+    search_fields = ['name__unaccent']
 
 
 class RoomAdmin(admin.ModelAdmin):
     list_display = ('name', 'challenge', 'main_judge')
-    search_fields = ['name', 'challenge', 'main_judge']
+    search_fields = ['name__unaccent', 'challenge__name__unaccent', 'main_judge__name__unaccent']
 
 
 class PresentationAdmin(admin.ModelAdmin):

@@ -7,7 +7,7 @@ class BaggageRoomAdmin(admin.ModelAdmin):
         'room', 'row', 'col', 'door_row', 'door_col'
     )
     search_fields = (
-        'room',
+        'room__unaccent',
     )
 
     def get_actions(self, request):
@@ -19,7 +19,7 @@ class BaggageListAdmin(admin.ModelAdmin):
         'bid', 'owner', 'status', 'btype', 'color', 'description', 'special', 'time', 'updated'
     )
     search_fields = (
-        'owner__email', 'owner__name', 'status', 'btype', 'color', 'description'
+        'owner__email__unaccent', 'owner__name__unaccent', 'status__unaccent', 'btype__unaccent', 'color__unaccent', 'description__unaccent'
     )
     list_filter = (
         'status', 'btype', 'color', 'special'

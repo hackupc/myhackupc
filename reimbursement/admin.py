@@ -21,7 +21,7 @@ class ReimbursementAdmin(admin.ModelAdmin):
     )
     list_filter = ("status", "origin", "reimbursed_by")
 
-    search_fields = ["hacker__name", "hacker__email", "origin"]
+    search_fields = ["hacker__name__unaccent", "hacker__email__unaccent", "origin__unaccent"]
     list_per_page = 200
 
     ordering = ("creation_time",)

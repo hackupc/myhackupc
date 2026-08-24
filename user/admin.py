@@ -42,7 +42,7 @@ class UserAdmin(admin.ModelAdmin):
             'fields': ('email', 'name', 'password1', 'password2',)}
          ),
     )
-    search_fields = ('email',)
+    search_fields = ('email__unaccent',)
     ordering = ('created_time',)
     date_hierarchy = 'created_time'
     filter_horizontal = ()
@@ -57,7 +57,7 @@ class BlacklistUserAdmin(admin.ModelAdmin):
     list_display = ('email', 'name', 'date_of_ban')
     list_per_page = 20
     list_filter = ('email', 'name')
-    search_fields = ('email', 'name')
+    search_fields = ('email__unaccent', 'name__unaccent')
     actions = ['delete_selected', ]
 
 

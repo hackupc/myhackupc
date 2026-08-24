@@ -9,7 +9,7 @@ class ApplicationCheckinFilter(django_filters.FilterSet):
     search = django_filters.CharFilter(method='search_filter', label='Search')
 
     def search_filter(self, queryset, name, value):
-        return queryset.filter(Q(user__email__icontains=value) | Q(user__name__icontains=value) |
+        return queryset.filter(Q(user__email__unaccent__icontains=value) | Q(user__name__unaccent__icontains=value) |
                                Q(uuid__icontains=value.replace('-', '')))
 
     class Meta:
@@ -34,8 +34,8 @@ class SponsorApplicationCheckinFilter(django_filters.FilterSet):
     search = django_filters.CharFilter(method='search_filter', label='Search')
 
     def search_filter(self, queryset, name, value):
-        return queryset.filter(Q(user__email__icontains=value) | Q(user__name__icontains=value) |
-                               Q(name__icontains=value))
+        return queryset.filter(Q(user__email__unaccent__icontains=value) | Q(user__name__unaccent__icontains=value) |
+                               Q(name__unaccent__icontains=value))
 
     class Meta:
         model = SponsorApplication

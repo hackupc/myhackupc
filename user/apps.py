@@ -11,3 +11,5 @@ class UserConfig(AppConfig):
         from .signals import user_organizer, user_verify_email
         user_organizer
         user_verify_email
+        from .lookups import register
+        register()

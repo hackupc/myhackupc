@@ -21,9 +21,9 @@ class BaggageListFilter(django_filters.FilterSet):
 
     def search_filter(self, queryset, name, value):
         queryfilter = queryset.annotate(fullpos=Concat('room', 'row', 'col', output_field=CharField()))
-        return queryfilter.filter((Q(owner__email__icontains=value) | Q(owner__name__icontains=value) |
-                                   Q(status__icontains=value) | Q(btype__icontains=value) | Q(color__icontains=value) |
-                                   Q(description__icontains=value) | Q(fullpos__icontains=value)))
+        return queryfilter.filter((Q(owner__email__unaccent__icontains=value) | Q(owner__name__unaccent__icontains=value) |
+                                   Q(status__unaccent__icontains=value) | Q(btype__unaccent__icontains=value) | Q(color__unaccent__icontains=value) |
+                                   Q(description__unaccent__icontains=value) | Q(fullpos__unaccent__icontains=value)))
 
     def search_time(self, queryset, name, value):
         if name == 'time_from':
@@ -39,15 +39,15 @@ class BaggageUsersFilter(django_filters.FilterSet):
     search = django_filters.CharFilter(method='search_filter', label='Search')
 
     def search_filter(self, queryset, name, value):
-        return queryset.filter(Q(hacker__user__email__icontains=value) |
-                               Q(hacker__user__name__icontains=value) |
-                               Q(volunteer__user__email__icontains=value) |
-                               Q(volunteer__user__name__icontains=value) |
-                               Q(mentor__user__email__icontains=value) |
-                               Q(mentor__user__name__icontains=value) |
-                               Q(sponsor__user__email__icontains=value) |
-                               Q(sponsor__user__name__icontains=value) |
-                               Q(qr_identifier__icontains=value))
+        return queryset.filter(Q(hacker__user__email__unaccent__icontains=value) |
+                               Q(hacker__user__name__unaccent__icontains=value) |
+                               Q(volunteer__user__email__unaccent__icontains=value) |
+                               Q(volunteer__user__name__unaccent__icontains=value) |
+                               Q(mentor__user__email__unaccent__icontains=value) |
+                               Q(mentor__user__name__unaccent__icontains=value) |
+                               Q(sponsor__user__email__unaccent__icontains=value) |
+                               Q(sponsor__user__name__unaccent__icontains=value) |
+                               Q(qr_identifier__unaccent__icontains=value))
 
     class Meta:
         model = CheckIn
