@@ -28,6 +28,8 @@
 
 ## Setup
 
+> For a step-by-step local setup guide see [docs/setting-up.md](docs/setting-up.md). For codebase orientation see [docs/getting-started.md](docs/getting-started.md).
+
 Needs: Python 3.X, virtualenv
 
 Stable at v. 3.10.X
@@ -36,7 +38,8 @@ Stable at v. 3.10.X
 - `virtualenv env --python=python3.10`
 - `source ./env/bin/activate`
 - `pip install -r requirements.txt`
-- (Optional) If using Postgres, set up the necessary environment variables for its usage before this step
+- Possible error: psycopg2-binary --> install openssl@3 and export LDFLAGS, CPPFLAGS and PKG_CONFIG_PATH 
+- (Optional) If using Postgres, set up the necessary environment variables for its usage before next step. Install libpq and add it to PATH.
 - `python manage.py migrate`
 - `python manage.py createsuperuser` (creates super user to manage all the app)
 

@@ -1,0 +1,98 @@
+/* Bootstrap 3 overrides — misc */
+.btn-group-vertical>.btn-group:after,.btn-group-vertical>.btn-group:before,.btn-toolbar:after,.btn-toolbar:before,.clearfix:after,.clearfix:before,.container-fluid:after,.container-fluid:before,.container:after,.container:before,.dl-horizontal dd:after,.dl-horizontal dd:before,.form-horizontal .form-group:after,.form-horizontal .form-group:before,.modal-footer:after,.modal-footer:before,.modal-header:after,.modal-header:before,.nav:after,.nav:before,.navbar-collapse:after,.navbar-collapse:before,.navbar-header:after,.navbar-header:before,.navbar:after,.navbar:before,.pager:after,.pager:before,.panel-body:after,.panel-body:before,.row:after,.row:before{display:table;content:" "}
+.btn-group-vertical>.btn-group:after,.btn-toolbar:after,.clearfix:after,.container-fluid:after,.container:after,.dl-horizontal dd:after,.form-horizontal .form-group:after,.modal-footer:after,.modal-header:after,.nav:after,.navbar-collapse:after,.navbar-header:after,.navbar:after,.pager:after,.panel-body:after,.row:after{clear:both}
+.center-block{display:block;margin-right:auto;margin-left:auto}
+.pull-right{float:right!important}
+.pull-left{float:left!important}
+.hide{display:none!important}
+.show{display:block!important}
+.hidden,.visible-lg,.visible-lg-block,.visible-lg-inline,.visible-lg-inline-block,.visible-md,.visible-md-block,.visible-md-inline,.visible-md-inline-block,.visible-sm,.visible-sm-block,.visible-sm-inline,.visible-sm-inline-block,.visible-xs,.visible-xs-block,.visible-xs-inline,.visible-xs-inline-block{display:none!important}
+.invisible{visibility:hidden}
+.text-hide{font:0/0 a;color:transparent;background-color:transparent;border:0}
+.affix{position:fixed}
+@-ms-viewport{width:device-width}
+@media (max-width:767px){.visible-xs{display:block!important}
+table.visible-xs{display:table!important}
+tr.visible-xs{display:table-row!important}
+td.visible-xs,th.visible-xs{display:table-cell!important}
+.visible-xs-block{display:block!important}
+.visible-xs-inline{display:inline!important}
+.visible-xs-inline-block{display:inline-block!important}
+}
+@media (min-width:768px) and (max-width:991px){.visible-sm{display:block!important}
+table.visible-sm{display:table!important}
+tr.visible-sm{display:table-row!important}
+td.visible-sm,th.visible-sm{display:table-cell!important}
+.visible-sm-block{display:block!important}
+.visible-sm-inline{display:inline!important}
+.visible-sm-inline-block{display:inline-block!important}
+}
+@media (min-width:992px) and (max-width:1199px){.visible-md{display:block!important}
+table.visible-md{display:table!important}
+tr.visible-md{display:table-row!important}
+td.visible-md,th.visible-md{display:table-cell!important}
+.visible-md-block{display:block!important}
+.visible-md-inline{display:inline!important}
+.visible-md-inline-block{display:inline-block!important}
+}
+@media (min-width:1200px){.visible-lg{display:block!important}
+table.visible-lg{display:table!important}
+tr.visible-lg{display:table-row!important}
+td.visible-lg,th.visible-lg{display:table-cell!important}
+.visible-lg-block{display:block!important}
+.visible-lg-inline{display:inline!important}
+.visible-lg-inline-block{display:inline-block!important}
+}
+@media (max-width:767px){.hidden-xs{display:none!important}
+}
+@media (min-width:768px) and (max-width:991px){.hidden-sm{display:none!important}
+}
+@media (min-width:992px) and (max-width:1199px){.hidden-md{display:none!important}
+}
+@media (min-width:1200px){.hidden-lg{display:none!important}
+}
+.visible-print{display:none!important}
+@media print{.visible-print{display:block!important}
+table.visible-print{display:table!important}
+tr.visible-print{display:table-row!important}
+td.visible-print,th.visible-print{display:table-cell!important}
+}
+.visible-print-block{display:none!important}
+@media print{.visible-print-block{display:block!important}
+}
+.visible-print-inline{display:none!important}
+@media print{.visible-print-inline{display:inline!important}
+}
+.visible-print-inline-block{display:none!important}
+@media print{.visible-print-inline-block{display:inline-block!important}
+.hidden-print{display:none!important}
+}
+
+.menu-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.menu-item {
+    padding: 10px 20px;
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    margin: 0 10px;
+    border-bottom: 2px solid transparent;
+    transition: color 0.3s, border-bottom 0.3s;
+}
+
+.menu-item:hover {
+    color: #231F20;
+    border-bottom: 2px solid #231F20;
+}
+
+.menu-item.active {
+    color: #231F20;
+    border-bottom: 2px solid #231F20;
+}
+
+.alert {border-radius:8px !important;}

@@ -1,0 +1,16 @@
+/* Bootstrap 3 overrides — scaffolding */
+*,:after,:before{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box}
+body{margin:0;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:14px;color:#333}
+button,input,select,textarea{font-family:inherit;font-size:inherit;line-height:inherit}
+a{color:#5B5340;text-decoration:none}
+a:focus,a:hover{color:#231F20;text-decoration:underline}
+a:focus{outline:-webkit-focus-ring-color auto 5px;outline-offset:-2px}
+figure{margin:0}
+.carousel-inner>.item>a>img,.carousel-inner>.item>img,.img-responsive,.thumbnail a>img,.thumbnail>img{display:block;max-width:100%;height:auto}
+.img-rounded{border-radius:8px}
+.img-thumbnail{padding:4px;border:1px solid #ddd;border-radius:8px;-webkit-transition:all .2s ease-in-out;-o-transition:all .2s ease-in-out;transition:all .2s ease-in-out;max-width:100%;height:auto}
+.img-circle{border-radius:50%}
+hr{margin-top:20px;margin-bottom:20px;border:0;border-top:1px solid #eee}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+.sr-only-focusable:active,.sr-only-focusable:focus{position:static;width:auto;height:auto;margin:0;overflow:visible;clip:auto}
+[role=button]{cursor:pointer}

@@ -1,29 +1,26 @@
 import json
+import base64
+import time
 
+from django.conf import settings
+from django.contrib import messages
+from django.core.files.base import ContentFile
+from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonResponse
+from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse
+from django_filters.views import FilterView
+from django_tables2 import SingleTableMixin
+from rest_framework.views import APIView
 
 from app.mixins import TabsViewMixin
 from app.services.messages import MessageManager
-from baggage.tables import BaggageListTable, BaggageListFilter, BaggageUsersTable
-from baggage.tables import BaggageUsersFilter, BaggageCurrentHackerTable
-from baggage.models import Bag, BAG_ADDED, BAG_REMOVED, Room
-from user.models import User
-from checkin.models import CheckIn
-from django_tables2 import SingleTableMixin
-from django_filters.views import FilterView
 from app.views import TabsView
-from rest_framework.views import APIView
-from django.contrib import messages
-from django.http import HttpResponseRedirect, Http404
-from django.shortcuts import redirect, get_object_or_404
+from baggage.models import Bag, BAG_ADDED, BAG_REMOVED, Room
+from baggage.tables import BaggageListTable, BaggageListFilter, BaggageUsersTable, BaggageUsersFilter
 from baggage import utils
-import base64
-from django.core.files.base import ContentFile
-import time
+from checkin.models import CheckIn
 from user.mixins import IsVolunteerMixin
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse, JsonResponse
-from django.conf import settings
+from user.models import User
 
 
 def baggage_checkIn(request, bag, bagrow, bagcol, bagroom, posmanual, bagspe):
@@ -71,11 +68,6 @@ def organizer_tabs(user):
          ('List', reverse('baggage_list'), False),
          ('Map', reverse('baggage_map'), False),
          ('History', reverse('baggage_history'), False)]
-    return t
-
-
-def hacker_tabs(user):
-    t = [('Baggage', reverse('baggage_currenthacker'), False)]
     return t
 
 
@@ -255,20 +247,6 @@ class BaggageHistory(IsVolunteerMixin, TabsView):
             'bags': bags
         })
         return context
-
-
-class BaggageCurrentHacker(LoginRequiredMixin, TabsViewMixin, SingleTableMixin, FilterView):
-    template_name = 'baggage_currenthacker.html'
-    table_class = BaggageCurrentHackerTable
-    filterset_class = BaggageListFilter
-    table_pagination = {'per_page': 100}
-
-    def get_current_tabs(self):
-        return hacker_tabs(self.request.user)
-
-    def get_queryset(self):
-        user = self.request.user
-        return Bag.objects.filter(status=BAG_ADDED, owner=user)
 
 
 class BaggageAPI(APIView):
