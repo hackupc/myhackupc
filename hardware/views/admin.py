@@ -179,7 +179,7 @@ class HardwareAdminView(IsHardwareAdminMixin, TabsViewMixin, TemplateView):
         Gets a list of suggestions based on the input (typeahead)
         """
         checkins = CheckIn.objects.filter(
-            Q(hacker__user__name__icontains=request.POST['query']) |
+            Q(hacker__user__name__unaccent__icontains=request.POST['query']) |
             Q(hacker__user__email__startswith=request.POST['query']) |
             Q(qr_identifier=request.POST['query']))
 

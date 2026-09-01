@@ -23,10 +23,10 @@ class ApplicationFilter(django_filters.FilterSet):
 
     def search_filter(self, queryset, name, value):
         return queryset.filter(
-            Q(user__email__icontains=value)
-            | Q(user__name__icontains=value)
-            | Q(university__icontains=value)
-            | Q(origin__icontains=value)
+            Q(user__email__unaccent__icontains=value)
+            | Q(user__name__unaccent__icontains=value)
+            | Q(university__unaccent__icontains=value)
+            | Q(origin__unaccent__icontains=value)
         )
 
     class Meta:
@@ -51,10 +51,10 @@ class DubiousApplicationFilter(django_filters.FilterSet):
 
     def search_filter(self, queryset, name, value):
         return queryset.filter(
-            Q(user__email__icontains=value)
-            | Q(user__name__icontains=value)
-            | Q(university__icontains=value)
-            | Q(origin__icontains=value)
+            Q(user__email__unaccent__icontains=value)
+            | Q(user__name__unaccent__icontains=value)
+            | Q(university__unaccent__icontains=value)
+            | Q(origin__unaccent__icontains=value)
         )
 
     class Meta:
@@ -67,10 +67,10 @@ class BlacklistApplicationFilter(django_filters.FilterSet):
 
     def search_filter(self, queryset, name, value):
         return queryset.filter(
-            Q(user__email__icontains=value)
-            | Q(user__name__icontains=value)
-            | Q(university__icontains=value)
-            | Q(origin__icontains=value)
+            Q(user__email__unaccent__icontains=value)
+            | Q(user__name__unaccent__icontains=value)
+            | Q(university__unaccent__icontains=value)
+            | Q(origin__unaccent__icontains=value)
         )
 
     class Meta:
@@ -94,10 +94,10 @@ class InviteFilter(django_filters.FilterSet):
 
     def search_filter(self, queryset, name, value):
         return queryset.filter(
-            Q(user__email__icontains=value)
-            | Q(user__name__icontains=value)
-            | Q(university__icontains=value)
-            | Q(origin__icontains=value)
+            Q(user__email__unaccent__icontains=value)
+            | Q(user__name__unaccent__icontains=value)
+            | Q(university__unaccent__icontains=value)
+            | Q(origin__unaccent__icontains=value)
         )
 
     class Meta:
@@ -273,9 +273,9 @@ class SponsorFilter(django_filters.FilterSet):
 
     def search_filter(self, queryset, name, value):
         return queryset.filter(
-            Q(email__icontains=value)
-            | Q(user__name__icontains=value)
-            | Q(name__icontains=value)
+            Q(email__unaccent__icontains=value)
+            | Q(user__name__unaccent__icontains=value)
+            | Q(name__unaccent__icontains=value)
         )
 
     class Meta:
@@ -307,7 +307,7 @@ class SponsorUserFilter(django_filters.FilterSet):
     search = django_filters.CharFilter(method="search_filter", label="Search")
 
     def search_filter(self, queryset, name, value):
-        return queryset.filter(Q(email__icontains=value) | Q(name__icontains=value))
+        return queryset.filter(Q(email__unaccent__icontains=value) | Q(name__unaccent__icontains=value))
 
     class Meta:
         model = User
