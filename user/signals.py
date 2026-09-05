@@ -51,5 +51,5 @@ def change_type(sender, instance, *args, **kwargs):
         if old_user.is_hacker():
             DraftApplication.create_draft_application(instance.hackerapplication_application)
             instance.hackerapplication_application.delete()
-    elif old_user and old_user.is_sponsor() and old_user.sponsorapplication_application:
+    elif old_user and old_user.type != instance.type and old_user.is_sponsor() and old_user.sponsorapplication_application:
         instance.sponsorapplication_application.all().delete()

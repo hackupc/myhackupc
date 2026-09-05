@@ -5,9 +5,55 @@ from django.core import mail
 from django.urls import reverse
 from django.utils import timezone
 
-from applications.models import APP_CONFIRMED, APP_DUBIOUS, APP_INVITED, APP_REJECTED
+from applications.models import APP_CONFIRMED, APP_DUBIOUS, APP_INVITED, APP_PENDING, APP_REJECTED
 from organizers.models import ApplicationComment, Vote
-from tests.factories import HackerApplicationFactory
+from tests.factories import (
+    HackerApplicationFactory,
+    MentorApplicationFactory,
+    SponsorApplicationFactory,
+    VolunteerApplicationFactory,
+    VolunteerUserFactory,
+)
+from organizers.views.review import add_comment
+
+
+@pytest.mark.django_db
+def test_not_dubious_with_volunteer_user_role(director_client):
+    client, director = director_client
+    app = HackerApplicationFactory(user=VolunteerUserFactory())
+    app.set_dubious(director, "Other", "Needs review")
+
+    response = client.post(
+        reverse("app_detail", kwargs={"id": app.uuid_str}),
+        data={"app_id": str(app.pk), "unset_dubious": "true"},
+    )
+
+    assert response.status_code == 302
+    app.refresh_from_db()
+    assert app.status == APP_PENDING
+    assert app.dubioused_by is None
+    comment = ApplicationComment.objects.get(hacker=app)
+    assert comment.author == director
+    assert comment.volunteer_id is None
+    assert "No problems, hacker allowed to participate" in comment.text
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("factory, field", [
+    (HackerApplicationFactory, "hacker"),
+    (VolunteerApplicationFactory, "volunteer"),
+    (MentorApplicationFactory, "mentor"),
+    (SponsorApplicationFactory, "sponsor"),
+])
+def test_comments_follow_application_type_after_user_role_change(organizer_user, factory, field):
+    app = factory(user=organizer_user)
+
+    comment = add_comment(app, organizer_user, "Reviewed")
+
+    comment.refresh_from_db()
+    assert comment.application == app
+    for application_field in ("hacker", "volunteer", "mentor", "sponsor"):
+        assert getattr(comment, application_field + "_id") == (app.pk if application_field == field else None)
 
 
 def reviewable_application(**kwargs):
