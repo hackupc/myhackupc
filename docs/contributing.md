@@ -79,7 +79,7 @@ Find and update the reimbursement limit variables. No migration or code change n
 | ------------------------------------------------------- | ------------------------------------- |
 | Application status flow (pending → invited → confirmed) | `applications/models/base.py`         |
 | Who can review applications and vote                    | `organizers/views/review.py`          |
-| Batch invite algorithm                                  | `organizers/views/batch_ops.py`       |
+| Batch invite algorithm                                  | `organizers/views/invite.py`          |
 | Email content                                           | See `docs/email-templates.md`         |
 | Check-in logic                                          | `checkin/views.py`                    |
 | User roles and permissions                              | `user/models.py`, `user/mixins.py`    |

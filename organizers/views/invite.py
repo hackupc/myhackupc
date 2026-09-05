@@ -72,7 +72,7 @@ class InviteTeamListView(
                 ),
             )
             .exclude(members=F("accepted"))
-            .exclude(Q(live_pending=0) | Q(live_pending__gt=F("members") / 2))
+            .exclude(Q(live_pending=0) | Q(live_pending__gt=F("members") * 0.35))
             .order_by("-vote_avg")
         )
 
