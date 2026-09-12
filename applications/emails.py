@@ -3,6 +3,7 @@ from django.core import mail
 
 from app import emails
 from app.utils import reverse
+from applications.models import HackerApplication
 
 
 # online_option can be Live, Online, Changed
@@ -14,7 +15,7 @@ def create_invite_email(application, request):
         'cancel_url': str(reverse('cancel_app', request=request, kwargs={'id': application.uuid_str})),
         'hybrid_option': 'Online' if getattr(application, 'online', False) else 'Live',
     }
-    if application.user.is_hacker():
+    if application.user.is_hacker() or isinstance(application, HackerApplication):
         return emails.render_mail('mails/invitation_hacker', application.user.email, c)
 
     # if application.user.is_mentor():
@@ -32,7 +33,7 @@ def create_confirmation_email(application, request):
         'is_hacker': application.user.is_hacker(),
         'is_sponsor': application.user.is_sponsor(),
     }
-    if application.user.is_hacker():
+    if application.user.is_hacker() or isinstance(application, HackerApplication):
         return emails.render_mail('mails/confirmation', application.user.email, c)
 
 
@@ -48,7 +49,7 @@ def create_lastreminder_email(application):
         'is_hacker': application.user.is_hacker(),
         'is_sponsor': application.user.is_sponsor(),
     }
-    if application.user.is_hacker():
+    if application.user.is_hacker() or isinstance(application, HackerApplication):
         return emails.render_mail('mails/last_reminder', application.user.email, c, action_required=True)
 
 

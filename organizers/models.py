@@ -104,13 +104,13 @@ class ApplicationComment(models.Model):
         return None
 
     def set_application(self, app):
-        if app.user.is_hacker():
+        if isinstance(app, HackerApplication):
             self.hacker = app
-        elif app.user.is_volunteer():
+        elif isinstance(app, VolunteerApplication):
             self.volunteer = app
-        elif app.user.is_mentor():
+        elif isinstance(app, MentorApplication):
             self.mentor = app
-        elif app.user.is_sponsor():
+        elif isinstance(app, SponsorApplication):
             self.sponsor = app
         else:
             raise ValueError
