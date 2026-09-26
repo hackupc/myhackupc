@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+from math import sqrt
+
 from django.db import models
 # Votes weight
 from django.db.models import Avg, F
@@ -54,19 +56,20 @@ class Vote(models.Model):
         avgs = User.objects.filter(id=self.user_id).aggregate(
             tech=Avg('vote__tech'),
             pers=Avg('vote__personal'))
-        p_avg = round(avgs['pers'], 2)
-        t_avg = round(avgs['tech'], 2)
+        p_avg = avgs['pers']
+        t_avg = avgs['tech']
 
-        # Calculate standard deviation for each scores
-        sds = User.objects.filter(id=self.user_id).aggregate(
+        # Calculate population variance for each score across this user's votes
+        variances = User.objects.filter(id=self.user_id).aggregate(
             tech=Avg((F('vote__tech') - t_avg) * (F('vote__tech') - t_avg)),
             pers=Avg((F('vote__personal') - p_avg) *
                      (F('vote__personal') - p_avg)))
 
         # Alternatively, if standard deviation is 0.0, set it as 1.0 to avoid
         # division by 0.0 in the update statement
-        p_sd = round(sds['pers'], 2) or 1.0
-        t_sd = round(sds['tech'], 2) or 1.0
+        # Keep full precision (rounding can turn a small variance into zero)
+        p_sd = sqrt(variances['pers']) or 1.0
+        t_sd = sqrt(variances['tech']) or 1.0
 
         # Apply standarization. Standarization formula:
         # x(new) = (x - u)/o
