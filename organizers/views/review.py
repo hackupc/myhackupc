@@ -26,6 +26,7 @@ from applications.models import (
     AcceptedResume,
     APP_ATTENDED,
 )
+from applications.validators import validate_file_extension_size
 from organizers import models
 from teams.models import Team
 from user.mixins import (
@@ -63,6 +64,22 @@ def add_comment(application, user, text):
     comment.text = text
     comment.save()
     return comment
+
+
+def change_application_resume(request, application):
+    resume = request.FILES.get("resume")
+    if not resume:
+        messages.error(request, "Please select a resume file")
+        return False
+    try:
+        validate_file_extension_size(resume)
+    except ValidationError as e:
+        messages.error(request, "; ".join(e.messages))
+        return False
+    application.resume = resume
+    application.save()
+    messages.success(request, "Resume updated")
+    return True
 
 
 class ApplicationDetailView(TabsViewMixin, IsOrganizerMixin, TemplateView):
@@ -193,6 +210,11 @@ class ApplicationDetailView(TabsViewMixin, IsOrganizerMixin, TemplateView):
                 + motive_of_ban,
             )
             application.confirm_blacklist(request.user, motive_of_ban)
+        elif request.POST.get("change_resume"):
+            if request.user.has_hx_access:
+                change_application_resume(request, application)
+            else:
+                messages.error(request, "You have no permissions to do this")
 
         return HttpResponseRedirect(
             reverse("app_detail", kwargs={"id": application.uuid_str})

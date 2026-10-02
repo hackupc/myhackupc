@@ -122,6 +122,7 @@ class User(AbstractBaseUser):
     can_review_volunteers = models.BooleanField(default=False)
     can_review_mentors = models.BooleanField(default=False)
     can_review_sponsors = models.BooleanField(default=False)
+    is_hx = models.BooleanField(default=False, verbose_name='Can modify CV')
     max_applications = models.IntegerField(default=1)
     email_subscribed = models.BooleanField(default=False)
     mlh_subscribed = models.BooleanField(default=False)
@@ -190,6 +191,10 @@ class User(AbstractBaseUser):
     @property
     def has_reimbursement_access(self):
         return self.is_director
+
+    @property
+    def has_hx_access(self):
+        return self.is_hx
 
     @property
     def is_organizer(self):
