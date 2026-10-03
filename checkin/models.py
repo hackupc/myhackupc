@@ -5,6 +5,7 @@ from django.db import models
 from django.utils import timezone
 
 from applications.models.constants import APP_CONFIRMED, APP_ATTENDED
+from applications.models import HackerApplication, VolunteerApplication, MentorApplication, SponsorApplication
 from offer.models import Code
 from user.models import User
 
@@ -33,13 +34,13 @@ class CheckIn(models.Model):
         return None
 
     def set_application(self, app):
-        if app.user.is_hacker():
+        if isinstance(app, HackerApplication):
             self.hacker = app
-        elif app.user.is_volunteer():
+        elif isinstance(app, VolunteerApplication):
             self.volunteer = app
-        elif app.user.is_mentor():
+        elif isinstance(app, MentorApplication):
             self.mentor = app
-        elif app.user.is_sponsor():
+        elif isinstance(app, SponsorApplication):
             self.sponsor = app
         else:
             raise ValueError
