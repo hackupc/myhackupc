@@ -44,10 +44,10 @@ def check_application_exists(user, uuid):
             user.type, models.HackerApplication
         ).objects.get(user=user)
     except (
-        models.HackerApplication.DoesNotExist
-        or models.VolunteerApplication.DoesNotExist
-        or models.SponsorApplication.DoesNotExist
-        or models.MentorApplication.DoesNotExist
+        models.HackerApplication.DoesNotExist,
+        models.VolunteerApplication.DoesNotExist,
+        models.SponsorApplication.DoesNotExist,
+        models.MentorApplication.DoesNotExist,
     ):
         raise Http404
     if not application or uuid != application.uuid_str:
