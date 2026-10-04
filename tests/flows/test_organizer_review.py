@@ -2,6 +2,7 @@ from datetime import timedelta
 
 import pytest
 from django.core import mail
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
 from django.utils import timezone
 
@@ -208,3 +209,94 @@ def test_organizer_can_comment_on_application_detail(organizer_client):
 
     assert response.status_code == 302
     assert ApplicationComment.objects.filter(hacker=app, author=organizer, text="Reviewed manually").count() == 1
+
+
+def _pdf_file(name="cv.pdf"):
+    return SimpleUploadedFile(name, b"%PDF-1.4 content", content_type="application/pdf")
+
+
+@pytest.mark.django_db
+def test_hx_can_change_hacker_resume(hx_client):
+    client, user = hx_client
+    app = HackerApplicationFactory(
+        resume=SimpleUploadedFile("old.pdf", b"%PDF-1.4 old", content_type="application/pdf")
+    )
+
+    response = client.post(
+        reverse("app_detail", kwargs={"id": app.uuid_str}),
+        data={
+            "app_id": str(app.pk),
+            "change_resume": "change_resume",
+            "resume": SimpleUploadedFile("new.pdf", b"%PDF-1.4 replaced", content_type="application/pdf"),
+        },
+    )
+
+    app.refresh_from_db()
+    app.resume.open("rb")
+    try:
+        content = app.resume.read()
+    finally:
+        app.resume.close()
+    assert response.status_code == 302
+    assert b"replaced" in content
+    assert ApplicationComment.objects.filter(
+        hacker=app, author=user, text="Resume updated"
+    ).exists()
+
+
+@pytest.mark.django_db
+def test_organizer_without_hx_cannot_change_hacker_resume(organizer_client):
+    client, _ = organizer_client
+    app = HackerApplicationFactory(resume=_pdf_file("old.pdf"))
+
+    response = client.post(
+        reverse("app_detail", kwargs={"id": app.uuid_str}),
+        data={
+            "app_id": str(app.pk),
+            "change_resume": "change_resume",
+            "resume": SimpleUploadedFile("new.pdf", b"%PDF-1.4 replaced", content_type="application/pdf"),
+        },
+    )
+
+    app.refresh_from_db()
+    app.resume.open("rb")
+    try:
+        content = app.resume.read()
+    finally:
+        app.resume.close()
+    assert response.status_code == 302
+    assert b"replaced" not in content
+
+
+@pytest.mark.django_db
+def test_hx_sees_change_cv_button(hx_client):
+    client, _ = hx_client
+    app = HackerApplicationFactory(resume=_pdf_file("old.pdf"))
+
+    response = client.get(reverse("app_detail", kwargs={"id": app.uuid_str}))
+
+    assert response.status_code == 200
+    assert b"Change CV" in response.content
+
+
+@pytest.mark.django_db
+def test_hx_does_not_see_change_cv_button_during_review(hx_client):
+    client, _ = hx_client
+    app = reviewable_application(resume=_pdf_file("old.pdf"))
+
+    response = client.get(reverse("review"))
+
+    assert response.status_code == 200
+    assert response.context["app"].pk == app.pk
+    assert b"Change CV" not in response.content
+
+
+@pytest.mark.django_db
+def test_organizer_without_hx_does_not_see_change_cv_button(organizer_client):
+    client, _ = organizer_client
+    app = HackerApplicationFactory(resume=_pdf_file("old.pdf"))
+
+    response = client.get(reverse("app_detail", kwargs={"id": app.uuid_str}))
+
+    assert response.status_code == 200
+    assert b"Change CV" not in response.content
