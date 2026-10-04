@@ -78,6 +78,7 @@ def change_application_resume(request, application):
         return False
     application.resume = resume
     application.save()
+    add_comment(application, request.user, "Resume updated")
     messages.success(request, "Resume updated")
     return True
 

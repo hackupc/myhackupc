@@ -83,7 +83,7 @@
                                 </form>
                             {% endif %}
                         {% endif %}
-                        {% if request.user.has_hx_access %}
+                        {% if request.user.has_hx_access and not vote %}
                             <form action="{% url 'app_detail' app.uuid_str %}" method="post" enctype="multipart/form-data" style="margin-top:8px;">
                                 {% csrf_token %}
                                 <input type="hidden" name="app_id" value="{{ app.pk }}"/>

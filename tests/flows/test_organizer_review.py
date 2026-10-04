@@ -217,7 +217,7 @@ def _pdf_file(name="cv.pdf"):
 
 @pytest.mark.django_db
 def test_hx_can_change_hacker_resume(hx_client):
-    client, _ = hx_client
+    client, user = hx_client
     app = HackerApplicationFactory(
         resume=SimpleUploadedFile("old.pdf", b"%PDF-1.4 old", content_type="application/pdf")
     )
@@ -239,6 +239,9 @@ def test_hx_can_change_hacker_resume(hx_client):
         app.resume.close()
     assert response.status_code == 302
     assert b"replaced" in content
+    assert ApplicationComment.objects.filter(
+        hacker=app, author=user, text="Resume updated"
+    ).exists()
 
 
 @pytest.mark.django_db
@@ -274,6 +277,18 @@ def test_hx_sees_change_cv_button(hx_client):
 
     assert response.status_code == 200
     assert b"Change CV" in response.content
+
+
+@pytest.mark.django_db
+def test_hx_does_not_see_change_cv_button_during_review(hx_client):
+    client, _ = hx_client
+    app = reviewable_application(resume=_pdf_file("old.pdf"))
+
+    response = client.get(reverse("review"))
+
+    assert response.status_code == 200
+    assert response.context["app"].pk == app.pk
+    assert b"Change CV" not in response.content
 
 
 @pytest.mark.django_db
