@@ -6,7 +6,7 @@ import os
 from django.utils import timezone
 # Hackathon timezone
 TIME_ZONE = "CET"
-YEAR = 2026
+YEAR = 2027
 # Applications deadline
 HACKATHON_APP_DEADLINE = timezone.datetime(
     YEAR, 4, 1, 23, 59, tzinfo=timezone.pytz.timezone(TIME_ZONE)
