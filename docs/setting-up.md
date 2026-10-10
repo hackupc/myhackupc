@@ -11,8 +11,9 @@
 
 ```bash
 git clone https://github.com/hackupc/myhackupc && cd myhackupc
-virtualenv env --python=python3.10
+virtualenv env --python=python3.10    # o bé python3.10 -m venv env
 source ./env/bin/activate
+python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 

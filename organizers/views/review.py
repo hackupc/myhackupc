@@ -7,26 +7,24 @@ from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
-from django.db.models import Count, Q
 from django.http import Http404, HttpResponseRedirect, HttpResponse
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.views.generic import TemplateView
-from django.utils import timezone
-from datetime import timedelta
+from django.utils.functional import cached_property
 
 from app import slack
 from app.mixins import TabsViewMixin
 from app.slack import SlackInvitationException
 from applications import emails
 from applications.models import (
-    APP_PENDING,
     APP_DUBIOUS,
     APP_BLACKLISTED,
     AcceptedResume,
     APP_ATTENDED,
 )
 from organizers import models
+from organizers.review_policy import add_vote, next_review_application, reviewable_applications
 from teams.models import Team
 from user.mixins import (
     IsOrganizerMixin,
@@ -35,25 +33,6 @@ from user.mixins import (
 )
 
 from organizers.views.application_lists import hacker_tabs
-
-
-def add_vote(application, user, tech_rat, pers_rat):
-    """
-    Save the vote of the application and
-    if the number of votes is >= 5 and the CV is not flagged, create an AcceptedResume
-    """
-    v = models.Vote()
-    v.user = user
-    v.application = application
-    v.tech = tech_rat
-    v.personal = pers_rat
-    v.save()
-    votes_count = application.vote_set.count()
-    if votes_count >= 5 and not application.cv_flagged:
-        AcceptedResume.objects.update_or_create(
-            application=application, defaults={"accepted": True}
-        )
-    return v
 
 
 def add_comment(application, user, text):
@@ -79,16 +58,7 @@ class ApplicationDetailView(TabsViewMixin, IsOrganizerMixin, TemplateView):
         context["vote"] = self.can_vote()
         context["max_vote"] = dict(models.VOTES)
         if self.can_vote():
-            context["apps_left_to_vote"] = (
-                models.HackerApplication.objects.exclude(
-                    vote__user_id=self.request.user.id
-                )
-                .filter(
-                    status=APP_PENDING,
-                    submission_date__lte=timezone.now() - timedelta(hours=2),
-                )
-                .count()
-            )
+            context["apps_left_to_vote"] = self.review_applications.count()
 
         context["comments"] = models.ApplicationComment.objects.filter(
             hacker=application
@@ -251,35 +221,18 @@ class ApplicationDetailView(TabsViewMixin, IsOrganizerMixin, TemplateView):
 
 
 class ReviewApplicationView(ApplicationDetailView):
+    @cached_property
+    def review_applications(self):
+        return reviewable_applications(self.request.user)
+
     def get_current_tabs(self):
-        return hacker_tabs(self.request.user)
+        return hacker_tabs(self.request.user, self.review_applications)
 
     def get_back_url(self):
         return None
 
     def get_application(self, kwargs):
-        """
-        Django model to the rescue. This is transformed to an SQL sentence
-        that does exactly what we need
-        :return: pending aplication that has not been voted by the current
-        user and that has less votes and its older
-        """
-        max_votes_to_app = getattr(settings, "MAX_VOTES_TO_APP", 50)
-        return (
-            models.HackerApplication.objects.exclude(
-                Q(vote__user_id=self.request.user.id) | Q(user_id=self.request.user.id)
-            )
-            .filter(status=APP_PENDING)
-            .filter(submission_date__lte=timezone.now() - timedelta(hours=2))
-            .annotate(count=Count("vote__calculated_vote"))
-            .filter(count__lte=max_votes_to_app)
-            .order_by("count", "submission_date")
-            .first()
-        )
-
-    def get(self, request, *args, **kwargs):
-        r = super(ReviewApplicationView, self).get(request, *args, **kwargs)
-        return r
+        return next_review_application(self.review_applications)
 
     def post(self, request, *args, **kwargs):
         tech_vote = request.POST.get("tech_rat", None)
@@ -288,116 +241,10 @@ class ReviewApplicationView(ApplicationDetailView):
         dubious_type = request.POST.get("dubious_type", None)
         dubious_comment_text = request.POST.get("dubious_comment_text", None)
 
-        application = models.HackerApplication.objects.get(
-            pk=request.POST.get("app_id")
-        )
-        try:
-            if request.POST.get("skip"):
-                add_vote(application, request.user, None, None)
-            elif request.POST.get("add_comment"):
-                add_comment(application, request.user, comment_text)
-                return HttpResponseRedirect(
-                    "/applications/hacker/review/" + application.uuid_str
-                )
-            elif request.POST.get("set_dubious"):
-                application.set_dubious(
-                    request.user, dubious_type, dubious_comment_text
-                )
-            elif request.POST.get("unset_dubious"):
-                application.unset_dubious()
-            elif request.POST.get("set_flagged_cv") and request.user.is_organizer:
-                application.set_flagged_cv()
-            elif request.POST.get("unset_flagged_cv") and request.user.is_organizer:
-                application.unset_flagged_cv()
-            elif request.POST.get("set_blacklist") and request.user.is_organizer:
-                application.set_blacklist()
-            elif (
-                request.POST.get("unset_blacklist")
-                and request.user.has_blacklist_access
-            ):
-                add_comment(
-                    application,
-                    request.user,
-                    "Blacklist review result: No problems, hacker allowed to participate in hackathon!",
-                )
-                application.unset_blacklist()
-            else:
-                add_vote(application, request.user, tech_vote, pers_vote)
-        # If application has already been voted -> Skip and bring next
-        # application
-        except IntegrityError:
-            pass
-        return HttpResponseRedirect(reverse("review"))
-
-    def can_vote(self):
-        return True
-
-
-class ReviewApplicationDetailView(ApplicationDetailView):
-    def get_current_tabs(self):
-        return hacker_tabs(self.request.user)
-
-    def get_back_url(self):
-        return None
-
-    def get_application(self, kwargs):
-        """
-        Django model to the rescue. This is transformed to an SQL sentence
-        that does exactly what we need
-        :return: pending aplication that has not been voted by the current
-        user and that has less votes and its older
-        """
+        filters = {"pk": request.POST.get("app_id")}
         if "id" in kwargs:
-            if (
-                models.HackerApplication.objects.filter(uuid=kwargs["id"])
-                .first()
-                .status
-                != APP_PENDING
-            ):
-                max_votes_to_app = getattr(settings, "MAX_VOTES_TO_APP", 50)
-                return (
-                    models.HackerApplication.objects.exclude(
-                        Q(vote__user_id=self.request.user.id)
-                        | Q(user_id=self.request.user.id)
-                    )
-                    .filter(status=APP_PENDING)
-                    .filter(submission_date__lte=timezone.now() - timedelta(hours=2))
-                    .annotate(count=Count("vote__calculated_vote"))
-                    .filter(count__lte=max_votes_to_app)
-                    .order_by("count", "submission_date")
-                    .first()
-                )
-            else:
-                return models.HackerApplication.objects.get(uuid=kwargs["id"])
-        else:
-            max_votes_to_app = getattr(settings, "MAX_VOTES_TO_APP", 50)
-            return (
-                models.HackerApplication.objects.exclude(
-                    Q(vote__user_id=self.request.user.id)
-                    | Q(user_id=self.request.user.id)
-                )
-                .filter(status=APP_PENDING)
-                .filter(submission_date__lte=timezone.now() - timedelta(hours=2))
-                .annotate(count=Count("vote__calculated_vote"))
-                .filter(count__lte=max_votes_to_app)
-                .order_by("count", "submission_date")
-                .first()
-            )
-
-    def get(self, request, *args, **kwargs):
-        r = super(ReviewApplicationDetailView, self).get(request, *args, **kwargs)
-        return r
-
-    def post(self, request, *args, **kwargs):
-        tech_vote = request.POST.get("tech_rat", None)
-        pers_vote = request.POST.get("pers_rat", None)
-        comment_text = request.POST.get("comment_text", None)
-        dubious_type = request.POST.get("dubious_type", None)
-        dubious_comment_text = request.POST.get("dubious_comment_text", None)
-
-        application = models.HackerApplication.objects.get(
-            pk=request.POST.get("app_id")
-        )
+            filters["uuid"] = kwargs["id"]
+        application = get_object_or_404(models.HackerApplication, **filters)
         try:
             if request.POST.get("skip"):
                 add_vote(application, request.user, None, None)
@@ -429,15 +276,31 @@ class ReviewApplicationDetailView(ApplicationDetailView):
                 )
                 application.unset_blacklist()
             else:
+                if tech_vote is None or pers_vote is None:
+                    raise ValidationError("Choose both scores before voting.")
                 add_vote(application, request.user, tech_vote, pers_vote)
         # If application has already been voted -> Skip and bring next
         # application
         except IntegrityError:
             pass
+        except ValidationError as error:
+            messages.info(request, error.messages[0])
         return HttpResponseRedirect(reverse("review"))
 
     def can_vote(self):
         return True
+
+
+class ReviewApplicationDetailView(ReviewApplicationView):
+    def get(self, request, *args, **kwargs):
+        application = get_object_or_404(models.HackerApplication, uuid=kwargs["id"])
+        if not self.review_applications.filter(pk=application.pk).exists():
+            messages.info(request, "This application does not need your review right now.")
+            return redirect("app_detail", id=application.uuid_str)
+        return super().get(request, *args, **kwargs)
+
+    def get_application(self, kwargs):
+        return self.review_applications.filter(uuid=kwargs["id"]).first()
 
 
 class ReviewVolunteerApplicationView(IsOrganizerMixin, TabsViewMixin, TemplateView):
