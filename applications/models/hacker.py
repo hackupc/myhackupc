@@ -103,6 +103,10 @@ class HackerApplication(BaseApplication):
     def annotate_vote(cls, qs):
         return qs.annotate(vote_avg=Avg("vote__calculated_vote"))
 
+    @property
+    def scored_vote_count(self):
+        return self.vote_set.filter(calculated_vote__isnull=False).count()
+
     def invalidate(self):
         """
         Marks the application as invalid, but only if its current status is "dubious".
