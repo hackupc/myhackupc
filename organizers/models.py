@@ -82,6 +82,17 @@ class Vote(models.Model):
         unique_together = ('application', 'user')
 
 
+class ApplicationDiscard(models.Model):
+    application = models.ForeignKey(
+        HackerApplication, related_name='discards', on_delete=models.CASCADE
+    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        unique_together = ('application', 'user')
+
+
 class ApplicationComment(models.Model):
     hacker = models.ForeignKey(HackerApplication, null=True, on_delete=models.CASCADE)
     volunteer = models.ForeignKey(VolunteerApplication, null=True, on_delete=models.CASCADE)
