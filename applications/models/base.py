@@ -117,7 +117,9 @@ class BaseApplication(models.Model):
 
     def get_soft_status_display(self):
         text = self.get_status_display()
-        if BLACKLIST_TEXT == text or (DUBIOUS_TEXT == text and not self.contacted):
+        if text in (BLACKLIST_TEXT, DISCARDED_TEXT) or (
+            DUBIOUS_TEXT == text and not self.contacted
+        ):
             return PENDING_TEXT
         if DUBIOUS_TEXT == text and self.contacted:
             return "Action Required - Check your email"
@@ -165,6 +167,9 @@ class BaseApplication(models.Model):
 
     def is_dubious(self):
         return self.status == APP_DUBIOUS
+
+    def is_discarded(self):
+        return self.status == APP_DISCARDED
 
     def can_be_cancelled(self):
         return (

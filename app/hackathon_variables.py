@@ -144,6 +144,9 @@ DUBIOUS_ENABLED = True
 # Enable blacklist separate pipeline (disabled by default)
 BLACKLIST_ENABLED = True
 
+# "Mark as possible discard" votes needed before an application becomes Discarded
+DISCARDS_REQUIRED = 5
+
 SUPPORTED_RESUME_EXTENSIONS = [".pdf"]
 
 # Mentor/Volunteer applications can expire if they are invited, set to False to not
