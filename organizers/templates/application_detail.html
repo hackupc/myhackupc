@@ -31,7 +31,37 @@
         .icon-option.active i {
             color: #ffc107;
         }
+        .cv-file-input {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+        label.cv-file-button {
+            font-weight: normal;
+            margin-bottom: 8px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
     </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var input = document.getElementById('resumeFile');
+            var label = document.getElementById('resumeFileLabel');
+            if (!input || !label) {
+                return;
+            }
+            input.addEventListener('change', function () {
+                var file = input.files && input.files[0];
+                label.textContent = file ? file.name : 'Select PDF';
+            });
+        });
+    </script>
 {% endblock %}
 {% block panel %}
     {% if app %}
@@ -65,7 +95,7 @@
                     {% include 'include/field.html' with desc='Origin' value=app.origin %}
                 {% endif %}
                 {% include 'include/field.html' with desc='Under age (-18)' value=app.under_age|yesno:'Yes,No,Maybe' %}
-                {% if app.resume or request.user.has_hx_access %}
+                {% if app.resume or can_change_resume %}
                     <dt>Resume</dt>
                     <dd>
                         {% if app.resume %}
@@ -83,11 +113,12 @@
                                 </form>
                             {% endif %}
                         {% endif %}
-                        {% if request.user.has_hx_access and not vote %}
+                        {% if can_change_resume and not vote %}
                             <form action="{% url 'app_detail' app.uuid_str %}" method="post" enctype="multipart/form-data" style="margin-top:8px;">
                                 {% csrf_token %}
                                 <input type="hidden" name="app_id" value="{{ app.pk }}"/>
-                                <input type="file" name="resume" required accept=".pdf" class="form-control" style="margin-bottom:8px;"/>
+                                <input id="resumeFile" class="cv-file-input" type="file" name="resume" required accept=".pdf,application/pdf"/>
+                                <label id="resumeFileLabel" for="resumeFile" class="btn btn-default btn-sm btn-block cv-file-button">Select PDF</label>
                                 <button name="change_resume" class="btn btn-primary btn-sm btn-block" value="change_resume">
                                     {% if app.resume %}Change CV{% else %}Upload CV{% endif %}
                                 </button>

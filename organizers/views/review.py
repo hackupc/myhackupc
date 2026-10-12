@@ -66,6 +66,12 @@ def add_comment(application, user, text):
     return comment
 
 
+def user_can_change_application_resume(user, application):
+    if not application.is_dubious():
+        return False
+    return user.has_hx_access or user.has_dubious_access
+
+
 def change_application_resume(request, application):
     resume = request.FILES.get("resume")
     if not resume:
@@ -94,6 +100,10 @@ class ApplicationDetailView(TabsViewMixin, IsOrganizerMixin, TemplateView):
         context = super(ApplicationDetailView, self).get_context_data(**kwargs)
         application = self.get_application(kwargs)
         context["app"] = application
+        context["can_change_resume"] = bool(
+            application
+            and user_can_change_application_resume(self.request.user, application)
+        )
         context["vote"] = self.can_vote()
         context["max_vote"] = dict(models.VOTES)
         if self.can_vote():
@@ -212,7 +222,7 @@ class ApplicationDetailView(TabsViewMixin, IsOrganizerMixin, TemplateView):
             )
             application.confirm_blacklist(request.user, motive_of_ban)
         elif request.POST.get("change_resume"):
-            if request.user.has_hx_access:
+            if user_can_change_application_resume(request.user, application):
                 change_application_resume(request, application)
             else:
                 messages.error(request, "You have no permissions to do this")
