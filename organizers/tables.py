@@ -122,7 +122,7 @@ class ApplicationsListTable(tables.Table):
     )
     origin = tables.Column(accessor="origin", verbose_name="Origin")
     votes = tables.Column(
-        accessor="vote_set.count", verbose_name="Votes", orderable=False
+        accessor="scored_vote_count", verbose_name="Votes", orderable=False
     )
 
     class Meta:
@@ -180,7 +180,7 @@ def get_admin_application_list_fields():
 class AdminApplicationsListTable(tables.Table):
     selected = tables.CheckBoxColumn(accessor="pk", verbose_name="Select")
     counter = tables.TemplateColumn("{{ row_counter|add:1 }}", verbose_name="Position")
-    review_count = tables.Column(accessor="vote_set.count", verbose_name="# of reviews")
+    review_count = tables.Column(accessor="scored_vote_count", verbose_name="# of reviews")
     detail = tables.TemplateColumn(
         "<a href='{% url 'app_detail' record.uuid %}'>Detail</a> ",
         verbose_name="Actions",

@@ -291,8 +291,7 @@ MAX_UPLOAD_SIZE = 5242880
 # Max number of votation application from 1 to MAX_VOTES
 MAX_VOTES = 5
 
-# Max number of votes that can have one application
-MAX_VOTES_TO_APP = 30
+# Review policy settings are imported from hackathon_variables.py above.
 
 APPLICATION_EXPIRATION_TYPES = {
     'H': True,  # Hacker allways expire, do not change this
