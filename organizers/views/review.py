@@ -26,6 +26,7 @@ from applications.models import (
     AcceptedResume,
     APP_ATTENDED,
 )
+from applications.validators import validate_file_extension_size
 from organizers import models
 from teams.models import Team
 from user.mixins import (
@@ -65,6 +66,29 @@ def add_comment(application, user, text):
     return comment
 
 
+def user_can_change_application_resume(user, application):
+    if not application.is_dubious():
+        return False
+    return user.has_hx_access or user.has_dubious_access
+
+
+def change_application_resume(request, application):
+    resume = request.FILES.get("resume")
+    if not resume:
+        messages.error(request, "Please select a resume file")
+        return False
+    try:
+        validate_file_extension_size(resume)
+    except ValidationError as e:
+        messages.error(request, "; ".join(e.messages))
+        return False
+    application.resume = resume
+    application.save()
+    add_comment(application, request.user, "Resume updated")
+    messages.success(request, "Resume updated")
+    return True
+
+
 class ApplicationDetailView(TabsViewMixin, IsOrganizerMixin, TemplateView):
     template_name = "application_detail.html"
 
@@ -76,6 +100,10 @@ class ApplicationDetailView(TabsViewMixin, IsOrganizerMixin, TemplateView):
         context = super(ApplicationDetailView, self).get_context_data(**kwargs)
         application = self.get_application(kwargs)
         context["app"] = application
+        context["can_change_resume"] = bool(
+            application
+            and user_can_change_application_resume(self.request.user, application)
+        )
         context["vote"] = self.can_vote()
         context["max_vote"] = dict(models.VOTES)
         if self.can_vote():
@@ -193,6 +221,11 @@ class ApplicationDetailView(TabsViewMixin, IsOrganizerMixin, TemplateView):
                 + motive_of_ban,
             )
             application.confirm_blacklist(request.user, motive_of_ban)
+        elif request.POST.get("change_resume"):
+            if user_can_change_application_resume(request.user, application):
+                change_application_resume(request, application)
+            else:
+                messages.error(request, "You have no permissions to do this")
 
         return HttpResponseRedirect(
             reverse("app_detail", kwargs={"id": application.uuid_str})
