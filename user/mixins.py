@@ -144,6 +144,21 @@ class HaveSponsorPermissionMixin(UserPassesTestMixin):
         return self.request.user.has_sponsor_access
 
 
+class HaveHxPermissionMixin(UserPassesTestMixin):
+    raise_exception = True
+
+    def test_func(self):
+        if not self.request.user.is_authenticated:
+            return False
+        if not self.request.user.email_verified:
+            return False
+        if not self.request.user.has_usable_password():
+            return False
+        if not self.request.user.is_organizer:
+            return False
+        return self.request.user.has_hx_access
+
+
 class IsBlacklistAdminMixin(UserPassesTestMixin):
     raise_exception = True
 
