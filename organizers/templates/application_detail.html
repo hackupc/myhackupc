@@ -306,14 +306,19 @@
                     </dl>
                 </div>
                 <button name="send" class="btn btn-success btn-block" value="send">Send vote</button>
-                <button name="skip" class="btn btn-default btn-block" value="skip">Skip
-                    application
-                </button>
-                {% if h_dubious_enabled %}
-                    <button type="button" class="btn btn-warning btn-block" data-toggle="modal" data-target="#dubiousModal">
-                        Dubious Application
+                <div style="display:flex; gap:4px; margin-top:4px;">
+                    <button name="discard" class="btn btn-info" style="flex:1" value="discard">
+                        Mark as possible discard
                     </button>
-                {% endif %}
+                    {% if h_dubious_enabled %}
+                        <button type="button" class="btn btn-warning" style="flex:1" data-toggle="modal" data-target="#dubiousModal">
+                            Dubious Application
+                        </button>
+                    {% endif %}
+                </div>
+                <button name="skip" class="btn btn-default btn-block" value="skip" style="margin-top:4px; background:#5e5240; color:#fff;">
+                    Skip application
+                </button>
                 {% if h_blacklist_enabled %}
                     <button name="set_blacklist" class="btn btn-danger btn-block" value="set_blacklist"
                             onclick="return confirm('Are you sure you want set this application as Blacklist?')">

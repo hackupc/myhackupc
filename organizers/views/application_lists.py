@@ -56,8 +56,13 @@ if getattr(settings, "REIMBURSEMENT_ENABLED", False):
 
 
 def hacker_tabs(user):
-    new_app = models.HackerApplication.objects.exclude(vote__user_id=user.id).filter(
-        status=APP_PENDING, submission_date__lte=timezone.now() - timedelta(hours=2)
+    new_app = (
+        models.HackerApplication.objects.exclude(vote__user_id=user.id)
+        .exclude(discards__user_id=user.id)
+        .filter(
+            status=APP_PENDING,
+            submission_date__lte=timezone.now() - timedelta(hours=2),
+        )
     )
     t = [
         ("Application", reverse("app_list"), False),

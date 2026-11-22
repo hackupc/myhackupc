@@ -22,6 +22,7 @@ from applications import emails
 from applications.models import (
     APP_PENDING,
     APP_DUBIOUS,
+    APP_DISCARDED,
     APP_BLACKLISTED,
     AcceptedResume,
     APP_ATTENDED,
@@ -55,6 +56,21 @@ def add_vote(application, user, tech_rat, pers_rat):
             application=application, defaults={"accepted": True}
         )
     return v
+
+
+def discard_application(application, user):
+    """Record one organizer discard. Enough discards hide the application."""
+    if not application.is_pending():
+        return False
+    _, created = models.ApplicationDiscard.objects.get_or_create(
+        application=application, user=user
+    )
+    discards_required = getattr(settings, "DISCARDS_REQUIRED", 5)
+    if created and application.discards.count() >= discards_required:
+        application.status = APP_DISCARDED
+        application.save()
+        add_comment(application, user, "Application discarded")
+    return created
 
 
 def add_comment(application, user, text):
@@ -111,10 +127,12 @@ class ApplicationDetailView(TabsViewMixin, IsOrganizerMixin, TemplateView):
                 models.HackerApplication.objects.exclude(
                     vote__user_id=self.request.user.id
                 )
+                .exclude(discards__user_id=self.request.user.id)
                 .filter(
                     status=APP_PENDING,
                     submission_date__lte=timezone.now() - timedelta(hours=2),
                 )
+                .distinct()
                 .count()
             )
 
@@ -300,11 +318,19 @@ class ReviewApplicationView(ApplicationDetailView):
         max_votes_to_app = getattr(settings, "MAX_VOTES_TO_APP", 50)
         return (
             models.HackerApplication.objects.exclude(
-                Q(vote__user_id=self.request.user.id) | Q(user_id=self.request.user.id)
+                vote__user_id=self.request.user.id
             )
+            .exclude(user_id=self.request.user.id)
+            .exclude(discards__user_id=self.request.user.id)
             .filter(status=APP_PENDING)
             .filter(submission_date__lte=timezone.now() - timedelta(hours=2))
-            .annotate(count=Count("vote__calculated_vote"))
+            .annotate(
+                count=Count(
+                    "vote__id",
+                    filter=Q(vote__calculated_vote__isnull=False),
+                    distinct=True,
+                )
+            )
             .filter(count__lte=max_votes_to_app)
             .order_by("count", "submission_date")
             .first()
@@ -327,6 +353,8 @@ class ReviewApplicationView(ApplicationDetailView):
         try:
             if request.POST.get("skip"):
                 add_vote(application, request.user, None, None)
+            elif request.POST.get("discard"):
+                discard_application(application, request.user)
             elif request.POST.get("add_comment"):
                 add_comment(application, request.user, comment_text)
                 return HttpResponseRedirect(
@@ -390,12 +418,19 @@ class ReviewApplicationDetailView(ApplicationDetailView):
                 max_votes_to_app = getattr(settings, "MAX_VOTES_TO_APP", 50)
                 return (
                     models.HackerApplication.objects.exclude(
-                        Q(vote__user_id=self.request.user.id)
-                        | Q(user_id=self.request.user.id)
+                        vote__user_id=self.request.user.id
                     )
+                    .exclude(user_id=self.request.user.id)
+                    .exclude(discards__user_id=self.request.user.id)
                     .filter(status=APP_PENDING)
                     .filter(submission_date__lte=timezone.now() - timedelta(hours=2))
-                    .annotate(count=Count("vote__calculated_vote"))
+                    .annotate(
+                        count=Count(
+                            "vote__id",
+                            filter=Q(vote__calculated_vote__isnull=False),
+                            distinct=True,
+                        )
+                    )
                     .filter(count__lte=max_votes_to_app)
                     .order_by("count", "submission_date")
                     .first()
@@ -406,12 +441,19 @@ class ReviewApplicationDetailView(ApplicationDetailView):
             max_votes_to_app = getattr(settings, "MAX_VOTES_TO_APP", 50)
             return (
                 models.HackerApplication.objects.exclude(
-                    Q(vote__user_id=self.request.user.id)
-                    | Q(user_id=self.request.user.id)
+                    vote__user_id=self.request.user.id
                 )
+                .exclude(user_id=self.request.user.id)
+                .exclude(discards__user_id=self.request.user.id)
                 .filter(status=APP_PENDING)
                 .filter(submission_date__lte=timezone.now() - timedelta(hours=2))
-                .annotate(count=Count("vote__calculated_vote"))
+                .annotate(
+                    count=Count(
+                        "vote__id",
+                        filter=Q(vote__calculated_vote__isnull=False),
+                        distinct=True,
+                    )
+                )
                 .filter(count__lte=max_votes_to_app)
                 .order_by("count", "submission_date")
                 .first()
@@ -434,6 +476,8 @@ class ReviewApplicationDetailView(ApplicationDetailView):
         try:
             if request.POST.get("skip"):
                 add_vote(application, request.user, None, None)
+            elif request.POST.get("discard"):
+                discard_application(application, request.user)
             elif request.POST.get("add_comment"):
                 add_comment(application, request.user, comment_text)
                 return HttpResponseRedirect(

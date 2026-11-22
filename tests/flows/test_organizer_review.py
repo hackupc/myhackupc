@@ -1,13 +1,22 @@
 from datetime import timedelta
 
 import pytest
+from django.conf import settings
 from django.core import mail
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
 from django.utils import timezone
 
-from applications.models import APP_CONFIRMED, APP_DUBIOUS, APP_INVITED, APP_PENDING, APP_REJECTED
-from organizers.models import ApplicationComment, Vote
+from applications.models import (
+    APP_CONFIRMED,
+    APP_DISCARDED,
+    APP_DUBIOUS,
+    APP_INVITED,
+    APP_PENDING,
+    APP_REJECTED,
+)
+from organizers.models import ApplicationComment, ApplicationDiscard, Vote
+from organizers.views.application_lists import hacker_tabs
 from tests.factories import (
     HackerApplicationFactory,
     MentorApplicationFactory,
@@ -77,6 +86,55 @@ def test_review_shows_oldest_pending_application(organizer_client):
 
     assert response.status_code == 200
     assert response.context["app"].pk == app.pk
+
+
+@pytest.mark.django_db
+def test_review_counts_votes_once_when_app_has_discard_records(organizer_client):
+    client, _ = organizer_client
+    now = timezone.now()
+    fewer_votes = HackerApplicationFactory(
+        submission_date=now - timedelta(hours=3) + timedelta(minutes=1)
+    )
+    more_votes = HackerApplicationFactory(
+        submission_date=now - timedelta(hours=3)
+    )
+
+    for _ in range(2):
+        Vote.objects.create(
+            application=fewer_votes,
+            user=OrganizerUserFactory(),
+            tech=None,
+            personal=None,
+            calculated_vote=1.0,
+        )
+    for _ in range(4):
+        Vote.objects.create(
+            application=more_votes,
+            user=OrganizerUserFactory(),
+            tech=None,
+            personal=None,
+            calculated_vote=1.0,
+        )
+    for _ in range(4):
+        ApplicationDiscard.objects.create(
+            application=fewer_votes, user=OrganizerUserFactory()
+        )
+
+    response = client.get(reverse("review"))
+
+    assert response.context["app"].pk == fewer_votes.pk
+    assert response.context["apps_left_to_vote"] == 2
+
+
+@pytest.mark.django_db
+def test_review_tab_badge_ignores_app_discarded_by_reviewer(organizer_client):
+    _, reviewer = organizer_client
+    app = reviewable_application()
+    ApplicationDiscard.objects.create(application=app, user=reviewer)
+
+    tabs = hacker_tabs(reviewer)
+
+    assert tabs[1][2] == ""
 
 
 @pytest.mark.django_db
@@ -430,3 +488,70 @@ def test_organizer_without_dubious_access_cannot_change_dubious_resume(organizer
     assert b"replaced" not in content
     detail = client.get(reverse("app_detail", kwargs={"id": app.uuid_str}))
     assert b"Change CV" not in detail.content
+
+
+@pytest.mark.django_db
+def test_review_shows_discard_button(organizer_client):
+    client, _ = organizer_client
+    reviewable_application()
+
+    response = client.get(reverse("review"))
+
+    assert response.status_code == 200
+    assert b"Mark as possible discard" in response.content
+
+
+@pytest.mark.django_db
+def test_discard_hides_application_from_that_reviewer_only(organizer_client):
+    client, organizer = organizer_client
+    app = reviewable_application()
+    other = OrganizerUserFactory()
+
+    response = client.post(reverse("review"), data={"app_id": str(app.pk), "discard": "discard"})
+
+    app.refresh_from_db()
+    assert response.status_code == 302
+    assert app.status == APP_PENDING
+    assert ApplicationDiscard.objects.filter(application=app, user=organizer).count() == 1
+    again = client.get(reverse("review"))
+    assert again.context["app"] is None
+
+    client.force_login(other)
+    other_view = client.get(reverse("review"))
+    assert other_view.context["app"].pk == app.pk
+
+
+@pytest.mark.django_db
+def test_required_discards_mark_application_discarded(organizer_client):
+    client, organizer = organizer_client
+    app = reviewable_application()
+    reviewers = [organizer] + [
+        OrganizerUserFactory() for _ in range(settings.DISCARDS_REQUIRED - 1)
+    ]
+
+    for reviewer in reviewers:
+        client.force_login(reviewer)
+        response = client.post(
+            reverse("review"), data={"app_id": str(app.pk), "discard": "discard"}
+        )
+        assert response.status_code == 302
+
+    app.refresh_from_db()
+    assert app.status == APP_DISCARDED
+    assert ApplicationDiscard.objects.filter(application=app).count() == settings.DISCARDS_REQUIRED
+    assert ApplicationComment.objects.filter(hacker=app, text="Application discarded").count() == 1
+
+    client.force_login(OrganizerUserFactory())
+    response = client.get(reverse("review"))
+    assert response.context["app"] is None
+
+
+@pytest.mark.django_db
+def test_same_reviewer_cannot_discard_twice(organizer_client):
+    client, organizer = organizer_client
+    app = reviewable_application()
+
+    client.post(reverse("review"), data={"app_id": str(app.pk), "discard": "discard"})
+    client.post(reverse("review"), data={"app_id": str(app.pk), "discard": "discard"})
+
+    assert ApplicationDiscard.objects.filter(application=app, user=organizer).count() == 1
