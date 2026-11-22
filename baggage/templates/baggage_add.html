@@ -132,8 +132,8 @@
           <label class="control-label" for="pos_col">Column</label>
           <select class="form-control" id="baggage-cols" name="pos_col">
             {% for i in "x"|ljust:rooms.0.col %}
-              <option value="{{ forloop.counter0 }}" {% if forloop.counter0|stringformat:"i" == defaults.col %}
-                      selected {% endif %}>{{ forloop.counter0 }}</option>
+              <option value="{{ forloop.counter }}" {% if forloop.counter|stringformat:"i" == defaults.col %}
+                      selected {% endif %}>{{ forloop.counter }}</option>
             {% endfor %}
           </select>
         </div>

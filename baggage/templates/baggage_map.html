@@ -46,7 +46,7 @@
                     {% for i in "x"|ljust:room.row %}
                         <tr class="baggage-table-tr baggage-table-tr-{{ room }}-{{ forloop.parentloop.counter0|itoa }} baggage-table-tr-{{ forloop.parentloop.counter0|itoa }}">
                             {% for j in "x"|ljust:room.col %}
-                                <th  class="baggage-table-th baggage-table-th-{{ room }}-{{ forloop.counter0 }} baggage-table-th-{{ forloop.counter0 }}" id="baggage-cell-{{ room }}-{{ forloop.parentloop.counter0|itoa }}{{ forloop.counter0 }}">{{ forloop.parentloop.counter0|itoa }}{{ forloop.counter0 }}</th>
+                                <th  class="baggage-table-th baggage-table-th-{{ room }}-{{ forloop.counter }} baggage-table-th-{{ forloop.counter }}" id="baggage-cell-{{ room }}-{{ forloop.parentloop.counter0|itoa }}{{ forloop.counter }}">{{ forloop.parentloop.counter0|itoa }}{{ forloop.counter }}</th>
                             {% endfor %}
                         </tr>
                     {% endfor %}

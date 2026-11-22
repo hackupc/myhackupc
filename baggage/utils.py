@@ -31,13 +31,15 @@ def get_position(special):
         for i in range(0, len(positions_sort)):
             # I am not responsible for what will happen if you add more than 26 rows ;)
             row_char = chr(positions_sort[i][0][1] + 65)
+            # Distances are computed with 0-based columns, but stored/displayed columns start at 1
+            col_num = positions_sort[i][0][2] + 1
             num_bags = Bag.objects.filter(status=BAG_ADDED, room=positions_sort[i][0][0],
-                                          row=row_char, col=positions_sort[i][0][2]).count()
+                                          row=row_char, col=col_num).count()
             if num_bags == 0:
-                return (1, positions_sort[i][0][0], row_char, positions_sort[i][0][2])
+                return (1, positions_sort[i][0][0], row_char, col_num)
         extra = 'EXTRA'
-    i = 0
-    while i < 10000:
+    i = 1
+    while i <= 10000:
         num_bags = Bag.objects.filter(status=BAG_ADDED, room=extra, row=0, col=i).count()
         if num_bags == 0:
             return (2, extra, 'EXTRA', i)
