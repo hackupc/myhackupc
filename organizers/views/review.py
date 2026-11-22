@@ -125,13 +125,14 @@ class ApplicationDetailView(TabsViewMixin, IsOrganizerMixin, TemplateView):
         if self.can_vote():
             context["apps_left_to_vote"] = (
                 models.HackerApplication.objects.exclude(
-                    Q(vote__user_id=self.request.user.id)
-                    | Q(discards__user_id=self.request.user.id)
+                    vote__user_id=self.request.user.id
                 )
+                .exclude(discards__user_id=self.request.user.id)
                 .filter(
                     status=APP_PENDING,
                     submission_date__lte=timezone.now() - timedelta(hours=2),
                 )
+                .distinct()
                 .count()
             )
 
@@ -317,13 +318,19 @@ class ReviewApplicationView(ApplicationDetailView):
         max_votes_to_app = getattr(settings, "MAX_VOTES_TO_APP", 50)
         return (
             models.HackerApplication.objects.exclude(
-                Q(vote__user_id=self.request.user.id)
-                | Q(user_id=self.request.user.id)
-                | Q(discards__user_id=self.request.user.id)
+                vote__user_id=self.request.user.id
             )
+            .exclude(user_id=self.request.user.id)
+            .exclude(discards__user_id=self.request.user.id)
             .filter(status=APP_PENDING)
             .filter(submission_date__lte=timezone.now() - timedelta(hours=2))
-            .annotate(count=Count("vote__calculated_vote"))
+            .annotate(
+                count=Count(
+                    "vote__id",
+                    filter=Q(vote__calculated_vote__isnull=False),
+                    distinct=True,
+                )
+            )
             .filter(count__lte=max_votes_to_app)
             .order_by("count", "submission_date")
             .first()
@@ -411,13 +418,19 @@ class ReviewApplicationDetailView(ApplicationDetailView):
                 max_votes_to_app = getattr(settings, "MAX_VOTES_TO_APP", 50)
                 return (
                     models.HackerApplication.objects.exclude(
-                        Q(vote__user_id=self.request.user.id)
-                        | Q(user_id=self.request.user.id)
-                        | Q(discards__user_id=self.request.user.id)
+                        vote__user_id=self.request.user.id
                     )
+                    .exclude(user_id=self.request.user.id)
+                    .exclude(discards__user_id=self.request.user.id)
                     .filter(status=APP_PENDING)
                     .filter(submission_date__lte=timezone.now() - timedelta(hours=2))
-                    .annotate(count=Count("vote__calculated_vote"))
+                    .annotate(
+                        count=Count(
+                            "vote__id",
+                            filter=Q(vote__calculated_vote__isnull=False),
+                            distinct=True,
+                        )
+                    )
                     .filter(count__lte=max_votes_to_app)
                     .order_by("count", "submission_date")
                     .first()
@@ -428,13 +441,19 @@ class ReviewApplicationDetailView(ApplicationDetailView):
             max_votes_to_app = getattr(settings, "MAX_VOTES_TO_APP", 50)
             return (
                 models.HackerApplication.objects.exclude(
-                    Q(vote__user_id=self.request.user.id)
-                    | Q(user_id=self.request.user.id)
-                    | Q(discards__user_id=self.request.user.id)
+                    vote__user_id=self.request.user.id
                 )
+                .exclude(user_id=self.request.user.id)
+                .exclude(discards__user_id=self.request.user.id)
                 .filter(status=APP_PENDING)
                 .filter(submission_date__lte=timezone.now() - timedelta(hours=2))
-                .annotate(count=Count("vote__calculated_vote"))
+                .annotate(
+                    count=Count(
+                        "vote__id",
+                        filter=Q(vote__calculated_vote__isnull=False),
+                        distinct=True,
+                    )
+                )
                 .filter(count__lte=max_votes_to_app)
                 .order_by("count", "submission_date")
                 .first()

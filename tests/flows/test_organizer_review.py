@@ -16,6 +16,7 @@ from applications.models import (
     APP_REJECTED,
 )
 from organizers.models import ApplicationComment, ApplicationDiscard, Vote
+from organizers.views.application_lists import hacker_tabs
 from tests.factories import (
     HackerApplicationFactory,
     MentorApplicationFactory,
@@ -85,6 +86,55 @@ def test_review_shows_oldest_pending_application(organizer_client):
 
     assert response.status_code == 200
     assert response.context["app"].pk == app.pk
+
+
+@pytest.mark.django_db
+def test_review_counts_votes_once_when_app_has_discard_records(organizer_client):
+    client, _ = organizer_client
+    now = timezone.now()
+    fewer_votes = HackerApplicationFactory(
+        submission_date=now - timedelta(hours=3) + timedelta(minutes=1)
+    )
+    more_votes = HackerApplicationFactory(
+        submission_date=now - timedelta(hours=3)
+    )
+
+    for _ in range(2):
+        Vote.objects.create(
+            application=fewer_votes,
+            user=OrganizerUserFactory(),
+            tech=None,
+            personal=None,
+            calculated_vote=1.0,
+        )
+    for _ in range(4):
+        Vote.objects.create(
+            application=more_votes,
+            user=OrganizerUserFactory(),
+            tech=None,
+            personal=None,
+            calculated_vote=1.0,
+        )
+    for _ in range(4):
+        ApplicationDiscard.objects.create(
+            application=fewer_votes, user=OrganizerUserFactory()
+        )
+
+    response = client.get(reverse("review"))
+
+    assert response.context["app"].pk == fewer_votes.pk
+    assert response.context["apps_left_to_vote"] == 2
+
+
+@pytest.mark.django_db
+def test_review_tab_badge_ignores_app_discarded_by_reviewer(organizer_client):
+    _, reviewer = organizer_client
+    app = reviewable_application()
+    ApplicationDiscard.objects.create(application=app, user=reviewer)
+
+    tabs = hacker_tabs(reviewer)
+
+    assert tabs[1][2] == ""
 
 
 @pytest.mark.django_db
