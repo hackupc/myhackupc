@@ -41,6 +41,11 @@ class OrganizerUserFactory(UserFactory):
     type = USR_ORGANIZER
 
 
+class HxUserFactory(OrganizerUserFactory):
+    email = factory.Sequence(lambda n: f"hx{n}@example.com")
+    is_hx = True
+
+
 class DirectorUserFactory(UserFactory):
     email = factory.Sequence(lambda n: f"director{n}@example.com")
     type = USR_ORGANIZER

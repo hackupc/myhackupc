@@ -2,6 +2,7 @@ import pytest
 
 from tests.factories import (
     DirectorUserFactory,
+    HxUserFactory,
     MentorUserFactory,
     OrganizerUserFactory,
     SponsorUserFactory,
@@ -81,3 +82,14 @@ def director_user(db):
 def director_client(client, director_user):
     client.force_login(director_user)
     return client, director_user
+
+
+@pytest.fixture
+def hx_user(db):
+    return HxUserFactory()
+
+
+@pytest.fixture
+def hx_client(client, hx_user):
+    client.force_login(hx_user)
+    return client, hx_user
