@@ -6,20 +6,21 @@ import os
 from django.utils import timezone
 # Hackathon timezone
 TIME_ZONE = "CET"
+YEAR = 2026
 # Applications deadline
 HACKATHON_APP_DEADLINE = timezone.datetime(
-    2026, 4, 1, 23, 59, tzinfo=timezone.pytz.timezone(TIME_ZONE)
+    YEAR, 4, 1, 23, 59, tzinfo=timezone.pytz.timezone(TIME_ZONE)
 )
 VOLUNTEER_APP_DEADLINE = timezone.datetime(
-    2026, 3, 27, 23, 59, tzinfo=timezone.pytz.timezone(TIME_ZONE)
+    YEAR, 3, 27, 23, 59, tzinfo=timezone.pytz.timezone(TIME_ZONE)
 )
 MENTOR_APP_DEADLINE = timezone.datetime(
-    2026, 3, 27, 23, 59, tzinfo=timezone.pytz.timezone(TIME_ZONE)
+    YEAR, 3, 27, 23, 59, tzinfo=timezone.pytz.timezone(TIME_ZONE)
 )
 
 # Event days (changes the navbar layout)
-HACKATHON_START_DAY = datetime.date(2026, 4, 24)
-HACKATHON_END_DAY = datetime.date(2026, 4, 26)
+HACKATHON_START_DAY = datetime.date(YEAR, 4, 24)
+HACKATHON_END_DAY = datetime.date(YEAR, 4, 26)
 
 
 HACKATHON_NAME = "HackUPC"
@@ -67,7 +68,7 @@ HACKATHON_LEAVE = ""
 
 # (OPTIONAL) When the event ends (to send Devpost link emails)
 HACKATHON_EVENT_END = timezone.datetime(
-    2026, 4, 26, 20, 00, tzinfo=timezone.pytz.timezone(TIME_ZONE)
+    YEAR, 4, 26, 20, 00, tzinfo=timezone.pytz.timezone(TIME_ZONE)
 )
 
 # (OPTIONAL) Hackathon live page
@@ -90,11 +91,11 @@ REIMBURSEMENT_ENABLED = True
 DEFAULT_REIMBURSEMENT_AMOUNT = 100
 CURRENCY = "€"
 REIMBURSEMENT_EXPIRY_DATE = timezone.datetime(
-    2026, 4, 24, 17, 00, tzinfo=timezone.pytz.timezone(TIME_ZONE)
+    YEAR, 4, 24, 17, 00, tzinfo=timezone.pytz.timezone(TIME_ZONE)
 )
 REIMBURSEMENT_REQUIREMENTS = "You have to submit a project and demo it during the event in order to get reimbursed"
 REIMBURSEMENT_DEADLINE = timezone.datetime(
-    2026, 4, 24, 17, 00, tzinfo=timezone.pytz.timezone(TIME_ZONE)
+    YEAR, 4, 24, 17, 00, tzinfo=timezone.pytz.timezone(TIME_ZONE)
 )
 MAX_REIMBURSEMENTS_UNTIL_WAITLIST = 250
 # (OPTIONAL) Max team members. Defaults to 4
@@ -152,7 +153,17 @@ VOLUNTEER_EXPIRES = False
 
 DISCORD_HACKATHON = False
 HYBRID_HACKATHON = False
-N_MAX_LIVE_HACKERS = 600
+N_MAX_LIVE_HACKERS = 700  # the goal
+
+# Review policy. Percentages below are 0-100; see docs/review-policy.md
+HACKER_INVITE_EXTRA_PERCENT = 25  # 700 attendance goal -> 875 active invitations/confirmations
+REVIEW_EARLY_CUTOFF_PERCENT = 50  # Start at the middle of the ranked pool, then cap at 875.
+REVIEW_RANDOM_POOL_SIZE = 10  # Mix the leading applications at the highest available priority.
+MIN_VOTES_TO_APP = 5
+MAX_VOTES_TO_APP = 12
+REVIEW_FULL_URGENCY_PERCENT = 5  # On EACH side of the cutoff, as % of the ranked pool
+REVIEW_ZERO_URGENCY_PERCENT = 12  # Urgency fades to zero at this distance on each side
+REVIEW_DISPUTE_GAP = 1.0  # Highest minus lowest normalized vote (not raw 1-5 marks)
 
 SERVER_EMAIL = "HackUPC Team <noreply@hackupc.com>"
 

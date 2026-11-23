@@ -8,7 +8,6 @@ from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 from django_tables2.export import ExportMixin
 from django.utils import timezone
-from datetime import timedelta
 
 from app.mixins import TabsViewMixin
 from applications import emails
@@ -23,6 +22,7 @@ from applications.models import (
     APP_REJECTED,
 )
 from organizers import models
+from organizers.review_policy import reviewable_applications
 from organizers.tables import (
     ApplicationsListTable,
     ApplicationFilter,
@@ -55,13 +55,12 @@ if getattr(settings, "REIMBURSEMENT_ENABLED", False):
     from reimbursement.models import Reimbursement, RE_PEND_APPROVAL
 
 
-def hacker_tabs(user):
-    new_app = models.HackerApplication.objects.exclude(vote__user_id=user.id).filter(
-        status=APP_PENDING, submission_date__lte=timezone.now() - timedelta(hours=2)
-    )
+def hacker_tabs(user, review_apps=None):
+    if review_apps is None:
+        review_apps = reviewable_applications(user)
     t = [
         ("Application", reverse("app_list"), False),
-        ("Review", reverse("review"), "new" if new_app else ""),
+        ("Review", reverse("review"), "new" if review_apps.exists() else ""),
     ]
     if user.has_dubious_access and getattr(settings, "DUBIOUS_ENABLED", False):
         t.append(

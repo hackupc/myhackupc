@@ -1,6 +1,9 @@
+from datetime import timedelta
+
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
+from django.utils import timezone
 
 from applications.models import APP_CANCELLED, APP_CONFIRMED, APP_INVITED, APP_PENDING
 from applications.models.hacker import HackerApplication
@@ -96,7 +99,7 @@ def test_pending_hacker_cannot_confirm(hacker_client):
 @pytest.mark.django_db
 def test_organizer_can_vote_on_application(organizer_client, db):
     client, organizer = organizer_client
-    app = HackerApplicationFactory()
+    app = HackerApplicationFactory(submission_date=timezone.now() - timedelta(hours=3))
     response = client.post(
         reverse("review_detail", kwargs={"id": app.uuid_str}),
         data={"app_id": str(app.pk), "tech_rat": "3", "pers_rat": "4"},

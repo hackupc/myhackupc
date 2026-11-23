@@ -22,6 +22,7 @@ This puts a `python3.10` executable in `~/.local/bin`; make sure that directory 
 git clone https://github.com/hackupc/myhackupc && cd myhackupc
 python3.10 -m venv env
 source ./env/bin/activate
+python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
