@@ -9,7 +9,7 @@ from django.utils import timezone
 from django_tables2 import SingleTableMixin
 
 from app.views import TabsView
-from applications.models import HackerApplication, APP_CONFIRMED, APP_ATTENDED, D_OTHER, \
+from applications.models import HackerApplication, APP_CONFIRMED, APP_ATTENDED, D_OTHER, TSHIRT_SIZES, \
     VolunteerApplication, MentorApplication, SponsorApplication, APP_DUBIOUS, APP_INVALID, APP_BLACKLISTED
 from organizers.models import Vote
 from stats.tables import CheckinRankingListTable, OrganizerRankingListTable
@@ -119,8 +119,15 @@ def get_stats(model):
                 for day in a.get_attendance_display().split(', '):
                     attendance_count_confirmed[day] += 1
 
-    shirt_count = [{'tshirt': x, 'applications': v} for (x, v) in shirt_count.items()]
-    shirt_count_confirmed = [{'tshirt': x, 'applications': v} for (x, v) in shirt_count_confirmed.items()]
+    # T-shirt sizes from smallest to largest, as defined in TSHIRT_SIZES
+    sizes = [label for (value, label) in TSHIRT_SIZES if value]
+
+    def by_size(item):
+        return sizes.index(item[0]) if item[0] in sizes else len(sizes)
+
+    shirt_count = [{'tshirt': x, 'applications': v} for (x, v) in sorted(shirt_count.items(), key=by_size)]
+    shirt_count_confirmed = [{'tshirt': x, 'applications': v} for (x, v) in
+                             sorted(shirt_count_confirmed.items(), key=by_size)]
 
     diet_count = [{'diet': x, 'applications': v} for (x, v) in diet_count.items()]
     diet_count_confirmed = [{'diet': x, 'applications': v} for (x, v) in diet_count_confirmed.items()]
